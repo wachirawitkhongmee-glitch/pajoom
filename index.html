@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — จองก่อนปลูก</title>
+<meta name="description" content="FarmUP แพลตฟอร์มจองผลผลิตล่วงหน้า เชื่อมเกษตรกรกับผู้บริโภคโดยตรง"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { headline: ['Manrope','sans-serif'], body: ['Inter','sans-serif'] },
+      colors: {
+        primary: '#1a6b2e', 'primary-light': '#2d8a47', 'primary-dark': '#0f4a1f',
+        secondary: '#e8a020', 'secondary-light': '#f5c44a',
+        surface: '#f5f0e8', 'surface-card': '#fffdf7',
+        danger: '#dc2626', warning: '#f59e0b', success: '#16a34a'
+      },
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
+        'slide-up': 'slideUp 0.5s ease-out',
+      },
+      keyframes: {
+        float: { '0%,100%': {transform:'translateY(0)'}, '50%': {transform:'translateY(-12px)'} },
+        slideUp: { from: {opacity:'0',transform:'translateY(30px)'}, to: {opacity:'1',transform:'translateY(0)'} }
+      }
+    }
+  }
+}
+</script>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#0f1a12;min-height:100vh;overflow-x:hidden;}
+.glass{background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);}
+.glass-light{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);}
+.grain{background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");}
+.btn-primary{background:linear-gradient(135deg,#2d8a47,#1a6b2e);color:#fff;border:none;transition:all 0.2s;box-shadow:0 8px 32px rgba(26,107,46,0.4);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(26,107,46,0.5);}
+.btn-primary:active{transform:scale(0.97);}
+.tab-active{background:linear-gradient(135deg,#2d8a47,#1a6b2e);color:#fff;}
+.role-card.selected{border-color:#2d8a47;background:rgba(45,138,71,0.15);}
+input:focus{outline:none;border-color:#2d8a47;box-shadow:0 0 0 3px rgba(45,138,71,0.15);}
+.hero-bg{background:radial-gradient(ellipse at 30% 40%,rgba(45,138,71,0.35) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(232,160,32,0.2) 0%,transparent 50%),#0a150c;}
+.floating-chip{animation:chipFloat 8s ease-in-out infinite;}
+@keyframes chipFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-16px) rotate(2deg);}}
+</style>
+</head>
+<body class="hero-bg grain">
+
+<!-- Background decorative orbs -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden">
+  <div class="absolute top-20 left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-float"></div>
+  <div class="absolute bottom-32 right-8 w-48 h-48 bg-secondary/15 rounded-full blur-3xl" style="animation:float 8s ease-in-out infinite reverse;"></div>
+  <div class="absolute top-1/2 left-1/2 w-32 h-32 bg-primary-light/10 rounded-full blur-2xl" style="animation:float 5s ease-in-out infinite;"></div>
+</div>
+
+<!-- Main Content -->
+<div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-12">
+
+  <!-- Logo + Hero -->
+  <div class="text-center mb-8 animate-slide-up">
+    <div class="inline-flex items-center gap-3 mb-6">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-light to-primary flex items-center justify-center shadow-xl shadow-primary/30">
+        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings:'FILL' 1;">eco</span>
+      </div>
+      <div class="text-left">
+        <h1 class="font-headline font-black text-3xl text-white leading-none">FarmUP</h1>
+        <p class="text-primary-light text-sm font-semibold tracking-wider">จองก่อนปลูก • ได้ของจริง</p>
+      </div>
+    </div>
+    <p class="text-white/60 text-base max-w-xs mx-auto leading-relaxed">เปลี่ยนเกษตรจาก <span class="text-danger font-bold">เสี่ยง</span> ให้ <span class="text-success font-bold">วางแผนได้</span></p>
+  </div>
+
+  <!-- Floating chips -->
+  <div class="relative w-full max-w-sm h-20 mb-2 pointer-events-none">
+    <div class="absolute left-0 top-2 floating-chip glass text-white/80 text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style="animation-delay:0s">
+      <span class="material-symbols-outlined text-sm text-secondary">trending_up</span> Demand Real-time
+    </div>
+    <div class="absolute right-0 top-6 floating-chip glass text-white/80 text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style="animation-delay:2s">
+      <span class="material-symbols-outlined text-sm text-green-400">verified</span> AI Risk Score
+    </div>
+    <div class="absolute left-1/4 bottom-0 floating-chip glass text-white/80 text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style="animation-delay:4s">
+      <span class="material-symbols-outlined text-sm text-primary-light">eco</span> Pre-order ล่วงหน้า
+    </div>
+  </div>
+
+  <!-- Auth Card -->
+  <div id="auth-card" class="w-full max-w-sm glass-light rounded-3xl p-6 shadow-2xl animate-slide-up" style="animation-delay:0.2s">
+
+    <!-- Tabs -->
+    <div class="flex bg-surface rounded-2xl p-1 mb-6">
+      <button id="tab-login" onclick="switchTab('login')" class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all tab-active">เข้าสู่ระบบ</button>
+      <button id="tab-register" onclick="switchTab('register')" class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-gray-500">สมัครสมาชิก</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="form-login">
+      <form id="loginForm" onsubmit="event.preventDefault(); doLogin();" class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">อีเมล / เบอร์โทร</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">person</span>
+            <input id="login-email" type="text" placeholder="you@farmup.th" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm bg-white transition-all focus:border-primary"/>
+          </div>
+          <p id="err-login-email" class="text-danger text-xs font-bold mt-1 hidden"></p>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">รหัสผ่าน</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">lock</span>
+            <input id="login-pass" type="password" placeholder="••••••••" class="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl text-sm bg-white transition-all focus:border-primary"/>
+            <button type="button" onclick="togglePw('login-pass', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 outline-none">
+              <span class="material-symbols-outlined text-xl">visibility</span>
+            </button>
+          </div>
+          <p id="err-login-pass" class="text-danger text-xs font-bold mt-1 hidden"></p>
+        </div>
+        <div class="flex justify-between items-center px-1">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="login-remember" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+            <span class="text-xs text-gray-600 font-semibold">จดจำฉันระบบ</span>
+          </label>
+          <button type="button" onclick="showToast('ระบบส่งอีเมลลีเซ็ตรหัสผ่านแล้ว', 'success')" class="text-xs text-primary font-bold hover:underline">ลืมรหัสผ่าน?</button>
+        </div>
+        <button id="btn-login" type="submit" class="btn-primary w-full py-4 rounded-2xl font-headline font-bold text-base flex justify-center items-center gap-2">
+          <span>เข้าสู่ระบบ →</span>
+        </button>
+        <div class="flex items-center gap-3"><div class="flex-1 h-px bg-gray-200"></div><span class="text-xs text-gray-400">หรือ</span><div class="flex-1 h-px bg-gray-200"></div></div>
+        <button type="button" onclick="quickLogin('consumer')" class="w-full py-3 rounded-2xl border-2 border-gray-200 text-sm font-bold text-gray-700 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
+          <span class="text-xl">🛒</span> เข้าด้วย Demo ผู้บริโภค
+        </button>
+        <button type="button" onclick="quickLogin('farmer')" class="w-full py-3 rounded-2xl border-2 border-gray-200 text-sm font-bold text-gray-700 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
+          <span class="text-xl">🧑‍🌾</span> เข้าด้วย Demo เกษตรกร
+        </button>
+      </form>
+    </div>
+
+    <!-- Register Form -->
+    <div id="form-register" class="hidden">
+      <form id="registerForm" onsubmit="event.preventDefault(); doRegister();" class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">คุณคือ</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div id="role-consumer" onclick="selectRole('consumer')" class="role-card border-2 border-gray-200 rounded-2xl p-3 text-center cursor-pointer transition-all hover:border-primary selected">
+              <div class="text-2xl mb-1">🛒</div>
+              <p class="text-xs font-bold text-gray-700">ผู้บริโภค</p>
+              <p class="text-[10px] text-gray-400">สั่งซื้อล่วงหน้า</p>
+            </div>
+            <div id="role-farmer" onclick="selectRole('farmer')" class="role-card border-2 border-gray-200 rounded-2xl p-3 text-center cursor-pointer transition-all hover:border-primary">
+              <div class="text-2xl mb-1">🧑‍🌾</div>
+              <p class="text-xs font-bold text-gray-700">เกษตรกร</p>
+              <p class="text-[10px] text-gray-400">จัดการฟาร์ม</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">ชื่อ-นามสกุล</label>
+          <input id="reg-name" type="text" placeholder="สมชาย ใจดี" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm bg-white transition-all focus:border-primary"/>
+          <p id="err-reg-name" class="text-danger text-xs font-bold mt-1 hidden"></p>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">อีเมล</label>
+          <input id="reg-email" type="email" placeholder="you@farmup.th" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm bg-white transition-all focus:border-primary"/>
+          <p id="err-reg-email" class="text-danger text-xs font-bold mt-1 hidden"></p>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">รหัสผ่าน</label>
+          <div class="relative">
+            <input id="reg-pass" type="password" placeholder="A-Z, a-z, 0-9 (8+ ตัว)" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm bg-white transition-all focus:border-primary pr-10"/>
+            <button type="button" onclick="togglePw('reg-pass', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 outline-none">
+              <span class="material-symbols-outlined text-xl">visibility</span>
+            </button>
+          </div>
+          <p id="err-reg-pass" class="text-danger text-xs font-bold mt-1 hidden"></p>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">ยืนยันรหัสผ่าน</label>
+          <div class="relative">
+            <input id="reg-confirm-pass" type="password" placeholder="กรอกรหัสผ่านอีกครั้ง" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm bg-white transition-all focus:border-primary pr-10"/>
+            <button type="button" onclick="togglePw('reg-confirm-pass', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 outline-none">
+              <span class="material-symbols-outlined text-xl">visibility</span>
+            </button>
+          </div>
+          <p id="err-reg-confirm" class="text-danger text-xs font-bold mt-1 hidden"></p>
+        </div>
+        <button id="btn-register" type="submit" class="btn-primary w-full py-4 rounded-2xl font-headline font-bold text-base flex justify-center items-center gap-2">
+          <span>สมัครสมาชิก →</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="flex gap-6 mt-8 text-center animate-slide-up" style="animation-delay:0.4s">
+    <div><p class="text-white font-headline font-black text-xl">2,847</p><p class="text-white/40 text-xs">เกษตรกร</p></div>
+    <div class="w-px bg-white/10"></div>
+    <div><p class="text-white font-headline font-black text-xl">14.2K</p><p class="text-white/40 text-xs">ล็อตปลูกสำเร็จ</p></div>
+    <div class="w-px bg-white/10"></div>
+    <div><p class="text-white font-headline font-black text-xl">98%</p><p class="text-white/40 text-xs">พอใจ</p></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl z-[500] font-bold text-sm text-white flex items-center gap-2 transition-all"></div>
+
+<script>
+var selectedRole = 'consumer';
+
+function switchTab(tab) {
+  var isLogin = tab === 'login';
+  document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+  document.getElementById('form-register').classList.toggle('hidden', isLogin);
+  document.getElementById('tab-login').className = 'flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ' + (isLogin ? 'tab-active' : 'text-gray-500');
+  document.getElementById('tab-register').className = 'flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ' + (!isLogin ? 'tab-active' : 'text-gray-500');
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('role-consumer').className = 'role-card border-2 border-gray-200 rounded-2xl p-3 text-center cursor-pointer transition-all hover:border-primary ' + (role==='consumer'?'selected':'');
+  document.getElementById('role-farmer').className = 'role-card border-2 border-gray-200 rounded-2xl p-3 text-center cursor-pointer transition-all hover:border-primary ' + (role==='farmer'?'selected':'');
+}
+
+function togglePw(id, btn) {
+  var inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.innerHTML = inp.type === 'password' ? '<span class="material-symbols-outlined text-xl">visibility</span>' : '<span class="material-symbols-outlined text-xl">visibility_off</span>';
+}
+
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.style.background = type==='error' ? '#dc2626' : '#16a34a';
+  t.classList.remove('hidden', 'opacity-0');
+  setTimeout(function(){ t.classList.add('opacity-0'); setTimeout(()=>t.classList.add('hidden'),300); }, 3000);
+}
+
+function saveSession(user) {
+  localStorage.setItem('farmup_user', JSON.stringify(user));
+}
+
+function validateEmail(email) {
+  // Relaxed to just check if it has some characters.
+  return email.length >= 3;
+}
+
+function validatePassword(pass) {
+  // Relaxed to just minimum 4 characters for easy demo
+  return pass.length >= 4;
+}
+
+function hideAllErrors() {
+  document.querySelectorAll('[id^="err-"]').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('input').forEach(el => el.classList.remove('border-danger', 'ring-1', 'ring-danger'));
+}
+
+function showError(inputId, msg) {
+  var errEl = document.getElementById('err-' + inputId);
+  var inpEl = document.getElementById(inputId);
+  if (errEl) { errEl.textContent = msg; errEl.classList.remove('hidden'); }
+  if (inpEl) { inpEl.classList.add('border-danger', 'ring-1', 'ring-danger'); inpEl.focus(); }
+}
+
+function setBtnLoading(btnId, isLoading, text) {
+  var btn = document.getElementById(btnId);
+  if (!btn) return;
+  if (isLoading) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> กำลังโหลด...`;
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = `<span>${text} →</span>`;
+  }
+}
+
+function doLogin() {
+  hideAllErrors();
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  var remember = document.getElementById('login-remember').checked;
+  var hasErr = false;
+
+  if (!email) { showError('login-email', 'กรุณากรอกอีเมลหรือเบอร์โทร'); hasErr = true; }
+  else if (!validateEmail(email)) { showError('login-email', 'รูปแบบอีเมล หรือเบอร์โทรไม่ถูกต้อง'); hasErr = true; }
+  
+  if (!pass) { showError('login-pass', 'กรุณากรอกรหัสผ่าน'); hasErr = true; }
+
+  if (hasErr) return;
+
+  setBtnLoading('btn-login', true);
+
+  fetch('http://localhost:3000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: pass, rememberMe: remember })
+  })
+  .then(res => res.json().then(data => ({ status: res.status, body: data })))
+  .then(res => {
+    setBtnLoading('btn-login', false, 'เข้าสู่ระบบ');
+    if(res.status !== 200 || res.body.error) { 
+      // Focus pass field on generic error
+      showError('login-pass', res.body.error || 'รหัสผ่านไม่ถูกต้อง');
+      showToast('⚠️ ' + (res.body.error || 'ล็อกอินล้มเหลว'), 'error');
+      return; 
+    }
+    showToast('✅ เข้าสู่ระบบสำเร็จ!', 'success');
+    saveSession(res.body.user);
+    localStorage.setItem('farmup_token', res.body.token);
+    setTimeout(function(){ window.location.href = res.body.user.role === 'farmer' ? 'farmup_farmer.html' : 'farmup_home.html'; }, 800);
+  })
+  .catch(err => {
+    setBtnLoading('btn-login', false, 'เข้าสู่ระบบ');
+    console.warn("Server offline fallback activated:", err);
+    showToast('✅ เข้าสู่ระบบสำเร็จ (Offline Mode)', 'success');
+    saveSession({ name: 'คุณสมชาย', email: email, role: 'consumer', avatar: '🧑' });
+    setTimeout(function(){ window.location.href = 'farmup_home.html'; }, 800);
+  });
+}
+
+function doRegister() {
+  hideAllErrors();
+  var name = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass = document.getElementById('reg-pass').value;
+  var confirmPass = document.getElementById('reg-confirm-pass').value;
+  var hasErr = false;
+
+  if (!name) { showError('reg-name', 'กรุณากรอกชื่อ-นามสกุล'); hasErr = true; }
+  
+  if (!email) { showError('reg-email', 'กรุณากรอกอีเมล'); hasErr = true; }
+  else if (!validateEmail(email)) { showError('reg-email', 'รูปแบบอีเมลไม่ถูกต้อง'); hasErr = true; }
+
+  if (!pass) { showError('reg-pass', 'กรุณากรอกรหัสผ่าน'); hasErr = true; }
+  else if (!validatePassword(pass)) { showError('reg-pass', 'รหัสผ่านอย่างน้อย 4 ตัวอักษร'); hasErr = true; }
+  
+  if (pass !== confirmPass) { showError('reg-confirm-pass', 'รหัสผ่านไม่ตรงกัน'); hasErr = true; }
+
+  if (hasErr) return;
+
+  setBtnLoading('btn-register', true);
+
+  fetch('http://localhost:3000/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password: pass, role: selectedRole })
+  })
+  .then(res => res.json().then(data => ({ status: res.status, body: data })))
+  .then(res => {
+    setBtnLoading('btn-register', false, 'สมัครสมาชิก');
+    if(res.status !== 200 || res.body.error) { 
+      showError('reg-email', res.body.error || 'เกิดข้อผิดพลาด');
+      showToast('⚠️ ' + (res.body.error || 'สมัครสมาชิกล้มเหลว'), 'error'); 
+      return; 
+    }
+    showToast('🌱 สมัครสมาชิกสำเร็จ!', 'success');
+    saveSession(res.body.user);
+    localStorage.setItem('farmup_token', res.body.token);
+    setTimeout(function(){ window.location.href = res.body.user.role === 'farmer' ? 'farmup_farmer.html' : 'farmup_home.html'; }, 800);
+  })
+  .catch(err => {
+    setBtnLoading('btn-register', false, 'สมัครสมาชิก');
+    console.warn("Server offline fallback activated:", err);
+    showToast('🌱 สมัครสมาชิกต้อนรับเข้าสู่ FarmUP (Offline Mode)', 'success');
+    saveSession({ name: name || 'ผู้ใช้งานใหม่', email: email, role: selectedRole, avatar: selectedRole==='farmer'?'🧑‍🌾':'🙋' });
+    setTimeout(function(){ window.location.href = selectedRole === 'farmer' ? 'farmup_farmer.html' : 'farmup_home.html'; }, 800);
+  });
+}
+
+function quickLogin(role) {
+  // Use Demo APi endpoint instead
+  fetch('http://localhost:3000/api/auth/demo-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ role })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.error) { showToast('⚠️ '+data.error, 'error'); return; }
+    showToast('✅ เข้าสู่ระบบ Demo สำเร็จ!', 'success');
+    saveSession(data.user);
+    localStorage.setItem('farmup_token', data.token);
+    setTimeout(function(){ window.location.href = data.user.role === 'farmer' ? 'farmup_farmer.html' : 'farmup_home.html'; }, 800);
+  })
+  .catch(err => {
+    console.warn("Server offline fallback activated:", err);
+    var names = { consumer: 'คุณสมใจ ใจดี', farmer: 'ลุงสมศักดิ์ เกษตรกร' };
+    showToast('✅ เข้าสู่ระบบเร็ว (Offline Mode)', 'success');
+    saveSession({ name: names[role], email: role+'@demo.farmup.th', role: role, avatar: role==='farmer'?'🧑‍🌾':'🙋' });
+    setTimeout(function(){ window.location.href = role==='farmer' ? 'farmup_farmer.html' : 'farmup_home.html'; }, 800);
+  });
+}
+
+// Check if already logged in
+if (localStorage.getItem('farmup_user')) {
+  var u = JSON.parse(localStorage.getItem('farmup_user'));
+  document.getElementById('login-email').value = u.email || 'demo@farmup.th';
+}
+</script>
+</body></html>
