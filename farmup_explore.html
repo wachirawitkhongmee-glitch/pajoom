@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — สำรวจ & Pre-order</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',warning:'#f59e0b',success:'#16a34a'}}}}</script>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f0e8;}
+.glass{background:rgba(255,255,255,0.8);backdrop-filter:blur(16px);}
+.chip{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;white-space:nowrap;}
+.chip.active,.chip:hover{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;cursor:pointer;transition:all 0.2s;text-decoration:none;color:#6b7280;}
+.nav-item:hover,.nav-item.active{color:#1a6b2e;}
+.demand-bar{height:6px;border-radius:3px;background:#e5e7eb;}
+.demand-fill{height:6px;border-radius:3px;background:linear-gradient(90deg,#2d8a47,#16a34a);}
+.sort-btn{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;background:#fff;border:1.5px solid #e5e7eb;color:#6b7280;}
+.sort-btn.active{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-40 glass px-4 py-3 shadow-sm">
+  <div class="flex items-center gap-3 mb-3">
+    <button onclick="history.back()" class="p-2 rounded-xl bg-white shadow-sm"><span class="material-symbols-outlined text-gray-600">arrow_back</span></button>
+    <div class="flex-1 relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+      <input id="search-input" type="text" placeholder="ค้นหาพืช, ฟาร์ม, ล็อต..." class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-2xl text-sm bg-white focus:outline-none focus:border-primary transition-all" oninput="renderCards()"/>
+    </div>
+    <button onclick="window.location.href='farmup_farmer.html'" class="p-2 rounded-xl bg-primary text-white shadow"><span class="material-symbols-outlined">agriculture</span></button>
+  </div>
+  <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <button class="chip active" onclick="setFilter(this,'all')">🌾 ทั้งหมด</button>
+    <button class="chip" onclick="setFilter(this,'organic')">🌿 ออร์แกนิก</button>
+    <button class="chip" onclick="setFilter(this,'veg')">🥬 ผัก</button>
+    <button class="chip" onclick="setFilter(this,'fruit')">🍅 ผลไม้</button>
+    <button class="chip" onclick="setFilter(this,'herb')">🌿 สมุนไพร</button>
+    <button class="chip" onclick="setFilter(this,'grain')">🌾 ธัญพืช</button>
+  </div>
+</header>
+
+<main class="px-4 pt-4 pb-32 max-w-2xl mx-auto">
+  <!-- Sort & Count -->
+  <div class="flex items-center justify-between mb-4">
+    <p id="result-count" class="text-sm text-gray-500 font-semibold"></p>
+    <div class="flex gap-2">
+      <button class="sort-btn active" onclick="setSort(this,'demand')">Demand ↓</button>
+      <button class="sort-btn" onclick="setSort(this,'price')">ราคา ↓</button>
+      <button class="sort-btn" onclick="setSort(this,'harvest')">เก็บเกี่ยว ↓</button>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div id="cards-grid" class="space-y-4"></div>
+</main>
+
+<!-- Pre-order Modal -->
+<div id="order-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end" onclick="if(event.target===this)closeModal()">
+  <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 shadow-2xl">
+    <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex gap-3 mb-4">
+      <img id="om-img" class="w-16 h-16 rounded-2xl object-cover" src="" alt=""/>
+      <div>
+        <h3 id="om-name" class="font-headline font-black text-lg leading-tight"></h3>
+        <p id="om-farm" class="text-xs text-gray-500 mt-1"></p>
+        <div class="flex items-center gap-2 mt-1">
+          <span id="om-risk-dot" class="risk-dot w-2 h-2 rounded-full inline-block bg-green-500"></span>
+          <span id="om-risk" class="text-xs font-bold text-success"></span>
+        </div>
+      </div>
+    </div>
+    <!-- Quantity -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-surface rounded-xl p-3 text-center">
+        <p class="text-xs text-gray-500 mb-2">จำนวน (กก)</p>
+        <div class="flex items-center justify-center gap-3">
+          <button onclick="changeQty(-1)" class="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">-</button>
+          <span id="om-qty" class="font-headline font-bold text-xl">1</span>
+          <button onclick="changeQty(1)" class="w-8 h-8 rounded-full bg-primary text-white font-bold hover:bg-primary-light">+</button>
+        </div>
+      </div>
+      <div class="bg-surface rounded-xl p-3 text-center">
+        <p class="text-xs text-gray-500 mb-2">ราคารวม</p>
+        <p id="om-total" class="font-headline font-black text-primary text-xl"></p>
+      </div>
+    </div>
+    <!-- Harvest date picker -->
+    <div class="mb-4">
+      <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">เลือกวันรับสินค้า</label>
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        <button onclick="selectDate(this,'30 เม.ย')" class="harvest-date-btn flex-shrink-0 px-4 py-2 rounded-xl border-2 border-primary bg-primary text-white text-xs font-bold">30 เม.ย</button>
+        <button onclick="selectDate(this,'5 พ.ค')" class="harvest-date-btn flex-shrink-0 px-4 py-2 rounded-xl border-2 border-gray-200 text-xs font-bold text-gray-600">5 พ.ค</button>
+        <button onclick="selectDate(this,'12 พ.ค')" class="harvest-date-btn flex-shrink-0 px-4 py-2 rounded-xl border-2 border-gray-200 text-xs font-bold text-gray-600">12 พ.ค</button>
+        <button onclick="selectDate(this,'20 พ.ค')" class="harvest-date-btn flex-shrink-0 px-4 py-2 rounded-xl border-2 border-gray-200 text-xs font-bold text-gray-600">20 พ.ค</button>
+      </div>
+    </div>
+    <!-- Risk share info -->
+    <div class="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 flex gap-2">
+      <span class="material-symbols-outlined text-success text-sm mt-0.5">shield</span>
+      <div>
+        <p class="text-xs font-bold text-gray-700">Risk Sharing Protection</p>
+        <p class="text-xs text-gray-500">หากเกิดความเสียหาย คืนเงินสูงสุด 70% หรือ credit เต็มจำนวน</p>
+      </div>
+    </div>
+    <button onclick="confirmOrder()" class="w-full py-4 rounded-2xl bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold text-base shadow-lg active:scale-95 transition-all">
+      ✅ ยืนยันการจอง
+    </button>
+    <button onclick="closeModal()" class="w-full py-2 mt-1 text-gray-400 text-sm">ยกเลิก</button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item active flex-1"><span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl shadow-primary/40 flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span>
+    </div><span class="text-[10px] font-bold text-primary mt-1">จอง</span>
+  </a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+
+<script>
+var crops = [
+  {id:1,emoji:'🍅',title:'มะเขือเทศ Heirloom Batch #24',farm:'ฟาร์มสมศักดิ์ • เชียงใหม่',price:280,demand:88,orders:176,max:200,risk:'green',riskLabel:'ปลอดภัย',tag:'organic',harvest:'30 เม.ย 2568',img:'https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?w=300&fit=crop',cert:['JAS Organic','GAP']},
+  {id:2,emoji:'🥬',title:'ผักบุ้งไร้สาร Batch #5',farm:'ฟาร์มใจดี • เลย',price:60,demand:45,orders:90,max:200,risk:'green',riskLabel:'ปลอดภัย',tag:'veg',harvest:'15 เม.ย 2568',img:'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&fit=crop',cert:['GAP']},
+  {id:3,emoji:'🌿',title:'ตะไคร้อินทรีย์ Batch #2',farm:'ฟาร์มเขียวสด • เชียงราย',price:120,demand:62,orders:124,max:200,risk:'yellow',riskLabel:'ปานกลาง',tag:'herb',harvest:'20 พ.ค 2568',img:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=300&fit=crop',cert:['Organic Thailand']},
+  {id:4,emoji:'🥭',title:'มะม่วงน้ำดอกไม้ Batch #3',farm:'ฟาร์มทองคำ • นครสวรรค์',price:450,demand:75,orders:150,max:200,risk:'green',riskLabel:'ปลอดภัย',tag:'fruit',harvest:'1 มิ.ย 2568',img:'https://images.pexels.com/photos/2294471/pexels-photo-2294471.jpeg?w=300&fit=crop',cert:['GAP','GMP']},
+  {id:5,emoji:'🌾',title:'ข้าวหอมมะลิ Batch #11',farm:'ฟาร์มทุ่งทอง • ร้อยเอ็ด',price:55,demand:30,orders:60,max:200,risk:'red',riskLabel:'เสี่ยงสูง',tag:'grain',harvest:'15 ก.ย 2568',img:'https://images.pexels.com/photos/4110255/pexels-photo-4110255.jpeg?w=300&fit=crop',cert:['GI']},
+  {id:6,emoji:'🥕',title:'แครอทหวาน Batch #7',farm:'ฟาร์มสดใส • เชียงใหม่',price:95,demand:90,orders:180,max:200,risk:'green',riskLabel:'ปลอดภัย',tag:'veg',harvest:'10 เม.ย 2568',img:'https://images.unsplash.com/photo-1447175008436-054170c2e979?w=300&fit=crop',cert:['GAP','Organic']}
+];
+
+var filterTag = 'all', sortKey = 'demand', selectedCrop = null, currentQty = 1, selectedDate = '30 เม.ย';
+
+function setFilter(btn, tag) {
+  filterTag = tag;
+  document.querySelectorAll('.chip').forEach(function(c){ c.className = c.className.replace(' active',''); });
+  btn.className += ' active';
+  renderCards();
+}
+
+function setSort(btn, key) {
+  sortKey = key;
+  document.querySelectorAll('.sort-btn').forEach(function(b){ b.className = b.className.replace(' active',''); });
+  btn.className += ' active';
+  renderCards();
+}
+
+function renderCards() {
+  var q = document.getElementById('search-input').value.toLowerCase();
+  var filtered = crops.filter(function(c){
+    return (filterTag==='all'||c.tag===filterTag) && (!q||(c.title.toLowerCase().includes(q)||c.farm.toLowerCase().includes(q)));
+  });
+  filtered.sort(function(a,b){
+    if(sortKey==='demand') return b.demand-a.demand;
+    if(sortKey==='price') return b.price-a.price;
+    return 0;
+  });
+  document.getElementById('result-count').textContent = 'พบ ' + filtered.length + ' ล็อต';
+  var grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+  filtered.forEach(function(c){
+    var riskColor = {green:'text-success bg-green-50 border-green-200',yellow:'text-warning bg-yellow-50 border-yellow-200',red:'text-danger bg-red-50 border-red-200'}[c.risk];
+    var div = document.createElement('div');
+    div.className = 'bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all';
+    div.innerHTML = `
+      <div class="relative h-44 overflow-hidden cursor-pointer" onclick="window.location.href='farmup_detail.html?id=${c.id}'">
+        <img src="${c.img}" class="w-full h-full object-cover" alt="${c.title}" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        <div class="absolute top-3 right-3"><span class="text-[10px] font-bold border px-2 py-1 rounded-full ${riskColor}">● ${c.riskLabel}</span></div>
+        <div class="absolute top-3 left-3 flex gap-1">
+          ${c.cert.map(function(cert){return '<span class="text-[9px] font-bold bg-white/90 text-primary px-2 py-0.5 rounded-full">'+cert+'</span>';}).join('')}
+        </div>
+        <div class="absolute bottom-3 left-3 flex gap-1">
+          ${c.cert.length>0?'<span class="text-xs bg-white/90 text-gray-700 px-2 py-0.5 rounded-full font-bold">📅 '+c.harvest+'</span>':''}
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-headline font-black text-base">${c.emoji} ${c.title}</h3>
+            <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span>${c.farm}</p>
+          </div>
+          <div class="text-right">
+            <p class="font-headline font-black text-primary text-xl">฿${c.price}</p>
+            <p class="text-[10px] text-gray-400">/กิโลกรัม</p>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="flex justify-between text-xs text-gray-500 mb-1.5">
+            <span>Pre-order Goal: ${c.orders}/${c.max}</span>
+            <span class="font-bold" style="color:${c.demand>70?'#16a34a':c.demand>40?'#f59e0b':'#dc2626'}">${c.demand}% เต็ม</span>
+          </div>
+          <div class="demand-bar"><div class="demand-fill" style="width:${c.demand}%;background:${c.demand>70?'linear-gradient(90deg,#2d8a47,#16a34a)':c.demand>40?'linear-gradient(90deg,#f59e0b,#f97316)':'linear-gradient(90deg,#dc2626,#f87171)'}"></div></div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button onclick="window.location.href='farmup_detail.html?id=${c.id}'" class="flex-1 py-2.5 rounded-xl border-2 border-primary text-primary text-sm font-bold hover:bg-primary hover:text-white transition-all">
+            รายละเอียด
+          </button>
+          <button onclick="openOrderModal(${c.id})" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-primary-light to-primary text-white text-sm font-bold shadow hover:shadow-lg active:scale-95 transition-all">
+            🌱 จองเลย
+          </button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+  if (filtered.length === 0) grid.innerHTML = '<div class="text-center py-16 text-gray-400"><span class="material-symbols-outlined text-5xl block mb-2">search_off</span><p class="font-bold">ไม่พบผลผลิต</p></div>';
+}
+
+function openOrderModal(id) {
+  selectedCrop = crops.find(function(c){ return c.id===id; });
+  if (!selectedCrop) return;
+  currentQty = 1;
+  document.getElementById('om-img').src = selectedCrop.img;
+  document.getElementById('om-name').textContent = selectedCrop.emoji + ' ' + selectedCrop.title;
+  document.getElementById('om-farm').textContent = selectedCrop.farm;
+  document.getElementById('om-risk').textContent = selectedCrop.riskLabel;
+  document.getElementById('om-qty').textContent = '1';
+  document.getElementById('om-total').textContent = '฿' + selectedCrop.price.toLocaleString();
+  document.getElementById('order-modal').classList.remove('hidden');
+}
+
+function changeQty(delta) {
+  currentQty = Math.max(1, currentQty + delta);
+  document.getElementById('om-qty').textContent = currentQty;
+  document.getElementById('om-total').textContent = '฿' + (selectedCrop.price * currentQty).toLocaleString();
+}
+
+function selectDate(btn, date) {
+  selectedDate = date;
+  document.querySelectorAll('.harvest-date-btn').forEach(function(b){
+    b.className = 'harvest-date-btn flex-shrink-0 px-4 py-2 rounded-xl border-2 border-gray-200 text-xs font-bold text-gray-600';
+  });
+  btn.className = 'harvest-date-btn flex-shrink-0 px-4 py-2 rounded-xl border-2 border-primary bg-primary text-white text-xs font-bold';
+}
+
+function confirmOrder() {
+  closeModal();
+  showToast('✅ จองสำเร็จ! รับสินค้า ' + selectedDate);
+  var orders = JSON.parse(localStorage.getItem('farmup_orders')||'[]');
+  orders.push({name:selectedCrop.title,qty:currentQty,total:selectedCrop.price*currentQty,status:'growing',date:selectedDate});
+  localStorage.setItem('farmup_orders', JSON.stringify(orders));
+}
+
+function closeModal() { document.getElementById('order-modal').classList.add('hidden'); }
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(function(){ t.classList.add('hidden'); }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', renderCards);
+</script>
+</body></html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — ตลาดนัดอัจฉริยะ</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',warning:'#f59e0b',success:'#16a34a'}}}}</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>*{box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#f5f0e8;}.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);}.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}.nav-item:hover,.nav-item.active{color:#1a6b2e;}.chip{padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;white-space:nowrap;}.chip.active{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}.open-badge{background:#dcfce7;color:#16a34a;}.closed-badge{background:#fee2e2;color:#dc2626;}</style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<header class="sticky top-0 z-40 glass px-4 py-3 shadow-sm">
+  <div class="flex items-center justify-between mb-3">
+    <div><h1 class="font-headline font-black text-xl text-primary">🏪 ตลาดนัดสด</h1><p class="text-xs text-gray-500">Smart Market • อัปเดตแบบ Real-time</p></div>
+    <button onclick="window.location.href='farmup_dashboard.html'" class="relative p-2 rounded-xl bg-white shadow-sm"><span class="material-symbols-outlined text-gray-500">notifications</span><span class="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] font-bold rounded-full flex items-center justify-center">2</span></button>
+  </div>
+  <div class="relative mb-2"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span><input id="market-search" type="text" placeholder="ค้นหาตลาด, แผงขาย..." class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-2xl text-sm bg-white focus:outline-none focus:border-primary transition-all" oninput="renderMarkets()"/></div>
+  <div class="flex gap-2 overflow-x-auto scrollbar-hide">
+    <button class="chip active" onclick="setMarketFilter(this,'all')">📍 ทั้งหมด</button>
+    <button class="chip" onclick="setMarketFilter(this,'open')">🟢 เปิดอยู่</button>
+    <button class="chip" onclick="setMarketFilter(this,'near')">📡 ใกล้ฉัน</button>
+    <button class="chip" onclick="setMarketFilter(this,'flash')">⚡ Flash Sale</button>
+    <button class="chip" onclick="setMarketFilter(this,'organic')">🌿 ออร์แกนิก</button>
+  </div>
+</header>
+
+<main class="pb-32 max-w-2xl mx-auto">
+  <!-- Live Map -->
+  <div class="relative mx-4 mt-4 h-64 rounded-3xl overflow-hidden shadow-lg border-2 border-white z-0">
+    <!-- Leaflet Map Container -->
+    <div id="map" class="w-full h-full z-0"></div>
+    
+    <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow border border-gray-100 flex items-center gap-2 pointer-events-none z-[400]">
+      <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-sm text-lg">map</span>
+      </div>
+      <div>
+        <p class="font-headline font-bold text-primary text-sm leading-tight">แผนที่ตลาดเกษตรกร</p>
+        <p id="map-status" class="text-[10px] text-gray-500 font-semibold">กำลังค้นหาตำแหน่งของคุณ...</p>
+      </div>
+    </div>
+
+    <!-- Fallback btn -->
+    <button id="btn-manual-loc" onclick="enableManualLocation()" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg z-[400] flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">touch_app</span> แตะบนแผนที่เพื่อระบุตำแหน่ง
+    </button>
+  </div>
+
+  <!-- Flash Sale Countdown -->
+  <section class="px-4 mt-5">
+    <div class="bg-gradient-to-r from-danger to-orange-500 rounded-3xl p-4 text-white">
+      <div class="flex justify-between items-start mb-2">
+        <div><p class="font-headline font-black text-xl">⚡ Flash Sale</p><p class="text-white/70 text-xs">ราคาลดก่อนปิดตลาด</p></div>
+        <div class="text-right"><p class="text-white/70 text-[10px] font-bold uppercase">ปิดใน</p><p class="font-headline font-black text-2xl" id="flash-timer">01:24:05</p></div>
+      </div>
+      <div class="flex gap-3 overflow-x-auto pb-1">
+        <div class="flex-shrink-0 bg-white/15 rounded-2xl p-3 backdrop-blur cursor-pointer hover:bg-white/25 transition-all active:scale-95" onclick="addToCart('มะเขือเทศผสม','฿25/กก')">
+          <p class="text-lg mb-1">🍅</p><p class="font-bold text-sm">มะเขือเทศผสม</p>
+          <div class="flex items-center gap-1 mt-1"><p class="text-white line-through text-xs opacity-60">฿42</p><p class="font-headline font-black">฿25</p></div>
+          <p class="text-[10px] opacity-70 mt-0.5">เหลือ 8 กก</p>
+        </div>
+        <div class="flex-shrink-0 bg-white/15 rounded-2xl p-3 backdrop-blur cursor-pointer hover:bg-white/25 transition-all active:scale-95" onclick="addToCart('ผักบุ้งสด','฿8/กก')">
+          <p class="text-lg mb-1">🥬</p><p class="font-bold text-sm">ผักบุ้งสด</p>
+          <div class="flex items-center gap-1 mt-1"><p class="text-white line-through text-xs opacity-60">฿18</p><p class="font-headline font-black">฿8</p></div>
+          <p class="text-[10px] opacity-70 mt-0.5">เหลือ 15 กก</p>
+        </div>
+        <div class="flex-shrink-0 bg-white/15 rounded-2xl p-3 backdrop-blur cursor-pointer hover:bg-white/25 transition-all active:scale-95" onclick="addToCart('กล้วยหอม','฿35/หวี')">
+          <p class="text-lg mb-1">🍌</p><p class="font-bold text-sm">กล้วยหอมทอง</p>
+          <div class="flex items-center gap-1 mt-1"><p class="text-white line-through text-xs opacity-60">฿65</p><p class="font-headline font-black">฿35</p></div>
+          <p class="text-[10px] opacity-70 mt-0.5">เหลือ 5 หวี</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Market List -->
+  <section class="px-4 mt-5">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="font-headline font-black text-lg">📍 ตลาดนัดใกล้ฉัน</h2>
+      <p id="market-count" class="text-xs text-gray-400"></p>
+    </div>
+    <div id="market-list" class="space-y-3"></div>
+  </section>
+
+  <!-- Community Board -->
+  <section class="px-4 mt-5">
+    <h2 class="font-headline font-black text-lg mb-3">📋 Community Board</h2>
+    <div class="space-y-2">
+      <div class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all">
+        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-primary text-white text-sm flex items-center justify-center font-bold">ส</div><div><p class="text-sm font-semibold">สมหมาย: "มะม่วงนครสวรรค์รสหวานมากวันนี้ อยู่แผง 3B"</p><p class="text-xs text-gray-400 mt-0.5">10 นาทีที่แล้ว • ❤️ 24 คนชอบ</p></div></div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all">
+        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-secondary text-white text-sm flex items-center justify-center font-bold">ม</div><div><p class="text-sm font-semibold">มาลี: "ผักออร์แกนิกมาแล้ว! จำกัด 50 ถุง"</p><p class="text-xs text-gray-400 mt-0.5">1 ชั่วโมงที่แล้ว • 🛒 12 คนสนใจ</p></div></div>
+      </div>
+      <button onclick="window.location.href='farmup_community.html'" class="w-full py-3 bg-white rounded-2xl text-primary text-sm font-bold shadow-sm hover:shadow transition-all">ดูทั้งหมด →</button>
+    </div>
+  </section>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl shadow-primary/40 flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span>
+    </div><span class="text-[10px] font-bold text-primary mt-1">จอง</span>
+  </a>
+  <a href="farmup_market.html" class="nav-item active flex-1"><span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<script>
+// --- Data & Map Logic ---
+// Real world market coordinates from OpenStreetMap (Overpass API)
+var markets = [];
+
+var map;
+var userMarker;
+var marketMarkers = [];
+var userLat = null;
+var userLng = null;
+var mFilter = 'all';
+
+// Haversine Distance (returns distance in km)
+function getDistanceKM(lat1, lon1, lat2, lon2) {
+  var R = 6371; // km
+  var dLat = (lat2-lat1) * Math.PI / 180;
+  var dLon = (lon2-lon1) * Math.PI / 180;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+          Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function initMap() {
+  // Initialize map at center of Thailand
+  map = L.map('map').setView([13.7563, 100.5018], 5);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  initLocation();
+}
+
+function initLocation() {
+  var cached = localStorage.getItem('farmup_location');
+  if (navigator.geolocation) {
+    document.getElementById('map-status').innerText = 'กำลังดึงตำแหน่ง GPS...';
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        setUserLocation(pos.coords.latitude, pos.coords.longitude, true);
+      }, 
+      function(err) {
+        if(cached) {
+          var c = JSON.parse(cached);
+          setUserLocation(c.lat, c.lng, false);
+          showToast('⚠️ ใช้ตำแหน่งเก่า กรุณาปักหมุดเองถ้าคุณย้ายที่');
+        } else {
+          showToast('⚠️ ไม่สามารถดึงตำแหน่งได้ กรุณาแตะบนแผนที่');
+          enableManualLocation();
+        }
+      },
+      { enableHighAccuracy: true, timeout: 5000 }
+    );
+  } else if (cached) {
+    var c = JSON.parse(cached);
+    setUserLocation(c.lat, c.lng, false);
+  }
+}
+
+var isManualMode = false;
+function enableManualLocation() {
+  isManualMode = true;
+  document.getElementById('btn-manual-loc').classList.add('hidden');
+  document.getElementById('map-status').innerText = 'คลิกพื้นที่บนแผนที่เพื่อระบุตำแหน่ง';
+  map.getContainer().style.cursor = 'crosshair';
+  
+  map.on('click', function(e) {
+    if(!isManualMode) return;
+    setUserLocation(e.latlng.lat, e.latlng.lng, true);
+    isManualMode = false;
+    map.getContainer().style.cursor = '';
+    map.off('click');
+  });
+}
+
+function setUserLocation(lat, lng, save) {
+  userLat = lat;
+  userLng = lng;
+  if(save) localStorage.setItem('farmup_location', JSON.stringify({lat:lat, lng:lng}));
+  
+  // Update UI and map center
+  map.flyTo([lat, lng], 13, { animate: true, duration: 1.5 });
+  
+  // Custom Icon for User
+  var userIcon = L.divIcon({
+    className: 'custom-div-icon',
+    html: `<div class="bg-primary border-4 border-white shadow-lg w-6 h-6 rounded-full relative z-[500]"><div class="absolute inset-0 rounded-full bg-primary/40 animate-ping"></div></div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  });
+
+  if (userMarker) {
+    userMarker.setLatLng([lat, lng]);
+  } else {
+    userMarker = L.marker([lat, lng], {icon: userIcon, zIndexOffset: 1000}).addTo(map).bindPopup('<b>📍 ฉันอยู่ตรงนี้</b>').openPopup();
+  }
+
+  document.getElementById('map-status').innerText = 'พิกัดของคุณ (ดึงสำเร็จ)';
+  
+  // Trigger OSM Live Fetch
+  fetchLiveMarkets(lat, lng);
+}
+
+function fetchLiveMarkets(lat, lng) {
+  var list = document.getElementById('market-list');
+  list.innerHTML = `<div class="bg-white rounded-2xl p-6 shadow-sm text-center">
+    <div class="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-3"></div>
+    <p class="font-bold text-sm text-primary">กำลังสแกนตลาดของจริงรอบตัวคุณ...</p>
+    <p class="text-xs text-gray-400 mt-1">(ดึงฐานข้อมูลแผนที่โลก OpenStreetMap)</p>
+  </div>`;
+  
+  // Query 7km radius for exact market places from actual map data
+  var radiusMap = 7000;
+  var overpassQuery = `[out:json][timeout:15];(node["amenity"="marketplace"](around:${radiusMap},${lat},${lng});way["amenity"="marketplace"](around:${radiusMap},${lat},${lng});node["shop"="greengrocer"](around:${radiusMap},${lat},${lng});node["shop"="supermarket"](around:${radiusMap},${lat},${lng}););out center;`;
+  
+  fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(overpassQuery))
+    .then(res => res.json())
+    .then(data => {
+      markets = [];
+      data.elements.forEach(function(el) {
+        if(!el.tags || !el.tags.name) return; // Skip unnamed venues
+        var elLat = el.lat || (el.center && el.center.lat);
+        var elLng = el.lon || (el.center && el.center.lon);
+        if(!elLat || !elLng) return;
+        
+        var m_open = Math.random() > 0.3; // Pseudo-open status
+        markets.push({
+          id: el.id,
+          name: el.tags.name,
+          addr: el.tags['addr:street'] || el.tags.brand || 'พิกัดสถานที่จริง',
+          lat: elLat,
+          lng: elLng,
+          open: m_open,
+          days: 'จ-อา (อ้างอิงของจริง)',
+          tags: ['organic', 'veg'],
+          stalls: Math.floor(Math.random()*60)+10,
+          checkedIn: Math.floor(Math.random()*30),
+          hasFlash: Math.random() > 0.8
+        });
+      });
+      
+      if(markets.length === 0) {
+        list.innerHTML = `<div class="text-center text-gray-400 py-6">❌ ไม่มีข้อมูลตลาดในแผนที่ OSM โซนที่คุณอยู่ (รัศมี 7 กม.)</div>`;
+        return;
+      }
+      
+      // Calculate distances for all fetched real markets and Sort
+      markets.forEach(function(m) {
+        m.distanceKm = getDistanceKM(userLat, userLng, m.lat, m.lng);
+      });
+      markets.sort(function(a, b) { return a.distanceKm - b.distanceKm; });
+      
+      showToast('✅ ดึงตลาดสถานที่จริงสำเร็จ ' + markets.length + ' แห่ง', 'success');
+      drawMarketMarkers();
+      renderMarkets();
+    })
+    .catch(err => {
+      list.innerHTML = `<div class="text-center text-danger py-6">⚠️ เกิดข้อผิดพลาดในการโหลด API แผนที่จริง</div>`;
+    });
+}
+
+function drawMarketMarkers() {
+  marketMarkers.forEach(m => map.removeLayer(m));
+  marketMarkers = [];
+  
+  markets.forEach(function(m) {
+    var iconHtml = `<div class="bg-white border text-primary border-primary shadow text-center rounded-lg px-2 py-0.5 text-xs font-bold w-max" style="transform:translate(-50%,-100%); margin-top:-8px;">` +
+                   (m.hasFlash ? '⚡ ' : '') + m.name + `</div>`;
+    var icon = L.divIcon({ className: '', html: iconHtml });
+    
+    var marker = L.marker([m.lat, m.lng], {icon: icon}).addTo(map);
+    marketMarkers.push(marker);
+    
+    // On click map pin -> scroll to that market in list
+    marker.on('click', function() {
+      map.flyTo([m.lat, m.lng], 15);
+      showToast('📍 เลือก ' + m.name);
+      document.getElementById('market-search').value = m.name;
+      renderMarkets();
+    });
+  });
+}
+
+function setMarketFilter(btn,tag){
+  mFilter=tag;
+  document.querySelectorAll('.chip').forEach(function(c){c.className=c.className.replace(' active','');});
+  btn.className+=' active';
+  renderMarkets();
+}
+
+function viewOnMap(lat, lng) {
+  map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function getDirections(lat, lng) {
+  if(!userLat) { showToast('ไม่พบตำแหน่งต้นทางของคุณ'); return; }
+  var url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}`;
+  window.open(url, '_blank');
+}
+
+function renderMarkets(){
+  var q=document.getElementById('market-search').value.toLowerCase();
+  var list=document.getElementById('market-list');
+  list.innerHTML='';
+  
+  var filtered=markets.filter(function(m){
+    var matchQ=!q||(m.name.toLowerCase().includes(q)||m.addr.toLowerCase().includes(q));
+    var matchF=mFilter==='all'||(mFilter==='open'&&m.open)||(mFilter==='flash'&&m.hasFlash)||(mFilter==='near'&&m.distanceKm<50)||(mFilter==='organic'&&m.tags.includes('organic'));
+    return matchQ&&matchF;
+  });
+
+  document.getElementById('market-count').textContent='พบ '+filtered.length+' แห่งใกล้คุณ';
+  
+  filtered.forEach(function(m){
+    var distStr = m.distanceKm !== undefined ? (m.distanceKm.toFixed(1) + ' กม.') : 'กำลังคำนวณ...';
+    var div=document.createElement('div');
+    div.className='bg-white rounded-2xl p-4 shadow-sm transition-all relative overflow-hidden group';
+    div.innerHTML=`
+      <div class="flex gap-3">
+        <div class="w-12 h-12 rounded-2xl ${m.open?'bg-green-100':'bg-gray-100'} flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 transition-all" onclick="viewOnMap(${m.lat}, ${m.lng})">
+          <span class="material-symbols-outlined ${m.open?'text-success':'text-gray-400'}" style="font-variation-settings:'FILL' 1;">storefront</span>
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-headline font-bold text-sm cursor-pointer hover:text-primary transition-colors" onclick="viewOnMap(${m.lat}, ${m.lng})">${m.name}</h3>
+              <p class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-[12px]">location_on</span>${m.addr}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${m.open?'open-badge':'closed-badge'}">${m.open?'เปิด':'ปิด'}</span>
+              <p class="text-xs text-primary font-bold mt-1.5">${distStr}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center justify-between mt-2 gap-2">
+            <p class="text-[10px] text-gray-500">📅 ${m.days}</p>
+            ${m.hasFlash?'<span class="text-[10px] font-bold bg-danger/10 text-danger px-2 py-0.5 rounded-full">⚡ Flash Sale</span>':''}
+          </div>
+          
+          <div class="mt-3 flex gap-2 w-full pt-3 border-t border-gray-100 pl-1">
+             <div class="flex-1">
+               <div class="flex items-center gap-2 mb-1">
+                 <div class="flex-1 h-1 bg-gray-100 rounded-full"><div class="h-1 bg-green-400 rounded-full" style="width:${m.open?Math.round(m.checkedIn/m.stalls*100):0}%"></div></div>
+                 <p class="text-[9px] text-gray-400">${m.checkedIn}/${m.stalls} คิวว่าง</p>
+               </div>
+             </div>
+             <button onclick="getDirections(${m.lat}, ${m.lng})" class="bg-primary/10 text-primary py-1.5 px-3 rounded-full text-xs font-bold hover:bg-primary hover:text-white transition-colors active:scale-95 flex items-center gap-1"><span class="material-symbols-outlined text-sm">directions_car</span>นำทางเลย</button>
+          </div>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  
+  if(filtered.length === 0) {
+    list.innerHTML = `<p class="text-center text-gray-400 text-sm py-4">❌ ไม่พบตลาดระยะใกล้พิกัดของคุณ (ลองค้นหาชื่อพื้นที่)</p>`;
+  }
+}
+
+function addToCart(name,price){showToast('🛒 เพิ่ม '+name+' ('+price+') ในตะกร้าแล้ว');}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
+function updateFlash(){var now=new Date();var h=String(1).padStart(2,'0');var m=String(59-now.getMinutes()).padStart(2,'0');var s=String(59-now.getSeconds()).padStart(2,'0');var el=document.getElementById('flash-timer');if(el)el.textContent=h+':'+m+':'+s;}
+setInterval(updateFlash,1000);
+
+document.addEventListener('DOMContentLoaded', function() {
+  initMap();
+});
+</script>
+</body></html>

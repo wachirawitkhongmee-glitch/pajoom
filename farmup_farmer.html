@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — Farmer Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',warning:'#f59e0b',success:'#16a34a'}}}}</script>
+<style>*{box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#f5f0e8;}.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}.nav-item:hover,.nav-item.active{color:#1a6b2e;}.bar{height:8px;border-radius:4px;background:#e5e7eb;}.bar-fill{height:8px;border-radius:4px;transition:width 1s ease-out;}.tab-btn{padding:8px 14px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;color:#6b7280;white-space:nowrap;}.tab-btn.active{background:#1a6b2e;color:#fff;}</style>
+</head>
+<body>
+<header class="bg-gradient-to-br from-primary to-primary-dark px-4 py-8 text-white">
+  <div class="flex justify-between items-start mb-4">
+    <button onclick="history.back()" class="bg-white/20 p-2 rounded-xl"><span class="material-symbols-outlined">arrow_back</span></button>
+    <button onclick="window.location.href='farmup_dashboard.html'" class="bg-white/20 p-2 rounded-xl"><span class="material-symbols-outlined">person</span></button>
+  </div>
+  <p class="text-white/70 text-sm font-semibold">Farm Analytics</p>
+  <h1 class="font-headline font-black text-2xl mt-1">ฟาร์มสมศักดิ์ 🧑‍🌾</h1>
+  <p class="text-white/70 text-xs mt-1">แม่ริม, เชียงใหม่ • 12 ไร่</p>
+  <div class="grid grid-cols-3 gap-3 mt-5">
+    <div class="bg-white/15 rounded-2xl p-3 text-center"><p class="text-xl font-headline font-black">฿48K</p><p class="text-[10px] text-white/70 font-bold">รายได้</p></div>
+    <div class="bg-white/15 rounded-2xl p-3 text-center"><p class="text-xl font-headline font-black">176</p><p class="text-[10px] text-white/70 font-bold">ออเดอร์</p></div>
+    <div class="bg-white/15 rounded-2xl p-3 text-center"><p class="text-xl font-headline font-black">94%</p><p class="text-[10px] text-white/70 font-bold">พอใจ</p></div>
+  </div>
+</header>
+
+<div class="sticky top-0 z-30 bg-surface px-4 py-3 overflow-x-auto">
+  <div class="flex gap-2 w-max">
+    <button class="tab-btn active" onclick="showTab(this,'t-analytics')">📊 Analytics</button>
+    <button class="tab-btn" onclick="showTab(this,'t-lots')">🌾 Lots</button>
+    <button class="tab-btn" onclick="showTab(this,'t-ai')">🤖 AI แนะ</button>
+    <button class="tab-btn" onclick="showTab(this,'t-reviews')">⭐ รีวิว</button>
+  </div>
+</div>
+
+<main class="px-4 pb-28 max-w-2xl mx-auto">
+  <div id="t-analytics" class="tab-panel mt-4">
+    <h2 class="font-headline font-black text-base mb-3">📈 Demand Real-time</h2>
+    <div class="space-y-3 mb-5" id="demand-bars"></div>
+    <h2 class="font-headline font-black text-base mb-3">💰 กำไร / ขาดทุน</h2>
+    <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+      <div class="grid grid-cols-3 gap-2 text-center mb-3">
+        <div><p class="text-xs text-gray-400">รายรับ</p><p class="font-headline font-black text-success">฿48,200</p></div>
+        <div><p class="text-xs text-gray-400">ต้นทุน</p><p class="font-headline font-black text-danger">฿21,500</p></div>
+        <div><p class="text-xs text-gray-400">กำไร</p><p class="font-headline font-black text-primary">฿26,700</p></div>
+      </div>
+      <div class="flex items-end gap-1.5 h-20 mt-2" id="chart-bars"></div>
+      <div class="flex justify-between text-[9px] text-gray-400 mt-1"><span>ต.ค</span><span>พ.ย</span><span>ธ.ค</span><span>ม.ค</span><span>ก.พ</span><span>มี.ค</span></div>
+    </div>
+    <div class="bg-danger/5 border border-danger/20 rounded-2xl p-4">
+      <div class="flex items-center justify-between"><div><p class="font-bold text-sm text-danger">🚨 Crisis Mode</p><p class="text-xs text-gray-500 mt-0.5">Redirect demand ไปฟาร์มอื่นหากเกิดภัย</p></div>
+      <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" oninput="showToast('⚠️ Crisis Mode: '+(this.checked?'เปิด':'ปิด'))"/><div class="w-11 h-6 bg-gray-200 peer-checked:bg-danger rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div></label></div>
+    </div>
+  </div>
+
+  <div id="t-lots" class="tab-panel hidden mt-4">
+    <div id="lots-container">
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-3 cursor-pointer hover:shadow transition-all lot-card" onclick="window.location.href='farmup_detail.html'">
+        <div class="flex justify-between items-start"><div><h3 class="font-bold text-sm lot-title">🍅 มะเขือเทศ Heirloom Batch #24</h3><p class="text-xs text-gray-400 mt-0.5">176/200 ออเดอร์ • เก็บ 30 เม.ย</p></div><span class="text-[10px] font-bold bg-green-50 text-success px-2 py-0.5 rounded-full">Active</span></div>
+        <div class="bar mt-3"><div class="bar-fill bg-primary" style="width:88%"></div></div>
+        <img class="lot-image-preview mt-3 rounded-xl w-full h-32 object-cover hidden" src="" />
+        <div class="flex gap-2 mt-3">
+          <button onclick="event.stopPropagation(); document.getElementById('image-upload').click();" class="flex-1 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-600">เพิ่มรูป</button>
+          <button onclick="event.stopPropagation(); showToast('📢 ส่ง Update แล้ว')" class="flex-1 py-2 rounded-xl bg-primary text-white text-xs font-bold">Update</button>
+        </div>
+      </div>
+    </div>
+    <button onclick="createNewLot()" class="w-full py-4 rounded-2xl border-2 border-dashed border-primary/30 text-primary text-sm font-bold hover:bg-primary/5 transition-all">+ สร้าง Lot ใหม่</button>
+    <input type="file" id="image-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
+  </div>
+
+  <div id="t-ai" class="tab-panel hidden mt-4 space-y-3">
+    <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4"><p class="font-bold text-sm text-indigo-900">🤖 AI: ปลูกแครอทต่อ</p><p class="text-xs text-gray-600 mt-1 mb-3">Demand แครอทสูงขึ้น 34% ราคาคาดว่าจะเพิ่ม 15% ใน 2 เดือน</p><button onclick="window.location.href='farmup_explore.html'" class="w-full py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold">ดูข้อมูล Demand →</button></div>
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4"><p class="font-bold text-sm text-amber-900">⚠️ ความเสี่ยงอากาศ</p><p class="text-xs text-gray-600 mt-1 mb-3">ฝนน้อยในอีก 3 สัปดาห์ แนะนำเพิ่มชลประทาน 20%</p><button onclick="window.location.href='farmup_weather.html'" class="w-full py-2.5 rounded-xl bg-amber-500 text-white text-sm font-bold">ดู Weather Risk →</button></div>
+    <div class="bg-green-50 border border-green-200 rounded-2xl p-4"><p class="font-bold text-sm">💰 ราคาต่ำกว่าตลาด 8%</p><p class="text-xs text-gray-600 mt-1 mb-3">แนะนำปรับขึ้นเป็น ฿295-310 ยังคง competitive</p><button onclick="showToast('✅ ราคาอัปเดตเป็น ฿295/กก')" class="w-full py-2.5 rounded-xl bg-success text-white text-sm font-bold">ปรับราคาตาม AI</button></div>
+  </div>
+
+  <div id="t-reviews" class="tab-panel hidden mt-4">
+    <div class="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm mb-4">
+      <div class="text-center"><p class="font-headline font-black text-5xl text-primary">4.8</p><p class="mt-1">⭐⭐⭐⭐⭐</p><p class="text-xs text-gray-400 mt-1">127 รีวิว</p></div>
+      <div class="flex-1 space-y-1 text-xs">
+        <div class="flex items-center gap-2"><span class="w-4">5⭐</span><div class="bar flex-1"><div class="bar-fill bg-yellow-400" style="width:85%"></div></div></div>
+        <div class="flex items-center gap-2"><span class="w-4">4⭐</span><div class="bar flex-1"><div class="bar-fill bg-yellow-400" style="width:10%"></div></div></div>
+        <div class="flex items-center gap-2"><span class="w-4">3⭐</span><div class="bar flex-1"><div class="bar-fill bg-gray-300" style="width:3%"></div></div></div>
+      </div>
+    </div>
+    <div class="space-y-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm"><div class="flex justify-between items-center mb-2"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-primary text-white text-sm flex items-center justify-center font-bold">น</div><p class="font-bold text-sm">นภา วงศ์ดี</p></div><span class="text-xs">⭐⭐⭐⭐⭐</span></div><p class="text-sm text-gray-700">มะเขือเทศหวานมาก สดมากกว่าในตลาดแน่นอน!</p></div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm"><div class="flex justify-between items-center mb-2"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-secondary text-white text-sm flex items-center justify-center font-bold">ส</div><p class="font-bold text-sm">สมหมาย</p></div><span class="text-xs">⭐⭐⭐⭐⭐</span></div><p class="text-sm text-gray-700">การอัปเดตรูปทุกสัปดาห์ทำให้มั่นใจมาก</p></div>
+    </div>
+  </div>
+</main>
+
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl flex items-center justify-center"><span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span></div><span class="text-[10px] font-bold text-primary mt-1">จอง</span></a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<script>
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
+function showTab(btn,id){document.querySelectorAll('.tab-btn').forEach(function(b){b.className='tab-btn';});btn.className='tab-btn active';document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.add('hidden');});document.getElementById(id).classList.remove('hidden');}
+var demands=[{name:'🍅 มะเขือเทศ Heirloom',pct:88,color:'#1a6b2e'},{name:'🥬 ผักบุ้ง',pct:45,color:'#e8a020'},{name:'🥕 แครอท',pct:90,color:'#2d8a47'},{name:'🌿 ตะไคร้',pct:62,color:'#16a34a'}];
+var dBox=document.getElementById('demand-bars');
+demands.forEach(function(d){var div=document.createElement('div');div.className='bg-white rounded-xl p-3 shadow-sm';div.innerHTML='<div class="flex justify-between text-xs mb-1.5"><span class="font-semibold">'+d.name+'</span><span class="font-bold" style="color:'+d.color+'">'+d.pct+'%</span></div><div class="bar"><div class="bar-fill" style="width:0%;background:'+d.color+'" data-w="'+d.pct+'%"></div></div>';dBox.appendChild(div);});
+var chartData=[28000,35000,42000,38000,45000,48200];
+var cBars=document.getElementById('chart-bars');
+chartData.forEach(function(v){var div=document.createElement('div');div.className='flex-1 flex flex-col items-center justify-end h-full';var h=Math.round((v/55000)*100);div.innerHTML='<div class="w-full rounded-t-lg" style="height:'+h+'%;background:linear-gradient(to top,#1a6b2e,#2d8a47)"></div>';cBars.appendChild(div);});
+document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){document.querySelectorAll('.bar-fill[data-w]').forEach(function(b){b.style.width=b.dataset.w;});},400);});
+
+let activeLotCard = null;
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    if (activeLotCard) {
+      const imgPreview = activeLotCard.querySelector('.lot-image-preview');
+      imgPreview.src = e.target.result;
+      imgPreview.classList.remove('hidden');
+      showToast('📷 อัปเดตรูปภาพสำเร็จ!');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target.innerText === 'เพิ่มรูป') {
+    activeLotCard = e.target.closest('.lot-card');
+  }
+});
+
+function createNewLot() {
+  const name = prompt("กรุณากรอกชื่อ Lot ใหม่ (เช่น ผักกาดกวางตุ้ง Batch #1):");
+  if (!name) return;
+  
+  const lotsContainer = document.getElementById('lots-container');
+  const newLot = document.createElement('div');
+  newLot.className = "bg-white rounded-2xl p-4 shadow-sm mb-3 cursor-pointer hover:shadow transition-all lot-card";
+  newLot.onclick = function() { window.location.href='farmup_detail.html'; };
+  newLot.innerHTML = `
+    <div class="flex justify-between items-start">
+      <div>
+        <h3 class="font-bold text-sm lot-title">🌱 ${name}</h3>
+        <p class="text-xs text-gray-400 mt-0.5">0/100 ออเดอร์ • รอเก็บเกี่ยว</p>
+      </div>
+      <span class="text-[10px] font-bold bg-green-50 text-success px-2 py-0.5 rounded-full">New</span>
+    </div>
+    <div class="bar mt-3"><div class="bar-fill bg-primary" style="width:0%"></div></div>
+    <img class="lot-image-preview mt-3 rounded-xl w-full h-32 object-cover hidden" src="" />
+    <div class="flex gap-2 mt-3">
+      <button onclick="event.stopPropagation(); document.getElementById('image-upload').click();" class="flex-1 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-600">เพิ่มรูป</button>
+      <button onclick="event.stopPropagation(); showToast('📢 ส่ง Update แล้ว')" class="flex-1 py-2 rounded-xl bg-primary text-white text-xs font-bold">Update</button>
+    </div>
+  `;
+  lotsContainer.appendChild(newLot);
+  showToast('✅ สร้าง Lot ใหม่สำเร็จ');
+}
+</script>
+</body></html>

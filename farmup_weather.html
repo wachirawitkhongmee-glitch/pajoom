@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — Weather Risk Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',warning:'#f59e0b',success:'#16a34a'}}}}</script>
+<style>*{box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#0a1a2e;min-height:100vh;}.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}.nav-item:hover,.nav-item.active{color:#1a6b2e;}.glass{background:rgba(255,255,255,0.05);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);}.glass-light{background:rgba(255,255,255,0.9);}.risk-card{border-radius:24px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:transform 0.2s;}.risk-card:hover{transform:translateY(-2px);}@keyframes scan{0%{transform:translateY(-100%);}100%{transform:translateY(400%);}}.scan-line{animation:scan 3s linear infinite;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);position:absolute;left:0;}</style>
+</head>
+<body>
+
+<!-- Dynamic sky background -->
+<div class="fixed inset-0 pointer-events-none">
+  <div class="absolute inset-0 bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900"></div>
+  <div class="absolute top-20 left-1/4 w-96 h-96 bg-blue-800/20 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-40 right-10 w-64 h-64 bg-orange-900/15 rounded-full blur-3xl"></div>
+</div>
+
+<div class="relative z-10">
+<header class="px-4 py-6">
+  <div class="flex items-center justify-between mb-6">
+    <button onclick="history.back()" class="glass text-white p-2 rounded-xl"><span class="material-symbols-outlined">arrow_back</span></button>
+    <div class="text-center">
+      <h1 class="font-headline font-black text-white text-xl">🌦️ Weather Risk</h1>
+      <p class="text-blue-300 text-xs">เชียงใหม่, ประเทศไทย</p>
+    </div>
+    <button onclick="showToast('🔔 เปิดการแจ้งเตือนสภาพอากาศ')" class="glass text-white p-2 rounded-xl"><span class="material-symbols-outlined">notifications</span></button>
+  </div>
+
+  <!-- Main weather display (Real-time enabled via JS) -->
+  <div class="text-center mb-6">
+    <p class="text-7xl mb-3" id="weather-icon">⛅</p>
+    <p class="font-headline font-black text-white flex justify-center items-start text-6xl" id="weather-temp-container">
+      <span id="weather-temp" class="text-6xl">28</span><span class="text-3xl mt-1">°</span>
+    </p>
+    <p class="text-blue-200 text-base mt-2" id="weather-desc">อัปเดตข้อมูลสภาพอากาศ...</p>
+    <p class="text-blue-300 text-sm mt-1" id="weather-time">กำลังเชื่อมต่อ...</p>
+  </div>
+
+  <!-- Overall Risk Score -->
+  <div class="glass rounded-3xl p-5 mb-2">
+    <div class="flex justify-between items-center mb-3">
+      <p class="font-headline font-bold text-white text-base">Overall Farm Risk Score</p>
+      <span class="text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-3 py-1 rounded-full">🟡 ปานกลาง</span>
+    </div>
+    <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+      <div class="h-3 rounded-full" style="width:45%;background:linear-gradient(90deg,#16a34a,#f59e0b)"></div>
+    </div>
+    <div class="flex justify-between text-[10px] text-blue-300 mt-1.5">
+      <span>🟢 ปลอดภัย</span><span>🟡 ปานกลาง</span><span>🔴 เสี่ยงสูง</span>
+    </div>
+  </div>
+</header>
+
+<main class="px-4 pb-32 max-w-2xl mx-auto">
+  <!-- Risk Cards -->
+  <div class="grid grid-cols-2 gap-3 mb-5">
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('🟢 ความเสี่ยงฝนแล้ง: ต่ำ — ดัชนีความชื้นดิน 72%')">
+      <div class="scan-line"></div>
+      <span class="text-3xl block mb-2">☀️</span>
+      <p class="font-bold text-white text-sm">ฝนแล้ง</p>
+      <p class="text-green-300 font-headline font-black text-2xl mt-1">🟢 ต่ำ</p>
+      <p class="text-green-300/70 text-[10px] mt-1">ความชื้นดิน 72%</p>
+      <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-green-400 rounded-full" style="width:25%"></div></div>
+    </div>
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05));border:1px solid rgba(245,158,11,0.3)" onclick="showToast('🟡 ความเสี่ยงน้ำท่วม: ปานกลาง — ฝนคาดว่าจะตกหนักสัปดาห์หน้า')">
+      <span class="text-3xl block mb-2">🌊</span>
+      <p class="font-bold text-white text-sm">น้ำท่วม</p>
+      <p class="text-yellow-300 font-headline font-black text-2xl mt-1">🟡 กลาง</p>
+      <p class="text-yellow-300/70 text-[10px] mt-1">ฝนคาดหนักสัปดาห์หน้า</p>
+      <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-yellow-400 rounded-full" style="width:55%"></div></div>
+    </div>
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('🟢 อุณหภูมิ: ปกติ — 26-32°C ดีสำหรับผักส่วนใหญ่')">
+      <span class="text-3xl block mb-2">🌡️</span>
+      <p class="font-bold text-white text-sm">อุณหภูมิ</p>
+      <p class="text-green-300 font-headline font-black text-2xl mt-1">🟢 ปกติ</p>
+      <p class="text-green-300/70 text-[10px] mt-1">26-32°C เหมาะสม</p>
+      <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-green-400 rounded-full" style="width:30%"></div></div>
+    </div>
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('🟢 ลมฟ้า: ปกติ — ไม่มีพายุคาดการณ์ใน 2 สัปดาห์')">
+      <span class="text-3xl block mb-2">💨</span>
+      <p class="font-bold text-white text-sm">ลมและพายุ</p>
+      <p class="text-green-300 font-headline font-black text-2xl mt-1">🟢 ปลอดภัย</p>
+      <p class="text-green-300/70 text-[10px] mt-1">ไม่มีพายุใน 14 วัน</p>
+      <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-green-400 rounded-full" style="width:15%"></div></div>
+    </div>
+  </div>
+
+  <!-- 7-day Forecast -->
+  <div class="glass rounded-3xl p-4 mb-4">
+    <h2 class="font-headline font-bold text-white text-sm mb-3">📅 พยากรณ์ 7 วัน</h2>
+    <div class="flex gap-3 overflow-x-auto pb-1">
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">พรุ่งนี้</p><p class="text-2xl my-1">⛅</p><p class="text-white font-bold text-xs">29°</p><p class="text-blue-300 text-[9px]">22°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16 border border-yellow-500/30"><p class="text-[10px] text-blue-300 font-bold">พ</p><p class="text-2xl my-1">🌧️</p><p class="text-white font-bold text-xs">26°</p><p class="text-yellow-300 text-[9px]">⚠️ฝน</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">พฤ</p><p class="text-2xl my-1">🌦️</p><p class="text-white font-bold text-xs">27°</p><p class="text-blue-300 text-[9px]">21°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">ศ</p><p class="text-2xl my-1">☀️</p><p class="text-white font-bold text-xs">32°</p><p class="text-blue-300 text-[9px]">24°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">ส</p><p class="text-2xl my-1">⛅</p><p class="text-white font-bold text-xs">30°</p><p class="text-blue-300 text-[9px]">23°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16 border border-red-500/30"><p class="text-[10px] text-blue-300 font-bold">อา</p><p class="text-2xl my-1">⛈️</p><p class="text-white font-bold text-xs">24°</p><p class="text-red-300 text-[9px]">🔴พายุ</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">จ</p><p class="text-2xl my-1">🌤️</p><p class="text-white font-bold text-xs">28°</p><p class="text-blue-300 text-[9px]">22°</p></div>
+    </div>
+  </div>
+
+  <!-- AI Risk Assessment -->
+  <div class="glass rounded-3xl p-4 mb-4">
+    <h2 class="font-headline font-bold text-white text-sm mb-3">🤖 AI Risk Assessment</h2>
+    <div class="space-y-2">
+      <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3"><p class="text-yellow-300 font-bold text-xs">⚠️ แนะนำ: เพิ่มชลประทาน 20%</p><p class="text-blue-200 text-[11px] mt-0.5">คาดฝนน้อยในสัปดาห์ที่ 2-3 เมษายน</p></div>
+      <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3"><p class="text-red-300 font-bold text-xs">🔴 แจ้งเตือน: พายุคาดเข้าวันอาทิตย์</p><p class="text-blue-200 text-[11px] mt-0.5">เตรียมตาข่ายกันลม และตรวจสอบระบบระบายน้ำ</p></div>
+      <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-3"><p class="text-green-300 font-bold text-xs">✅ ช่วงปลูกที่ดีที่สุด: 5-15 เมษายน</p><p class="text-blue-200 text-[11px] mt-0.5">อุณหภูมิและความชื้นเหมาะสมสำหรับเมล็ดพันธุ์ใหม่</p></div>
+    </div>
+  </div>
+
+  <!-- Alert Toggle -->
+  <div class="glass rounded-3xl p-4">
+    <h2 class="font-headline font-bold text-white text-sm mb-3">🔔 การแจ้งเตือน</h2>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between"><span class="text-blue-200 text-sm">แจ้งเตือนฝน</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked oninput="showToast('🌧️ แจ้งเตือนฝน: '+(this.checked?'เปิด':'ปิด'))"/><div class="w-11 h-6 bg-gray-600 peer-checked:bg-primary rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div></label></div>
+      <div class="flex items-center justify-between"><span class="text-blue-200 text-sm">แจ้งเตือนความเสี่ยงสูง</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked oninput="showToast('🔴 แจ้งเตือนเสี่ยงสูง: '+(this.checked?'เปิด':'ปิด'))"/><div class="w-11 h-6 bg-gray-600 peer-checked:bg-danger rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div></label></div>
+      <div class="flex items-center justify-between"><span class="text-blue-200 text-sm">รายงานประจำวัน</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" oninput="showToast('📊 รายงานประจำวัน: '+(this.checked?'เปิด':'ปิด'))"/><div class="w-11 h-6 bg-gray-600 peer-checked:bg-primary rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div></label></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-slate-900/80 backdrop-blur-xl border-t border-white/10 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1 text-blue-300 hover:text-green-300"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1 text-blue-300 hover:text-green-300"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl flex items-center justify-center"><span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span></div><span class="text-[10px] font-bold text-primary mt-1">จอง</span></a>
+  <a href="farmup_market.html" class="nav-item flex-1 text-blue-300 hover:text-green-300"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1 text-blue-300 hover:text-green-300"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<script>
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
+
+async function fetchRealTimeWeather() {
+  try {
+    // Chiang Mai coordinates
+    const lat = 18.7904;
+    const lon = 98.9847;
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m&timezone=Asia%2FBangkok`);
+    const data = await res.json();
+    
+    if (data.current_weather) {
+      const temp = Math.round(data.current_weather.temperature);
+      const isDay = data.current_weather.is_day;
+      const weatherCode = data.current_weather.weathercode;
+      
+      // Get current humidity (approx from hourly data based on current time)
+      const nowIdx = data.hourly.time.findIndex(t => t.startsWith(data.current_weather.time.substring(0, 13)));
+      const humidity = nowIdx !== -1 ? data.hourly.relative_humidity_2m[nowIdx] : 65;
+      
+      let icon = '⛅';
+      let desc = 'มีเมฆบางส่วน';
+      
+      // Simple weather code mapping for Open-Meteo
+      if (weatherCode === 0) {
+        icon = isDay ? '☀️' : '🌕';
+        desc = 'ท้องฟ้าแจ่มใส';
+      } else if (weatherCode >= 1 && weatherCode <= 3) {
+        icon = isDay ? '⛅' : '☁️';
+        desc = 'มีเมฆเป็นส่วนมาก';
+      } else if (weatherCode >= 45 && weatherCode <= 48) {
+        icon = '🌫️';
+        desc = 'มีหมอก';
+      } else if (weatherCode >= 51 && weatherCode <= 67) {
+        icon = '🌧️';
+        desc = 'มีฝนตก';
+      } else if (weatherCode >= 71 && weatherCode <= 82) {
+        icon = '🌨️';
+        desc = 'มีฝนตกหนัก';
+      } else if (weatherCode >= 95) {
+        icon = '⛈️';
+        desc = 'มีพายุฝนฟ้าคะนอง';
+      }
+
+      document.getElementById('weather-temp').textContent = temp;
+      document.getElementById('weather-icon').textContent = icon;
+      document.getElementById('weather-desc').textContent = `${desc} • ความชื้น ${humidity}%`;
+      
+      const now = new Date();
+      const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+      document.getElementById('weather-time').textContent = `อัปเดตแบบ Real-time: ${now.getDate()} ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543} • ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`;
+    }
+  } catch (err) {
+    document.getElementById('weather-time').textContent = 'ไม่สามารถดึงข้อมูลแบบ Real-time ได้ (ออฟไลน์)';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetchRealTimeWeather();
+});
+</script>
+</body></html>

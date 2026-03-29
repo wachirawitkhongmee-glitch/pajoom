@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — Community Room</title>
+<meta name="description" content="ห้องชุมชนเกษตรกร พูดคุย แชร์ประสบการณ์ และติดตามล็อตร่วมกัน"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { headline: ['Manrope','sans-serif'] },
+      colors: {
+        primary: '#1a6b2e', 'primary-light': '#2d8a47', 'primary-dark': '#0f4a1f',
+        secondary: '#e8a020', surface: '#f5f0e8', danger: '#dc2626', success: '#16a34a'
+      }
+    }
+  }
+}
+</script>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
+.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}
+.nav-item:hover,.nav-item.active{color:#1a6b2e;}
+.tab-btn{padding:8px 16px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;color:#6b7280;transition:all 0.2s;white-space:nowrap;}
+.tab-btn.active{background:#1a6b2e;color:#fff;}
+.msg-bubble{border-radius:18px;max-width:78%;word-break:break-word;animation:fadeIn 0.3s ease;}
+.msg-me{background:linear-gradient(135deg,#2d8a47,#1a6b2e);color:#fff;border-bottom-right-radius:4px;margin-left:auto;}
+.msg-other{background:#fff;color:#1f2937;border-bottom-left-radius:4px;border:1px solid #e5e7eb;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.room-card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.2s;border:2px solid transparent;}
+.room-card:hover,.room-card.active{border-color:#2d8a47;box-shadow:0 4px 16px rgba(26,107,46,0.15);}
+.online-dot{width:10px;height:10px;border-radius:50%;background:#16a34a;border:2px solid #fff;position:absolute;bottom:0;right:0;}
+.chat-container{height:calc(100vh - 340px);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.chat-container::-webkit-scrollbar{width:4px;}
+.chat-container::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur-xl px-4 py-3 flex items-center gap-3 border-b border-gray-100 shadow-sm">
+  <button onclick="history.back()" class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all">
+    <span class="material-symbols-outlined text-gray-600">arrow_back</span>
+  </button>
+  <div class="flex-1">
+    <h1 class="font-headline font-black text-lg text-gray-900 leading-none">👥 Community</h1>
+    <p class="text-xs text-gray-500">ห้องสนทนาเกษตรกร</p>
+  </div>
+  <button onclick="showCreateRoom()" class="bg-primary text-white text-sm font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-lg shadow-primary/30">
+    <span class="material-symbols-outlined text-base">add</span>สร้างห้อง
+  </button>
+</header>
+
+<!-- Tabs -->
+<div class="bg-surface px-4 py-3 overflow-x-auto border-b border-gray-200">
+  <div class="flex gap-2 w-max">
+    <button class="tab-btn active" onclick="switchTab(this,'tab-rooms')">🌱 ห้องทั้งหมด</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-chat')">💬 แชทล็อต #24</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-feed')">📰 Story Feed</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-qa')">❓ Q&A</button>
+  </div>
+</div>
+
+<!-- Tab: Rooms -->
+<div id="tab-rooms" class="tab-panel px-4 py-4 pb-28 max-w-2xl mx-auto">
+  <!-- Online users bar -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+    <p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">ออนไลน์ตอนนี้ 12 คน</p>
+    <div class="flex gap-2 overflow-x-auto pb-1">
+      <div id="online-users" class="flex gap-2"></div>
+    </div>
+  </div>
+
+  <!-- Hot topic banner -->
+  <div class="bg-gradient-to-r from-orange-500 to-secondary rounded-2xl p-4 mb-4 flex items-center gap-3">
+    <span class="text-3xl">🔥</span>
+    <div>
+      <p class="font-bold text-white text-sm">Hot Topic: ภัยแล้งภาคเหนือ</p>
+      <p class="text-white/80 text-xs mt-0.5">247 คนกำลังพูดถึง • อัปเดต 5 นาทีก่อน</p>
+    </div>
+  </div>
+
+  <!-- Rooms list -->
+  <div class="space-y-3" id="rooms-list"></div>
+</div>
+
+<!-- Tab: Chat -->
+<div id="tab-chat" class="tab-panel hidden flex flex-col" style="height:calc(100vh - 148px)">
+  <!-- Room info bar -->
+  <div class="bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-xl">🍅</div>
+    <div class="flex-1">
+      <p class="font-bold text-sm text-gray-900">มะเขือเทศ Heirloom Batch #24</p>
+      <p class="text-xs text-gray-500">47 คน • ฟาร์มสมศักดิ์ เชียงใหม่</p>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+      <span class="text-xs text-success font-bold">Live</span>
+    </div>
+  </div>
+
+  <!-- Chat messages -->
+  <div class="chat-container flex-1" id="chat-messages"></div>
+
+  <!-- Input bar -->
+  <div class="bg-white border-t border-gray-100 px-4 py-3 pb-safe">
+    <div class="flex gap-2 items-end">
+      <div class="flex-1 relative">
+        <textarea id="msg-input" rows="1" placeholder="พิมพ์ข้อความ..." 
+          class="w-full px-4 py-3 bg-surface border-2 border-gray-200 rounded-2xl text-sm resize-none focus:outline-none focus:border-primary transition-all"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+      </div>
+      <div class="flex gap-1.5">
+        <button onclick="attachEmoji()" class="p-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all text-lg">😊</button>
+        <button onclick="sendMsg()" class="p-3 rounded-xl bg-gradient-to-br from-primary-light to-primary shadow-lg hover:shadow-xl shadow-primary/30 transition-all">
+          <span class="material-symbols-outlined text-white text-xl">send</span>
+        </button>
+      </div>
+    </div>
+    <!-- Quick replies -->
+    <div class="flex gap-2 mt-2 overflow-x-auto pb-1">
+      <button onclick="insertQuick('รูปทุกดี! 👍')" class="flex-shrink-0 bg-surface text-xs px-3 py-1.5 rounded-full font-semibold text-gray-700 border border-gray-200 hover:border-primary hover:text-primary transition-all">รูปโอเค 👍</button>
+      <button onclick="insertQuick('วันรับสินค้าคือ?')" class="flex-shrink-0 bg-surface text-xs px-3 py-1.5 rounded-full font-semibold text-gray-700 border border-gray-200 hover:border-primary hover:text-primary transition-all">วันรับสินค้า?</button>
+      <button onclick="insertQuick('มีภาพอัปเดตล่าสุดไหม?')" class="flex-shrink-0 bg-surface text-xs px-3 py-1.5 rounded-full font-semibold text-gray-700 border border-gray-200 hover:border-primary hover:text-primary transition-all">ภาพล่าสุด?</button>
+      <button onclick="insertQuick('ขอบคุณเกษตรกรมากครับ 🙏')" class="flex-shrink-0 bg-surface text-xs px-3 py-1.5 rounded-full font-semibold text-gray-700 border border-gray-200 hover:border-primary hover:text-primary transition-all">ขอบคุณ 🙏</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: Feed -->
+<div id="tab-feed" class="tab-panel hidden px-4 py-4 pb-28 max-w-2xl mx-auto space-y-4">
+  <div id="story-feed-items"></div>
+</div>
+
+<!-- Tab: Q&A -->
+<div id="tab-qa" class="tab-panel hidden px-4 py-4 pb-28 max-w-2xl mx-auto">
+  <!-- Ask question -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+    <p class="font-bold text-sm mb-2">❓ ถามผู้เชี่ยวชาญ</p>
+    <textarea id="qa-input" rows="2" placeholder="เช่น ทำไมใบมะเขือเทศเหลือง? วิธีแก้?" 
+      class="w-full px-3 py-2.5 bg-surface border-2 border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:border-primary transition-all mb-2"></textarea>
+    <div class="flex gap-2">
+      <button onclick="postQuestion()" class="flex-1 py-2.5 bg-gradient-to-br from-primary-light to-primary text-white font-bold text-sm rounded-xl shadow-lg shadow-primary/20">โพสต์คำถาม</button>
+      <button onclick="showToast('📷 เลือกรูปแนบ')" class="px-4 py-2.5 bg-surface border border-gray-200 rounded-xl text-gray-600">
+        <span class="material-symbols-outlined text-xl">attach_file</span>
+      </button>
+    </div>
+  </div>
+  <div class="space-y-3" id="qa-list"></div>
+</div>
+
+<!-- Create Room Modal -->
+<div id="create-room-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 shadow-2xl">
+    <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="font-headline font-black text-xl mb-4">🌱 สร้างห้องใหม่</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="text-xs font-bold text-gray-500 uppercase mb-1.5 block">ชื่อห้อง</label>
+        <input id="room-name" type="text" placeholder="เช่น กลุ่มมะเขือเทศ Batch #25" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary transition-all"/>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-500 uppercase mb-1.5 block">ประเภท</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="selectRoomType(this,'lot')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm">🌾 ล็อต</button>
+          <button onclick="selectRoomType(this,'general')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm">💬 ทั่วไป</button>
+          <button onclick="selectRoomType(this,'expert')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm">🎓 ผู้เชี่ยวชาญ</button>
+        </div>
+      </div>
+      <button onclick="createRoom()" class="w-full py-4 bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold rounded-2xl shadow-lg">✅ สร้างห้อง</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span>
+    </div>
+    <span class="text-[10px] font-bold text-primary mt-1">จอง</span>
+  </a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[300] font-bold text-sm"></div>
+
+<script>
+var user = JSON.parse(localStorage.getItem('farmup_user') || '{"name":"คุณสมใจ","avatar":"🙋","role":"consumer"}');
+var activeTab = 'tab-rooms';
+var selectedRoomType = 'lot';
+
+// ===== DATA =====
+var rooms = [
+  { id:1, emoji:'🍅', name:'มะเขือเทศ Heirloom Batch #24', type:'Lot Room', members:47, online:12, lastMsg:'ลุงสมศักดิ์: อัปเดตรูปการเจริญเติบโตสัปดาห์ 3 แล้วนะครับ', time:'5 นาทีก่อน', hot:true },
+  { id:2, emoji:'🥬', name:'กลุ่มผักออร์แกนิกอีสาน', type:'General', members:89, online:23, lastMsg:'น้องมาลี: ใครรู้จักฟาร์มผักปลอดสารได้บ้าง?', time:'12 นาทีก่อน', hot:false },
+  { id:3, emoji:'🎓', name:'เกษตรผู้เชี่ยวชาญ AMA', type:'Expert Room', members:234, online:56, lastMsg:'ดร.วิชัย: วิธีป้องกันโรคราน้ำค้างในช่วงฝน', time:'1 ชม.ก่อน', hot:true },
+  { id:4, emoji:'🥭', name:'มะม่วงน้ำดอกไม้ Batch #3', type:'Lot Room', members:18, online:3, lastMsg:'คุณสมชาย: เมื่อไหร่จะถึงช่วงออกดอกครับ?', time:'2 ชม.ก่อน', hot:false },
+  { id:5, emoji:'🌾', name:'ข้าวหอมมะลิ Batch #11', type:'Lot Room', members:62, online:8, lastMsg:'ลุงทองสุข: ฝนทิ้งช่วง เพิ่มการรดน้ำแล้ว', time:'3 ชม.ก่อน', hot:false },
+];
+
+var onlineUsers = [
+  {name:'สมศักดิ์',emoji:'🧑‍🌾',role:'farmer'},{name:'สมใจ',emoji:'🙋',role:'consumer'},
+  {name:'มาลี',emoji:'👩',role:'consumer'},{name:'ทองสุข',emoji:'🧑',role:'farmer'},
+  {name:'วิชัย',emoji:'👨‍🏫',role:'expert'},{name:'สุภาพร',emoji:'👩',role:'consumer'},
+  {name:'ประยูร',emoji:'🧑‍🌾',role:'farmer'},{name:'รัตนา',emoji:'👩',role:'consumer'},
+];
+
+var chatMessages = [
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'สวัสดีครับทุกคน อัปเดตสัปดาห์ที่ 3 มาเลยนะครับ',time:'09:00',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'ต้นมะเขือเทศแข็งแรงดีมากครับ คาดว่าจะได้ผลผลิตตามกำหนด 30 เม.ย. 🍅',time:'09:01',type:'other'},
+  {from:'consumer',name:'คุณสมใจ',emoji:'🙋',text:'ขอบคุณครับ รูปออกมาสดมากเลย 👍',time:'09:05',type:'me'},
+  {from:'consumer',name:'นภาพรรณ',emoji:'👩',text:'ฟาร์มสวยมากเลยค่ะ ดีใจที่จองมาตั้งแต่ต้น',time:'09:07',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'ขอบคุณทุกคนนะครับ ผมจะโพสต์รูปทุกสัปดาห์ครับ',time:'09:10',type:'other'},
+  {from:'system',text:'📊 Demand อัปเดต: 176/200 ออเดอร์ (88%)',time:'09:15',type:'system'},
+  {from:'consumer',name:'มาลี',emoji:'👩',text:'วันรับสินค้าไปที่ไหนได้บ้างคะ?',time:'09:20',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'มีจุดรับที่ตลาด อตก. กรุงเทพ และ เมญ่า เชียงใหม่ครับ',time:'09:22',type:'other'},
+];
+
+var qaItems = [
+  {q:'ทำไมใบมะเขือเทศเหลือง แนะนำวิธีแก้ด้วยนะครับ',user:'สมชาย',time:'1 ชม.ก่อน',answers:[
+    {text:'อาจขาดไนโตรเจนครับ ลองใส่ปุ๋ยยูเรีย 46-0-0 สัก 1 ช้อนโต๊ะต่อน้ำ 20 ลิตร',expert:true,name:'ดร.วิชัย'}
+  ]},
+  {q:'มีฟาร์มผักบุ้งออร์แกนิกแม่ริมแนะนำบ้างไหม?',user:'สุนิสา',time:'3 ชม.ก่อน',answers:[
+    {text:'ฟาร์มใจดีที่เลยดีมากครับ มีในแอป FarmUP เลย',expert:false,name:'ทองสุข'}
+  ]},
+];
+
+var storyFeed = [
+  {farm:'ฟาร์มสมศักดิ์',emoji:'🧑‍🌾',time:'30 นาทีก่อน',img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&fit=crop',caption:'อัปเดตสัปดาห์ 3: ต้นแข็งแรง ขยายเติบโตดี รดน้ำวันละ 2 ครั้ง 🌱',likes:23,comments:8,lot:'Batch #24',commentsList:[{user:'สมศรี',text:'เยี่ยมเลยค่ะ'},{user:'ประยูร',text:'รอรับเลยครับ'}]},
+  {farm:'ฟาร์มทองสุข',emoji:'🧑‍🌾',time:'2 ชม.ก่อน',img:'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&fit=crop',caption:'ข้าวหอมมะลิออกรวงแล้ว คาดเก็บได้เดือนกันยา 🌾',likes:45,comments:12,lot:'Batch #11',commentsList:[]},
+  {farm:'ฟาร์มเขียวสด',emoji:'🌿',time:'5 ชม.ก่อน',img:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&fit=crop',caption:'ตะไคร้อินทรีย์โตเต็มที่แล้ว เตรียมเก็บสัปดาห์หน้า',likes:18,comments:5,lot:'Batch #2',commentsList:[]},
+];
+
+// ===== RENDER =====
+function renderRooms() {
+  var list = document.getElementById('rooms-list');
+  list.innerHTML = '';
+  rooms.forEach(function(r) {
+    var div = document.createElement('div');
+    div.className = 'room-card';
+    div.innerHTML = `
+      <div class="flex items-start gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">${r.emoji}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-0.5">
+            <h3 class="font-bold text-sm text-gray-900 truncate">${r.name}</h3>
+            ${r.hot ? '<span class="flex-shrink-0 text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full">🔥 Hot</span>' : ''}
+          </div>
+          <p class="text-xs text-gray-500 mb-1.5 truncate">${r.lastMsg}</p>
+          <div class="flex items-center gap-3 text-[10px] text-gray-400">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success inline-block"></span>${r.online} ออนไลน์</span>
+            <span>${r.members} สมาชิก</span>
+            <span>${r.time}</span>
+          </div>
+        </div>
+        <span class="text-[10px] bg-surface border border-gray-200 text-gray-500 px-2 py-1 rounded-full flex-shrink-0">${r.type}</span>
+      </div>
+    `;
+    div.onclick = function() {
+      switchTab(document.querySelector('.tab-btn:nth-child(2)'), 'tab-chat');
+    };
+    list.appendChild(div);
+  });
+}
+
+function renderOnlineUsers() {
+  var container = document.getElementById('online-users');
+  onlineUsers.forEach(function(u) {
+    var div = document.createElement('div');
+    div.className = 'flex-shrink-0 text-center relative cursor-pointer';
+    div.innerHTML = `
+      <div class="relative w-10 h-10 mx-auto">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">${u.emoji}</div>
+        <div class="online-dot"></div>
+      </div>
+      <p class="text-[9px] text-gray-500 mt-1 w-10 truncate">${u.name}</p>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderChat() {
+  var container = document.getElementById('chat-messages');
+  container.innerHTML = '';
+  chatMessages.forEach(function(m) {
+    if (m.type === 'system') {
+      var sys = document.createElement('div');
+      sys.className = 'text-center text-xs text-gray-400 bg-surface rounded-full px-4 py-1.5 self-center';
+      sys.textContent = m.text;
+      container.appendChild(sys);
+      return;
+    }
+    var isMe = m.type === 'me';
+    var wrapper = document.createElement('div');
+    wrapper.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
+    if (!isMe) {
+      wrapper.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-lg flex-shrink-0">${m.emoji}</div>
+        <div>
+          <p class="text-[10px] text-gray-400 mb-1 ml-1">${m.name}</p>
+          <div class="msg-bubble msg-other px-4 py-2.5 text-sm">${m.text}</div>
+          <p class="text-[10px] text-gray-300 mt-1 ml-1">${m.time}</p>
+        </div>
+      `;
+    } else {
+      wrapper.innerHTML = `
+        <div>
+          <div class="msg-bubble msg-me px-4 py-2.5 text-sm">${m.text}</div>
+          <p class="text-[10px] text-gray-300 mt-1 mr-1 text-right">${m.time}</p>
+        </div>
+      `;
+    }
+    container.appendChild(wrapper);
+  });
+  container.scrollTop = container.scrollHeight;
+}
+
+function renderFeed() {
+  var container = document.getElementById('story-feed-items');
+  container.innerHTML = '';
+  storyFeed.forEach(function(s, idx) {
+    var commentsHtml = (s.commentsList||[]).map(function(c){ return '<div class="mb-1"><span class="font-bold text-xs">'+c.user+': </span><span class="text-xs text-gray-700">'+c.text+'</span></div>'; }).join('');
+    var div = document.createElement('div');
+    div.className = 'bg-white rounded-3xl overflow-hidden shadow-sm';
+    div.innerHTML = `
+      <div class="p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">${s.emoji}</div>
+        <div>
+          <p class="font-bold text-sm">${s.farm}</p>
+          <p class="text-xs text-gray-400">${s.time} • <span class="text-primary font-semibold">${s.lot}</span></p>
+        </div>
+        <button class="ml-auto text-xs bg-primary/10 text-primary font-bold px-3 py-1.5 rounded-full">+ ติดตาม</button>
+      </div>
+      <img src="${s.img}" class="w-full h-52 object-cover" loading="lazy" alt="farm update"/>
+      <div class="p-4">
+        <p class="text-sm text-gray-700">${s.caption}</p>
+        <div class="flex items-center gap-4 mt-3">
+          <button onclick="this.textContent=this.textContent.includes('❤️')?'🤍 ${s.likes}':'❤️ ${s.likes+1}'" class="text-sm font-semibold text-gray-600">🤍 ${s.likes}</button>
+          <button onclick="document.getElementById('comment-section-${idx}').classList.toggle('hidden')" class="text-sm font-semibold text-gray-600">💬 ${s.comments}</button>
+          <button onclick="showToast('📤 แชร์สตอรี่')" class="text-sm font-semibold text-gray-600">📤 แชร์</button>
+        </div>
+        <div id="comment-section-${idx}" class="hidden mt-3 border-t border-gray-100 pt-3">
+          ${commentsHtml}
+          <div class="flex gap-2 mt-2">
+            <input type="text" id="feed-comment-input-${idx}" placeholder="แสดงความคิดเห็น..." class="flex-1 px-3 py-1.5 bg-surface rounded-xl text-xs focus:outline-none focus:border-primary border border-transparent" onkeydown="if(event.key==='Enter')postFeedComment(${idx})"/>
+            <button onclick="postFeedComment(${idx})" class="text-primary text-xs font-bold px-2">ส่ง</button>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function postFeedComment(idx) {
+  var input = document.getElementById('feed-comment-input-'+idx);
+  var text = input.value.trim();
+  if(!text)return;
+  storyFeed[idx].commentsList = storyFeed[idx].commentsList || [];
+  storyFeed[idx].commentsList.push({user:user.name, text:text});
+  storyFeed[idx].comments++;
+  input.value = '';
+  renderFeed();
+  setTimeout(function() {
+    document.getElementById('comment-section-'+idx).classList.remove('hidden');
+    var inputFocus = document.getElementById('feed-comment-input-'+idx);
+    if(inputFocus) inputFocus.focus();
+  }, 10);
+}
+
+function renderQA() {
+  var list = document.getElementById('qa-list');
+  list.innerHTML = '';
+  qaItems.forEach(function(q, idx) {
+    var div = document.createElement('div');
+    div.className = 'bg-white rounded-2xl p-4 shadow-sm';
+    div.innerHTML = `
+      <div class="flex items-start gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-sm text-primary">${q.user.charAt(0)}</div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-bold text-sm">${q.user}</span>
+            <span class="text-xs text-gray-400">${q.time}</span>
+          </div>
+          <p class="text-sm text-gray-800 font-medium">${q.q}</p>
+        </div>
+      </div>
+      ${q.answers.map(function(a){ return `
+        <div class="bg-green-50 border border-green-200 rounded-xl p-3 ml-11 mb-2">
+          <div class="flex items-center gap-2 mb-1">
+            ${a.expert ? '<span class="text-[10px] bg-primary text-white font-bold px-2 py-0.5 rounded-full">ผู้เชี่ยวชาญ</span>' : ''}
+            <span class="font-bold text-xs">${a.name}</span>
+          </div>
+          <p class="text-xs text-gray-700">${a.text}</p>
+        </div>
+      `; }).join('')}
+      <div id="qa-reply-${idx}" class="hidden ml-11 mt-2 flex gap-2">
+        <input type="text" id="qa-reply-input-${idx}" placeholder="พิมพ์คำตอบ..." class="flex-1 px-3 py-1.5 bg-surface border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-primary" onkeydown="if(event.key==='Enter')postAnswer(${idx})"/>
+        <button onclick="postAnswer(${idx})" class="text-white bg-primary text-xs font-bold px-3 py-1.5 rounded-xl shadow">ส่งตอบ</button>
+      </div>
+      <button onclick="document.getElementById('qa-reply-${idx}').classList.toggle('hidden')" class="ml-11 text-xs text-primary font-bold">+ ตอบคำถามนี้</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function postAnswer(idx) {
+  var input = document.getElementById('qa-reply-input-'+idx);
+  var text = input.value.trim();
+  if(!text)return;
+  qaItems[idx].answers.push({text:text, expert:user.role==='expert', name:user.name});
+  renderQA();
+}
+
+// ===== ACTIONS =====
+function switchTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.className = 'tab-btn'; });
+  btn.className = 'tab-btn active';
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.add('hidden'); });
+  document.getElementById(id).classList.remove('hidden');
+  activeTab = id;
+  if (id === 'tab-chat') {
+    setTimeout(function(){ var c = document.getElementById('chat-messages'); c.scrollTop = c.scrollHeight; }, 100);
+  }
+}
+
+function sendMsg() {
+  var input = document.getElementById('msg-input');
+  var text = input.value.trim();
+  if (!text) return;
+  chatMessages.push({type:'me', text: text, time: new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});
+  input.value = '';
+  renderChat();
+  // Simulate response
+  setTimeout(function() {
+    var replies = ['ขอบคุณครับ! 🙏','เข้าใจแล้วครับ ขอบคุณมาก','จะอัปเดตให้ทราบครับ','ดีใจที่ถามครับ มีอะไรสอบถามได้เลย'];
+    chatMessages.push({from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:replies[Math.floor(Math.random()*replies.length)],time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),type:'other'});
+    renderChat();
+  }, 1500);
+}
+
+function insertQuick(text) {
+  document.getElementById('msg-input').value = text;
+  document.getElementById('msg-input').focus();
+}
+
+function attachEmoji() {
+  var emojis = ['🍅','🌱','🙏','👍','😊','💪','🥬','🌾','❤️'];
+  document.getElementById('msg-input').value += emojis[Math.floor(Math.random()*emojis.length)];
+}
+
+function postQuestion() {
+  var input = document.getElementById('qa-input');
+  var text = input.value.trim();
+  if (!text) { showToast('⚠️ กรุณาพิมพ์คำถามก่อน'); return; }
+  qaItems.unshift({q:text, user:user.name, time:'เมื่อกี้', answers:[]});
+  input.value = '';
+  renderQA();
+  showToast('✅ โพสต์คำถามแล้ว! รอผู้เชี่ยวชาญตอบ');
+}
+
+function showCreateRoom() {
+  document.getElementById('create-room-modal').classList.remove('hidden');
+}
+
+function selectRoomType(btn, type) {
+  selectedRoomType = type;
+  document.querySelectorAll('.room-type-btn').forEach(function(b) {
+    b.className = 'room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm';
+  });
+  btn.className = 'room-type-btn p-3 border-2 border-primary rounded-xl text-center cursor-pointer text-sm bg-primary/5 text-primary font-bold';
+}
+
+function createRoom() {
+  var name = document.getElementById('room-name').value.trim();
+  if (!name) { showToast('⚠️ กรุณาใส่ชื่อห้อง'); return; }
+  var emojis = {lot:'🌾', general:'💬', expert:'🎓'};
+  rooms.unshift({id:rooms.length+1, emoji:emojis[selectedRoomType]||'💬', name:name, type:selectedRoomType, members:1, online:1, lastMsg:'🌱 ห้องใหม่! เชิญเพื่อนมาร่วมได้เลย', time:'เมื่อกี้', hot:false});
+  document.getElementById('create-room-modal').classList.add('hidden');
+  document.getElementById('room-name').value = '';
+  renderRooms();
+  showToast('✅ สร้างห้อง "' + name + '" สำเร็จ!');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(function(){ t.classList.add('hidden'); }, 3000);
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+  renderRooms();
+  renderOnlineUsers();
+  renderChat();
+  renderFeed();
+  renderQA();
+
+  // Simulate new message every 30s
+  setInterval(function() {
+    if (activeTab === 'tab-chat') {
+      var msgs = ['ขอบคุณทุกคนนะครับ 🌱','รูปอัปเดตล่าสุดโพสต์แล้วครับ','ฝนมาพอดีช่วยประหยัดน้ำได้มากครับ'];
+      chatMessages.push({from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:msgs[Math.floor(Math.random()*msgs.length)],time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),type:'other'});
+      renderChat();
+    }
+  }, 30000);
+});
+</script>
+</body>
+</html>

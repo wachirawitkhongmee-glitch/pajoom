@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — ติดตามการเติบโต</title>
+<meta name="description" content="ติดตามการเติบโตของผลผลิตที่คุณจองแบบ Real-time"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { headline: ['Manrope','sans-serif'] },
+      colors: {
+        primary: '#1a6b2e', 'primary-light': '#2d8a47', 'primary-dark': '#0f4a1f',
+        secondary: '#e8a020', surface: '#f5f0e8', danger: '#dc2626', success: '#16a34a', warning: '#f59e0b'
+      }
+    }
+  }
+}
+</script>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
+.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}
+.nav-item:hover,.nav-item.active{color:#1a6b2e;}
+.timeline-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;transition:all 0.3s;}
+.timeline-dot.done{background:linear-gradient(135deg,#2d8a47,#1a6b2e);color:#fff;box-shadow:0 4px 12px rgba(26,107,46,0.3);}
+.timeline-dot.active{background:linear-gradient(135deg,#f5c44a,#e8a020);color:#fff;box-shadow:0 4px 12px rgba(232,160,32,0.4);animation:pulse-dot 2s ease-in-out infinite;}
+.timeline-dot.pending{background:#e5e7eb;color:#9ca3af;}
+@keyframes pulse-dot{0%,100%{box-shadow:0 4px 12px rgba(232,160,32,0.4);}50%{box-shadow:0 4px 24px rgba(232,160,32,0.7);transform:scale(1.05);}}
+.timeline-line{width:2px;flex:1;min-height:32px;}
+.timeline-line.done{background:linear-gradient(to bottom,#2d8a47,#2d8a47);}
+.timeline-line.pending{background:#e5e7eb;}
+.photo-card{border-radius:20px;overflow:hidden;cursor:pointer;transition:transform 0.2s;position:relative;}
+.photo-card:hover{transform:scale(1.02);}
+.week-btn{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;border:2px solid transparent;color:#6b7280;background:#fff;}
+.week-btn.active{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}
+.risk-badge{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:4px 10px;font-size:11px;font-weight:700;}
+.risk-green{background:#dcfce7;color:#16a34a;}
+.risk-yellow{background:#fef9c3;color:#ca8a04;}
+.risk-red{background:#fee2e2;color:#dc2626;}
+@keyframes slidein{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.slide-in{animation:slidein 0.4s ease;}
+</style>
+</head>
+<body>
+
+<!-- Header: Hero -->
+<div class="relative">
+  <div class="h-52 bg-gradient-to-br from-primary-dark via-primary to-primary-light relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20" style="background-image:url('https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?w=600&fit=crop');background-size:cover;background-position:center;"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-primary-dark/60 to-primary/80"></div>
+    <div class="relative px-4 pt-4 flex items-center gap-3">
+      <button onclick="history.back()" class="bg-white/20 backdrop-blur p-2 rounded-xl text-white">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <p class="text-white/80 text-sm font-semibold">Growth Tracking</p>
+    </div>
+    <div class="relative px-4 pt-4">
+      <h1 class="font-headline font-black text-2xl text-white">🍅 มะเขือเทศ Heirloom</h1>
+      <p class="text-white/70 text-sm mt-1">Batch #24 • ฟาร์มสมศักดิ์ • แม่ริม, เชียงใหม่</p>
+      <div class="flex items-center gap-3 mt-3">
+        <span class="risk-badge risk-green">✅ ปลอดภัย</span>
+        <span class="text-white/70 text-xs">อัปเดต 2 ชม.ก่อน</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating stats -->
+  <div class="mx-4 -mt-6 bg-white rounded-2xl p-4 shadow-xl flex gap-4 text-center">
+    <div class="flex-1">
+      <p class="font-headline font-black text-primary text-lg">สัปดาห์ 3</p>
+      <p class="text-xs text-gray-400">จาก 8</p>
+    </div>
+    <div class="w-px bg-gray-100"></div>
+    <div class="flex-1">
+      <p class="font-headline font-black text-secondary text-lg">38%</p>
+      <p class="text-xs text-gray-400">เติบโต</p>
+    </div>
+    <div class="w-px bg-gray-100"></div>
+    <div class="flex-1">
+      <p class="font-headline font-black text-success text-lg">30 เม.ย</p>
+      <p class="text-xs text-gray-400">วันเก็บ</p>
+    </div>
+    <div class="w-px bg-gray-100"></div>
+    <div class="flex-1">
+      <p class="font-headline font-black text-gray-800 text-lg">5 กก</p>
+      <p class="text-xs text-gray-400">ของคุณ</p>
+    </div>
+  </div>
+</div>
+
+<main class="px-4 pt-6 pb-28 max-w-2xl mx-auto">
+
+  <!-- Progress bar -->
+  <section class="mb-6">
+    <div class="flex justify-between text-xs text-gray-500 mb-2">
+      <span class="font-semibold">ความคืบหน้าโดยรวม</span>
+      <span class="font-bold text-primary">38%</span>
+    </div>
+    <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+      <div class="h-full bg-gradient-to-r from-primary-light to-primary rounded-full transition-all duration-1000" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="flex justify-between text-[10px] text-gray-400 mt-1.5">
+      <span>ปลูก</span><span>เติบโต</span><span>ออกดอก</span><span>ติดผล</span><span>เก็บเกี่ยว</span>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="mb-6">
+    <h2 class="font-headline font-black text-base text-gray-900 mb-4">📅 Timeline การเติบโต</h2>
+    <div id="timeline-container" class="space-y-0"></div>
+  </section>
+
+  <!-- Week Photo Gallery -->
+  <section class="mb-6">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="font-headline font-black text-base text-gray-900">📸 ภาพอัปเดต</h2>
+      <div class="flex gap-2 overflow-x-auto" id="week-tabs"></div>
+    </div>
+    <div id="photo-gallery" class="grid grid-cols-2 gap-3"></div>
+  </section>
+
+  <!-- Environmental Sensors -->
+  <section class="mb-6">
+    <h2 class="font-headline font-black text-base text-gray-900 mb-3">🌡️ สภาพแวดล้อมฟาร์ม</h2>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-orange-500">thermostat</span>
+          <span class="font-bold text-sm">อุณหภูมิ</span>
+        </div>
+        <p class="font-headline font-black text-2xl text-orange-500">28°C</p>
+        <p class="text-xs text-gray-400 mt-1">เหมาะสม (25-32°C)</p>
+        <div class="h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
+          <div class="h-full bg-orange-400 rounded-full" style="width:70%"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-blue-500">water_drop</span>
+          <span class="font-bold text-sm">ความชื้น</span>
+        </div>
+        <p class="font-headline font-black text-2xl text-blue-500">72%</p>
+        <p class="text-xs text-gray-400 mt-1">เหมาะสม (60-80%)</p>
+        <div class="h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
+          <div class="h-full bg-blue-400 rounded-full" style="width:72%"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-yellow-500">wb_sunny</span>
+          <span class="font-bold text-sm">แสงแดด</span>
+        </div>
+        <p class="font-headline font-black text-2xl text-yellow-500">8.2 ชม.</p>
+        <p class="text-xs text-gray-400 mt-1">เหมาะสม (6-10 ชม.)</p>
+        <div class="h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
+          <div class="h-full bg-yellow-400 rounded-full" style="width:82%"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-green-600">grass</span>
+          <span class="font-bold text-sm">ค่า pH ดิน</span>
+        </div>
+        <p class="font-headline font-black text-2xl text-green-600">6.8</p>
+        <p class="text-xs text-gray-400 mt-1">เหมาะสม (6.0-7.5)</p>
+        <div class="h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
+          <div class="h-full bg-green-400 rounded-full" style="width:63%"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Risk Status -->
+  <section class="mb-6">
+    <h2 class="font-headline font-black text-base text-gray-900 mb-3">🛡️ สถานะความเสี่ยง</h2>
+    <div class="bg-white rounded-2xl p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-success"></div>
+          <span class="font-bold text-sm text-success">ระดับความเสี่ยง: ต่ำ</span>
+        </div>
+        <span class="text-xs text-gray-400">อัปเดต: วันนี้</span>
+      </div>
+      <div class="space-y-2 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-success text-sm">check_circle</span>
+          <span class="text-gray-600">ไม่มีโรคแมลง</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-success text-sm">check_circle</span>
+          <span class="text-gray-600">น้ำเพียงพอตลอดฤดู</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-warning text-sm">warning</span>
+          <span class="text-gray-600">คาดฝนน้อยอีก 2 สัปดาห์</span>
+        </div>
+      </div>
+      <div class="mt-3 p-3 bg-green-50 rounded-xl text-xs text-gray-600">
+        <strong class="text-success">🛡️ Risk Sharing Active</strong> — หากเสียหาย &gt;50% คืนเงิน 70%
+      </div>
+    </div>
+  </section>
+
+  <!-- Farmer Notes -->
+  <section class="mb-6">
+    <h2 class="font-headline font-black text-base text-gray-900 mb-3">📝 บันทึกเกษตรกร</h2>
+    <div class="space-y-3" id="farmer-notes"></div>
+  </section>
+
+  <!-- Pickup Reminder -->
+  <div class="bg-gradient-to-br from-primary to-primary-dark rounded-2xl p-5 text-white mb-6">
+    <div class="flex items-start gap-4">
+      <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">local_shipping</span>
+      </div>
+      <div class="flex-1">
+        <p class="font-bold text-sm mb-1">📅 วันรับสินค้า: 30 เมษายน</p>
+        <p class="text-white/70 text-xs mb-3">เลือกจุดรับสินค้าก่อน 25 เมษายน</p>
+        <button onclick="window.location.href='farmup_tracking.html'" class="bg-white text-primary text-sm font-bold px-4 py-2.5 rounded-xl w-full text-center block">
+          📍 เลือกจุดรับสินค้า →
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span>
+    </div>
+    <span class="text-[10px] font-bold text-primary mt-1">จอง</span>
+  </a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+
+<!-- Image Modal -->
+<div id="img-modal" class="hidden fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+  <img id="modal-img" src="" class="max-w-full max-h-full rounded-2xl object-contain" alt="crop photo"/>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[300] font-bold text-sm"></div>
+
+<script>
+// ===== DATA =====
+var milestones = [
+  { icon:'🌱', title:'ปลูกเมล็ด', date:'7 มี.ค 2568', desc:'เพาะเมล็ดพันธุ์ในโรงเรือน เมล็ดทั้งหมด 2,000 เมล็ด', status:'done', week:0 },
+  { icon:'🌿', title:'ต้นกล้า', date:'14 มี.ค 2568', desc:'ต้นกล้างอก 1,890 ต้น (94%) ย้ายลงแปลงหลัก', status:'done', week:1 },
+  { icon:'🌾', title:'กำลังเติบโต', date:'21 มี.ค 2568', desc:'ต้นสูง 15-20 ซม. ใส่ปุ๋ยรอบแรก ระบบน้ำทำงานดี', status:'active', week:3 },
+  { icon:'🌸', title:'ออกดอก', date:'11 เม.ย 2568', desc:'คาดออกดอกสัปดาห์ที่ 5-6', status:'pending', week:5 },
+  { icon:'🍅', title:'ติดผล', date:'21 เม.ย 2568', desc:'คาดผลเริ่มแดงสัปดาห์ที่ 7', status:'pending', week:7 },
+  { icon:'🚜', title:'เก็บเกี่ยว', date:'30 เม.ย 2568', desc:'กำหนดเก็บเกี่ยวและจัดส่งสู่จุดรับ', status:'pending', week:8 },
+];
+
+var photos = {
+  1: [
+    {url:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&fit=crop',note:'วันปลูก: เตรียมดินในแปลง'},
+    {url:'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400&fit=crop',note:'แผงโรงเรือนเพาะกล้า'},
+  ],
+  2: [
+    {url:'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&fit=crop',note:'สัปดาห์ 2: กล้างอก'},
+    {url:'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&fit=crop',note:'ย้ายลงแปลงหลัก'},
+  ],
+  3: [
+    {url:'https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?w=400&fit=crop',note:'สัปดาห์ 3: โตแล้ว 20 ซม.'},
+    {url:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&fit=crop',note:'ระบบน้ำหยดทำงาน'},
+    {url:'https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=400&fit=crop',note:'ใบเขียวสด ไม่มีโรค'},
+    {url:'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=400&fit=crop',note:'วัดดินค่า pH 6.8'},
+  ]
+};
+
+var farmerNotes = [
+  {week:3, date:'21 มี.ค 2568', avatar:'🧑‍🌾', name:'ลุงสมศักดิ์', note:'อัปเดตสัปดาห์ 3: ต้นโตแข็งแรงมากครับ ไม่พบโรคหรือแมลง ใส่ปุ๋ยอินทรีย์รอบแรก คาดว่าจะเก็บได้ตามกำหนดครับ'},
+  {week:2, date:'14 มี.ค 2568', avatar:'🧑‍🌾', name:'ลุงสมศักดิ์', note:'ย้ายต้นกล้าลงแปลงหลักแล้วครับ 1,890 ต้นจาก 2,000 — ต้นกล้าสมบูรณ์ดีมาก'},
+  {week:1, date:'7 มี.ค 2568', avatar:'🧑‍🌾', name:'ลุงสมศักดิ์', note:'เริ่มเพาะเมล็ดวันนี้ครับ พันธุ์ Heirloom นำเข้าจากอิตาลี เมล็ดคุณภาพสูง'},
+];
+
+var activeWeek = 3;
+
+// ===== RENDER =====
+function renderTimeline() {
+  var container = document.getElementById('timeline-container');
+  container.innerHTML = '';
+  milestones.forEach(function(m, i) {
+    var isLast = i === milestones.length - 1;
+    var row = document.createElement('div');
+    row.className = 'flex gap-4';
+    row.innerHTML = `
+      <div class="flex flex-col items-center">
+        <div class="timeline-dot ${m.status}">
+          <span class="${m.status==='done'||m.status==='active' ? 'text-white' : 'text-gray-400'} text-base">${m.icon}</span>
+        </div>
+        ${!isLast ? '<div class="timeline-line '+(i<2?'done':'pending')+'"></div>' : ''}
+      </div>
+      <div class="flex-1 pb-6 ${m.status==='active'?'':''}">
+        <div class="bg-white rounded-2xl p-4 shadow-sm ${m.status==='active'?'border-2 border-secondary':''} slide-in">
+          <div class="flex items-start justify-between mb-1">
+            <h3 class="font-bold text-sm ${m.status==='active'?'text-secondary':m.status==='done'?'text-gray-900':'text-gray-400'}">${m.title}</h3>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${m.status==='done'?'bg-green-100 text-success':m.status==='active'?'bg-yellow-100 text-secondary':'bg-gray-100 text-gray-400'}">${m.status==='done'?'✅ เสร็จ':m.status==='active'?'⏳ กำลัง':'⏰ รอ'}</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-2">📅 ${m.date}</p>
+          ${m.status!=='pending' ? '<p class="text-xs text-gray-600">'+m.desc+'</p>' : '<p class="text-xs text-gray-400 italic">'+m.desc+'</p>'}
+          ${m.status==='active' ? '<div class="mt-2 flex items-center gap-1.5 text-xs text-secondary font-semibold"><div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>กำลังดำเนินการ</div>' : ''}
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderWeekTabs() {
+  var container = document.getElementById('week-tabs');
+  container.innerHTML = '';
+  [1,2,3].forEach(function(w) {
+    var btn = document.createElement('button');
+    btn.className = 'week-btn' + (w === activeWeek ? ' active' : '');
+    btn.textContent = 'สัปดาห์ ' + w;
+    btn.onclick = function() {
+      activeWeek = w;
+      document.querySelectorAll('.week-btn').forEach(function(b){ b.className='week-btn'; });
+      btn.className = 'week-btn active';
+      renderPhotos();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function renderPhotos() {
+  var container = document.getElementById('photo-gallery');
+  container.innerHTML = '';
+  var weekPhotos = photos[activeWeek] || [];
+  if (weekPhotos.length === 0) {
+    container.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400"><span class="material-symbols-outlined text-4xl block mb-2">photo_camera</span><p class="text-sm">ยังไม่มีรูปสัปดาห์นี้</p></div>';
+    return;
+  }
+  weekPhotos.forEach(function(p) {
+    var div = document.createElement('div');
+    div.className = 'photo-card';
+    div.innerHTML = `
+      <div class="relative">
+        <img src="${p.url}" class="w-full h-36 object-cover rounded-2xl" loading="lazy" alt="crop"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-2xl flex items-end p-2">
+          <p class="text-white text-[10px] font-semibold leading-tight">${p.note}</p>
+        </div>
+        <div class="absolute top-2 right-2">
+          <button onclick="openImage('${p.url}')" class="bg-white/90 p-1.5 rounded-lg">
+            <span class="material-symbols-outlined text-gray-600 text-base">zoom_in</span>
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderFarmerNotes() {
+  var container = document.getElementById('farmer-notes');
+  container.innerHTML = '';
+  farmerNotes.forEach(function(n) {
+    var div = document.createElement('div');
+    div.className = 'bg-white rounded-2xl p-4 shadow-sm slide-in';
+    div.innerHTML = `
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xl">${n.avatar}</div>
+        <div>
+          <p class="font-bold text-sm">${n.name}</p>
+          <p class="text-xs text-gray-400">สัปดาห์ ${n.week} • ${n.date}</p>
+        </div>
+        <span class="ml-auto text-xs bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">W${n.week}</span>
+      </div>
+      <p class="text-sm text-gray-700">${n.note}</p>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function openImage(url) {
+  document.getElementById('modal-img').src = url;
+  document.getElementById('img-modal').classList.remove('hidden');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(function(){ t.classList.add('hidden'); }, 3000);
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+  renderTimeline();
+  renderWeekTabs();
+  renderPhotos();
+  renderFarmerNotes();
+  // Animate progress
+  setTimeout(function() {
+    document.getElementById('progress-bar').style.width = '38%';
+  }, 300);
+});
+</script>
+</body>
+</html>

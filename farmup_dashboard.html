@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — Dashboard ของฉัน</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',success:'#16a34a'}}}}</script>
+<style>*{box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#f5f0e8;}.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}.nav-item:hover,.nav-item.active{color:#1a6b2e;}</style>
+</head>
+<body>
+<div class="relative"><div class="h-36 bg-gradient-to-br from-primary to-primary-dark"></div>
+<div class="absolute top-4 right-4"><button onclick="doLogout()" class="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur">ออกจากระบบ</button></div>
+<div class="px-4 -mt-12">
+  <div class="flex items-end gap-3 mb-4">
+    <div class="w-20 h-20 rounded-2xl bg-white shadow-xl flex items-center justify-center text-4xl border-4 border-white" id="profile-avatar">🙋</div>
+    <div class="mb-2">
+      <h1 class="font-headline font-black text-xl" id="profile-name">Loading...</h1>
+      <p class="text-sm text-gray-500" id="profile-role">ผู้บริโภค</p>
+    </div>
+    <button onclick="window.location.href='farmup_farmer.html'" class="ml-auto mb-2 px-3 py-2 rounded-xl border-2 border-primary text-primary text-sm font-bold hover:bg-primary hover:text-white transition-all">🧑‍🌾 เกษตรกร</button>
+  </div>
+</div></div>
+
+<main class="px-4 pb-32 max-w-2xl mx-auto">
+  <!-- Impact -->
+  <section class="mb-5">
+    <h2 class="font-headline font-black text-lg mb-3">🌍 Impact ของฉัน</h2>
+    <div class="grid grid-cols-3 gap-3">
+      <div class="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-4 text-white text-center shadow-lg"><p class="text-2xl font-headline font-black" id="waste-saved">0</p><p class="text-[10px] text-white/70 uppercase font-bold mt-1">กก ไม่เสียเปล่า</p></div>
+      <div class="bg-gradient-to-br from-secondary to-orange-400 rounded-2xl p-4 text-white text-center shadow-lg"><p class="text-2xl font-headline font-black" id="co2-saved">0</p><p class="text-[10px] text-white/70 uppercase font-bold mt-1">กก CO₂ ลด</p></div>
+      <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-4 text-white text-center shadow-lg"><p class="text-2xl font-headline font-black" id="orders-total">0</p><p class="text-[10px] text-white/70 uppercase font-bold mt-1">Pre-orders</p></div>
+    </div>
+  </section>
+
+  <!-- Badges -->
+  <section class="mb-5">
+    <h2 class="font-headline font-black text-lg mb-3">🏅 Badges</h2>
+    <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3 overflow-x-auto">
+      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('🥇 First Order!')"><div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center text-2xl mb-1">🥇</div><p class="text-[9px] text-gray-500 font-bold">First Order</p></div>
+      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('🌱 Green Starter!')"><div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-2xl mb-1">🌱</div><p class="text-[9px] text-gray-500 font-bold">Green Starter</p></div>
+      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('🌿 Organic Lover!')"><div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-2xl mb-1">🌿</div><p class="text-[9px] text-gray-500 font-bold">Organic Lover</p></div>
+      <div class="flex-shrink-0 text-center cursor-pointer opacity-30" onclick="showToast('🔒 จอง 50 ครั้งเพื่อปลดล็อก Earth Champion')"><div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-2xl mb-1">🔒</div><p class="text-[9px] text-gray-500 font-bold">Earth Champion</p></div>
+    </div>
+  </section>
+
+  <!-- Orders -->
+  <section class="mb-5">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="font-headline font-black text-lg">📦 ออเดอร์ของฉัน</h2>
+      <button onclick="window.location.href='farmup_explore.html'" class="text-primary text-sm font-bold">+ จองเพิ่ม</button>
+    </div>
+    <div id="order-list"><div class="text-center py-8 text-gray-400"><span class="material-symbols-outlined text-4xl block mb-2">shopping_bag</span><p class="text-sm">ยังไม่มีออเดอร์</p><button onclick="window.location.href='farmup_explore.html'" class="mt-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold">จองเลย →</button></div></div>
+  </section>
+
+  <!-- Contract Stub -->
+  <section class="mb-5">
+    <h2 class="font-headline font-black text-lg mb-3">📜 สัญญาดิจิทัล</h2>
+    <div id="contract-list"><div class="bg-white rounded-2xl p-4 shadow-sm text-center text-gray-400 text-sm">ยังไม่มีสัญญา — จองเพื่อสร้างสัญญา</div></div>
+  </section>
+
+  <!-- Secondary Market -->
+  <section>
+    <h2 class="font-headline font-black text-lg mb-3">🛍️ Secondary Market</h2>
+    <div class="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-4">
+      <p class="font-bold text-sm mb-1">ขายสิทธิ์ล็อตต่อ</p>
+      <p class="text-xs text-gray-500 mb-3">โอนสิทธิ์การจองให้ผู้อื่นได้ด้วยราคาตลาด</p>
+      <button onclick="showToast('🔄 Secondary Market — เปิดใช้งานได้หลังจองครบ 3 ออเดอร์')" class="w-full py-2.5 rounded-xl bg-purple-600 text-white text-sm font-bold">ดูตลาดขายสิทธิ์ →</button>
+    </div>
+  </section>
+</main>
+
+<!-- Contract Modal -->
+<div id="contract-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 shadow-2xl">
+    <h3 class="font-headline font-black text-xl mb-4">📜 สัญญา Pre-order</h3>
+    <div id="contract-detail" class="text-sm text-gray-700 space-y-3 mb-4"></div>
+    <button onclick="document.getElementById('contract-modal').classList.add('hidden')" class="w-full py-3 bg-surface rounded-2xl font-bold text-gray-600">ปิด</button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl flex items-center justify-center"><span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span></div><span class="text-[10px] font-bold text-primary mt-1">จอง</span></a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item active flex-1"><span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<script>
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
+function doLogout(){localStorage.removeItem('farmup_user');window.location.href='farmup_index.html';}
+function animCount(id,n){var el=document.getElementById(id);var i=0;var step=Math.ceil(n/25);var timer=setInterval(function(){i+=step;if(i>=n){i=n;clearInterval(timer);}el.textContent=i;},40);}
+function renderOrders(orders){
+  var list=document.getElementById('order-list');var cList=document.getElementById('contract-list');
+  if(!orders||orders.length===0)return;
+  list.innerHTML='';cList.innerHTML='';
+  orders.forEach(function(o,idx){
+    var div=document.createElement('div');
+    div.className='bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all mb-3';
+    div.innerHTML='<div class="flex justify-between items-center"><div><p class="font-bold text-sm">'+((o.name||'ออเดอร์ #'+(idx+1)).substring(0,30))+'</p><p class="text-xs text-gray-400 mt-0.5">📅 '+o.date+' • '+(o.qty||1)+' กก</p></div><div class="text-right"><span class="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">กำลังปลูก 🌱</span><p class="font-headline font-black text-primary mt-1">฿'+(o.total||0).toLocaleString()+'</p></div></div>';
+    div.onclick=function(){
+      document.getElementById('contract-detail').innerHTML='<div class="bg-surface rounded-xl p-3 space-y-2 text-xs"><div class="flex justify-between"><span class="text-gray-400">สินค้า</span><span class="font-bold">'+o.name+'</span></div><div class="flex justify-between"><span class="text-gray-400">จำนวน</span><span class="font-bold">'+(o.qty||1)+' กก</span></div><div class="flex justify-between"><span class="text-gray-400">ราคารวม</span><span class="font-bold text-primary">฿'+(o.total||0).toLocaleString()+'</span></div><div class="flex justify-between"><span class="text-gray-400">วันรับสินค้า</span><span class="font-bold">'+o.date+'</span></div></div><div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs"><p class="font-bold text-success mb-1">🛡️ Risk Sharing</p><p>เสียหาย >50% → คืน 70%</p><p>เสียหาย 20-50% → คืน 30%</p></div>';
+      document.getElementById('contract-modal').classList.remove('hidden');
+    };
+    list.appendChild(div);
+    var cdiv=document.createElement('div');
+    cdiv.className='bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all mb-2 flex items-center gap-3';
+    cdiv.innerHTML='<span class="material-symbols-outlined text-primary">description</span><div class="flex-1"><p class="font-bold text-sm">สัญญา #'+String(idx+1).padStart(3,'0')+'</p><p class="text-xs text-gray-400">'+o.name+' • ฿'+(o.total||0).toLocaleString()+'</p></div><span class="material-symbols-outlined text-gray-400">arrow_forward_ios</span>';
+    cdiv.onclick=div.onclick;
+    cList.appendChild(cdiv);
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var user = JSON.parse(localStorage.getItem('farmup_user')||'{"name":"คุณ","role":"consumer","avatar":"🙋"}');
+  document.getElementById('profile-name').textContent = user.name;
+  document.getElementById('profile-role').textContent = user.role === 'farmer' ? '🧑‍🌾 เกษตรกร' : '🛒 ผู้บริโภค';
+  document.getElementById('profile-avatar').textContent = user.avatar || '🙋';
+  
+  var token = localStorage.getItem('farmup_token');
+  if (token) {
+    fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) {
+          setTimeout(function(){
+            animCount('waste-saved', Math.round(data.length * 8.5));
+            animCount('co2-saved', Math.round(data.length * 3.2));
+            animCount('orders-total', data.length);
+          }, 300);
+          
+          // Map backend orders to frontend format
+          const mappedOrders = data.map(o => ({
+            id: o.id,
+            name: o.name,
+            qty: o.qty,
+            total: o.total_price,
+            date: o.harvest_date
+          }));
+          renderOrders(mappedOrders);
+        } else {
+          loadLocalOrders();
+        }
+      })
+      .catch(err => loadLocalOrders());
+  } else {
+    loadLocalOrders();
+  }
+});
+
+function loadLocalOrders() {
+  var orders = JSON.parse(localStorage.getItem('farmup_orders')||'[]');
+  setTimeout(function(){
+    animCount('waste-saved', Math.round(orders.length * 8.5));
+    animCount('co2-saved', Math.round(orders.length * 3.2));
+    animCount('orders-total', orders.length);
+  }, 300);
+  renderOrders(orders);
+}
+</script>
+</body></html>

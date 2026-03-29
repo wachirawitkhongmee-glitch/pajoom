@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — รับสินค้า & Pickup</title>
+<meta name="description" content="ตรวจสอบออเดอร์และเลือกจุดรับสินค้า"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { headline: ['Manrope','sans-serif'] },
+    colors: { primary:'#1a6b2e','primary-light':'#2d8a47','primary-dark':'#0f4a1f',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',success:'#16a34a',warning:'#f59e0b' }
+  }}
+}
+</script>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
+.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}
+.nav-item:hover,.nav-item.active{color:#1a6b2e;}
+.tab-btn{padding:8px 18px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;color:#6b7280;border:2px solid transparent;background:#fff;}
+.tab-btn.active{background:#1a6b2e;color:#fff;}
+.pickup-card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;border:2px solid transparent;transition:all 0.3s;}
+.pickup-card:hover{border-color:#e8a020;}
+.pickup-card.selected{border-color:#1a6b2e;background:rgba(26,107,46,0.03);}
+.status-step{border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative;z-index:2;}
+.status-step.done{background:linear-gradient(135deg,#2d8a47,#1a6b2e);color:#fff;}
+.status-step.active{background:linear-gradient(135deg,#f5c44a,#e8a020);color:#fff;animation:pulseS 2s ease-in-out infinite;}
+.status-step.pending{background:#e5e7eb;color:#9ca3af;}
+@keyframes pulseS{0%,100%{box-shadow:0 0 0 rgba(232,160,32,0.4);}50%{box-shadow:0 0 0 6px rgba(232,160,32,0.15);}}
+.order-chip{border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;}
+.chip-growing{background:#dcfce7;color:#16a34a;}
+.chip-ready{background:#fef9c3;color:#ca8a04;}
+.chip-delivered{background:#f0fdf4;color:#1a6b2e;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="bg-gradient-to-br from-primary-dark to-primary px-4 py-6 text-white">
+  <div class="flex items-center gap-3 mb-4">
+    <button onclick="history.back()" class="bg-white/20 p-2 rounded-xl">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div>
+      <h1 class="font-headline font-black text-xl">📦 ออเดอร์ & รับสินค้า</h1>
+      <p class="text-white/70 text-xs">ติดตามและเลือกจุดรับ</p>
+    </div>
+  </div>
+  <!-- Quick stats -->
+  <div class="grid grid-cols-3 gap-3">
+    <div class="bg-white/15 rounded-2xl p-3 text-center">
+      <p class="font-headline font-black text-lg" id="stat-active">3</p>
+      <p class="text-[10px] text-white/70 font-bold">กำลังปลูก</p>
+    </div>
+    <div class="bg-white/15 rounded-2xl p-3 text-center">
+      <p class="font-headline font-black text-lg" id="stat-ready">1</p>
+      <p class="text-[10px] text-white/70 font-bold">พร้อมรับ</p>
+    </div>
+    <div class="bg-white/15 rounded-2xl p-3 text-center">
+      <p class="font-headline font-black text-lg" id="stat-done">12</p>
+      <p class="text-[10px] text-white/70 font-bold">รับแล้ว</p>
+    </div>
+  </div>
+</header>
+
+<!-- Tabs -->
+<div class="bg-surface px-4 py-3 flex gap-2 border-b border-gray-200 overflow-x-auto">
+  <button class="tab-btn active" onclick="switchTab(this,'tab-orders')">📦 ออเดอร์ทั้งหมด</button>
+  <button class="tab-btn" onclick="switchTab(this,'tab-pickup')">📍 จุดรับสินค้า</button>
+  <button class="tab-btn" onclick="switchTab(this,'tab-schedule')">📅 ตารางรับ</button>
+  <button class="tab-btn" onclick="switchTab(this,'tab-qr')">📲 QR ของฉัน</button>
+</div>
+
+<main class="pb-28 max-w-2xl mx-auto">
+
+<!-- Tab: Orders -->
+<div id="tab-orders" class="tab-panel px-4 py-4 space-y-4">
+
+  <!-- Filter chips -->
+  <div class="flex gap-2">
+    <button onclick="filterOrders(this,'all')" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-full bg-primary text-white">ทั้งหมด</button>
+    <button onclick="filterOrders(this,'growing')" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-full bg-white text-gray-500 border border-gray-200">กำลังปลูก</button>
+    <button onclick="filterOrders(this,'ready')" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-full bg-white text-gray-500 border border-gray-200">พร้อมรับ</button>
+    <button onclick="filterOrders(this,'done')" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-full bg-white text-gray-500 border border-gray-200">รับแล้ว</button>
+  </div>
+
+  <div id="orders-list"></div>
+</div>
+
+<!-- Tab: Pickup Points -->
+<div id="tab-pickup" class="tab-panel hidden px-4 py-4">
+  <div class="bg-white rounded-2xl p-4 shadow-sm mb-4 flex items-center gap-3">
+    <span class="material-symbols-outlined text-primary">location_on</span>
+    <div class="flex-1">
+      <p class="font-bold text-sm">เลือกที่รับ: มะเขือเทศ Heirloom #24</p>
+      <p class="text-xs text-gray-400">ครบกำหนดรับ: 30 เม.ย 2568</p>
+    </div>
+  </div>
+  <p class="text-xs text-gray-500 mb-3 font-semibold uppercase tracking-wider">จุดรับสินค้า 5 แห่ง</p>
+  <div id="pickup-points" class="space-y-3"></div>
+  <button id="confirm-pickup-btn" onclick="confirmPickup()" class="hidden w-full mt-4 py-4 bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold rounded-2xl shadow-lg shadow-primary/30">
+    ✅ ยืนยันจุดรับสินค้า
+  </button>
+</div>
+
+<!-- Tab: Schedule -->
+<div id="tab-schedule" class="tab-panel hidden px-4 py-4">
+  <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+    <h3 class="font-bold text-sm mb-3">📅 ตารางรับสินค้าของคุณ</h3>
+    <div class="space-y-3" id="pickup-schedule"></div>
+  </div>
+  <!-- Calendar mini -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-bold text-sm">เมษายน 2568</h3>
+      <div class="flex gap-2">
+        <button class="p-1 rounded-lg bg-gray-100"><span class="material-symbols-outlined text-base text-gray-500">chevron_left</span></button>
+        <button class="p-1 rounded-lg bg-gray-100"><span class="material-symbols-outlined text-base text-gray-500">chevron_right</span></button>
+      </div>
+    </div>
+    <div class="grid grid-cols-7 gap-1 text-center text-xs">
+      <div class="text-gray-400 font-bold py-1">อา</div>
+      <div class="text-gray-400 font-bold py-1">จ</div>
+      <div class="text-gray-400 font-bold py-1">อ</div>
+      <div class="text-gray-400 font-bold py-1">พ</div>
+      <div class="text-gray-400 font-bold py-1">พฤ</div>
+      <div class="text-gray-400 font-bold py-1">ศ</div>
+      <div class="text-gray-400 font-bold py-1">ส</div>
+      <div id="cal-days" class="col-span-7 grid grid-cols-7 gap-1"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: QR Code -->
+<div id="tab-qr" class="tab-panel hidden px-4 py-4 text-center">
+  <div class="bg-white rounded-2xl p-6 shadow-sm mb-4">
+    <p class="font-headline font-black text-lg mb-2">QR Pickup Code</p>
+    <p class="text-xs text-gray-500 mb-5">แสดง QR นี้ที่จุดรับสินค้า</p>
+    <!-- Simulated QR -->
+    <div class="w-48 h-48 mx-auto mb-4 bg-white rounded-2xl p-3 shadow-inner border-2 border-gray-100" id="qr-display">
+      <svg viewBox="0 0 100 100" class="w-full h-full">
+        <!-- QR pattern simulation -->
+        <rect fill="#fff" width="100" height="100"/>
+        <rect fill="#000" x="5" y="5" width="35" height="35"/>
+        <rect fill="#fff" x="10" y="10" width="25" height="25"/>
+        <rect fill="#000" x="15" y="15" width="15" height="15"/>
+        <rect fill="#000" x="60" y="5" width="35" height="35"/>
+        <rect fill="#fff" x="65" y="10" width="25" height="25"/>
+        <rect fill="#000" x="70" y="15" width="15" height="15"/>
+        <rect fill="#000" x="5" y="60" width="35" height="35"/>
+        <rect fill="#fff" x="10" y="65" width="25" height="25"/>
+        <rect fill="#000" x="15" y="70" width="15" height="15"/>
+        <rect fill="#000" x="45" y="5" width="5" height="5"/>
+        <rect fill="#000" x="55" y="5" width="5" height="5"/>
+        <rect fill="#000" x="45" y="15" width="5" height="10"/>
+        <rect fill="#000" x="55" y="20" width="5" height="5"/>
+        <rect fill="#000" x="45" y="30" width="5" height="5"/>
+        <rect fill="#000" x="55" y="35" width="5" height="5"/>
+        <rect fill="#000" x="45" y="45" width="15" height="5"/>
+        <rect fill="#000" x="65" y="45" width="5" height="5"/>
+        <rect fill="#000" x="75" y="45" width="5" height="10"/>
+        <rect fill="#000" x="85" y="45" width="5" height="5"/>
+        <rect fill="#000" x="65" y="55" width="10" height="5"/>
+        <rect fill="#000" x="80" y="55" width="10" height="5"/>
+        <rect fill="#000" x="65" y="65" width="5" height="5"/>
+        <rect fill="#000" x="75" y="65" width="5" height="5"/>
+        <rect fill="#000" x="85" y="65" width="5" height="5"/>
+        <rect fill="#000" x="65" y="75" width="10" height="5"/>
+        <rect fill="#000" x="80" y="75" width="10" height="5"/>
+        <rect fill="#000" x="65" y="85" width="5" height="5"/>
+        <rect fill="#000" x="75" y="85" width="5" height="5"/>
+        <rect fill="#000" x="85" y="85" width="5" height="5"/>
+        <rect fill="#1a6b2e" x="42" y="42" width="16" height="16" rx="4"/>
+        <text x="50" y="53" fill="white" font-size="10" text-anchor="middle" font-weight="bold">F</text>
+      </svg>
+    </div>
+    <div class="bg-surface rounded-xl p-3 text-center mb-4">
+      <p class="text-xs text-gray-400 mb-1">รหัสออเดอร์</p>
+      <p class="font-headline font-black text-primary text-lg tracking-widest">FUP-2025-0024</p>
+    </div>
+    <div class="grid grid-cols-2 gap-3 text-xs text-left">
+      <div class="bg-surface rounded-xl p-3">
+        <p class="text-gray-400 mb-0.5">ชื่อ</p>
+        <p class="font-bold" id="qr-name">คุณสมใจ</p>
+      </div>
+      <div class="bg-surface rounded-xl p-3">
+        <p class="text-gray-400 mb-0.5">จำนวน</p>
+        <p class="font-bold">5 กก</p>
+      </div>
+      <div class="bg-surface rounded-xl p-3">
+        <p class="text-gray-400 mb-0.5">สินค้า</p>
+        <p class="font-bold">มะเขือเทศ Heirloom</p>
+      </div>
+      <div class="bg-surface rounded-xl p-3">
+        <p class="text-gray-400 mb-0.5">วันรับ</p>
+        <p class="font-bold">30 เม.ย 2568</p>
+      </div>
+    </div>
+    <button onclick="showToast('📥 บันทึก QR แล้ว')" class="w-full mt-4 py-3 bg-gradient-to-br from-primary-light to-primary text-white font-bold rounded-2xl">
+      <span class="material-symbols-outlined text-base align-middle mr-1">download</span>บันทึก QR Code
+    </button>
+    <button onclick="showToast('📤 แชร์ QR Code')" class="w-full mt-2 py-3 border-2 border-primary text-primary font-bold rounded-2xl">
+      แชร์ QR →
+    </button>
+  </div>
+  <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 text-left">
+    <p class="font-bold text-sm text-yellow-800 mb-1">⚠️ หมายเหตุ</p>
+    <p class="text-xs text-yellow-700">QR Code นี้ใช้ได้ครั้งเดียว ณ จุดรับสินค้าที่เลือก กรุณาแสดง QR ให้เจ้าหน้าที่สแกนเมื่อรับสินค้า</p>
+  </div>
+</div>
+
+</main>
+
+<!-- Order Detail Modal -->
+<div id="order-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 shadow-2xl">
+    <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div>
+    <h3 id="modal-title" class="font-headline font-black text-xl mb-4">รายละเอียดออเดอร์</h3>
+    <div id="modal-content"></div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="window.location.href='farmup_growth.html'" class="flex-1 py-3 bg-primary text-white font-bold rounded-2xl text-sm">ติดตามการเติบโต →</button>
+      <button onclick="document.getElementById('order-modal').classList.add('hidden')" class="flex-1 py-3 border-2 border-gray-200 text-gray-600 font-bold rounded-2xl text-sm">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span>
+    </div>
+    <span class="text-[10px] font-bold text-primary mt-1">จอง</span>
+  </a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item active flex-1"><span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[300] font-bold text-sm"></div>
+
+<script>
+var user = JSON.parse(localStorage.getItem('farmup_user') || '{"name":"คุณสมใจ","avatar":"🙋"}');
+var selectedPickup = null;
+
+var orders = [
+  {id:'FUP-2025-0024',emoji:'🍅',name:'มะเขือเทศ Heirloom Batch #24',farm:'ฟาร์มสมศักดิ์ เชียงใหม่',qty:5,price:1400,status:'growing',harvest:'30 เม.ย 2568',week:3,total:8,risk:'low'},
+  {id:'FUP-2025-0019',emoji:'🥬',name:'ผักบุ้งไร้สาร Batch #5',farm:'ฟาร์มใจดี เลย',qty:3,price:180,status:'ready',harvest:'15 เม.ย 2568',week:4,total:4,risk:'low'},
+  {id:'FUP-2025-0015',emoji:'🌿',name:'ตะไคร้อินทรีย์ Batch #2',farm:'ฟาร์มเขียวสด เชียงราย',qty:2,price:240,status:'growing',harvest:'20 พ.ค 2568',week:2,total:6,risk:'medium'},
+  {id:'FUP-2025-0011',emoji:'🥭',name:'มะม่วงน้ำดอกไม้ Batch #1',farm:'ฟาร์มทองคำ นครสวรรค์',qty:4,price:1800,status:'done',harvest:'15 มี.ค 2568',week:10,total:10,risk:'none'},
+];
+
+var pickupPoints = [
+  {id:1,name:'ตลาด อตก. กรุงเทพ',addr:'เขตจตุจักร กรุงเทพฯ',hours:'08:00-17:00',type:'ตลาดหลัก',emoji:'🏪',capacity:'มีที่ว่าง',distance:'2.3 กม.'},
+  {id:2,name:'เมญ่า เชียงใหม่',addr:'ถนนนิมมานเหมินท์ เชียงใหม่',hours:'10:00-20:00',type:'ห้างฯ',emoji:'🏬',capacity:'มีที่ว่าง',distance:'45 กม. (จัดส่ง)'},
+  {id:3,name:'ไปรษณีย์ไทย สาขาใกล้บ้าน',addr:'กดตรวจสอบสาขาใกล้คุณ',hours:'09:00-17:00',type:'ไปรษณีย์',emoji:'📮',capacity:'มีที่ว่าง',distance:'0.8 กม.'},
+  {id:4,name:'จัดส่งถึงบ้าน (EMS)',addr:'ที่อยู่ที่ลงทะเบียน',hours:'จัดส่ง 1-2 วัน',type:'Delivery',emoji:'🚚',capacity:'รับได้เสมอ',distance:'+฿80'},
+  {id:5,name:'Grab/LINE MAN',addr:'รับที่ฟาร์มแล้วส่งถึงมือ',hours:'ตามคนส่ง',type:'On-demand',emoji:'🛵',capacity:'มีพร้อม',distance:'+฿120'},
+];
+
+var scheduleItems = [
+  {date:'30 เม.ย 2568',item:'🍅 มะเขือเทศ Heirloom #24',point:'ตลาด อตก.',weight:'5 กก'},
+  {date:'20 พ.ค 2568',item:'🌿 ตะไคร้อินทรีย์ #2',point:'ยังไม่เลือก',weight:'2 กก'},
+  {date:'1 มิ.ย 2568',item:'🥭 มะม่วงน้ำดอกไม้ #3',point:'ยังไม่เลือก',weight:'4 กก'},
+];
+
+var currentFilter = 'all';
+
+function switchTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.className='tab-btn'; });
+  btn.className = 'tab-btn active';
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.add('hidden'); });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function filterOrders(btn, status) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.className='filter-btn text-xs font-bold px-3 py-1.5 rounded-full bg-white text-gray-500 border border-gray-200'; });
+  btn.className = 'filter-btn text-xs font-bold px-3 py-1.5 rounded-full bg-primary text-white';
+  renderOrders();
+}
+
+function renderOrders() {
+  var list = document.getElementById('orders-list');
+  list.innerHTML = '';
+  var filtered = currentFilter === 'all' ? orders : orders.filter(function(o){ return o.status === currentFilter; });
+  if (!filtered.length) {
+    list.innerHTML = '<div class="text-center py-12 text-gray-400"><span class="material-symbols-outlined text-5xl block mb-2">inbox</span><p>ไม่มีออเดอร์ในหมวดนี้</p></div>';
+    return;
+  }
+  filtered.forEach(function(o) {
+    var div = document.createElement('div');
+    div.className = 'bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow-md transition-all';
+    var chipClass = {growing:'chip-growing',ready:'chip-ready',done:'chip-delivered'}[o.status] || 'chip-growing';
+    var chipText = {growing:'🌱 กำลังปลูก',ready:'✅ พร้อมรับ',done:'📦 รับแล้ว'}[o.status];
+    div.innerHTML = `
+      <div class="flex items-start gap-3">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">${o.emoji}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <h3 class="font-bold text-sm text-gray-900 leading-tight">${o.name}</h3>
+            <span class="order-chip ${chipClass} flex-shrink-0">${chipText}</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-2">${o.farm}</p>
+          <div class="flex items-center gap-3 text-xs text-gray-400">
+            <span>${o.qty} กก • ฿${o.price.toLocaleString()}</span>
+            <span>📅 ${o.harvest}</span>
+          </div>
+          ${o.status === 'growing' ? `
+            <div class="mt-2">
+              <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                <span>สัปดาห์ ${o.week}/${o.total}</span>
+                <span>${Math.round(o.week/o.total*100)}%</span>
+              </div>
+              <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-primary-light to-primary rounded-full" style="width:${Math.round(o.week/o.total*100)}%"></div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button onclick="openOrderDetail(${JSON.stringify(o).replace(/"/g,'&quot;')})" class="flex-1 py-2 text-xs font-bold border border-gray-200 rounded-xl text-gray-600 hover:border-primary hover:text-primary transition-all">รายละเอียด</button>
+        ${o.status === 'growing' ? '<button onclick="window.location.href=\'farmup_growth.html\'" class="flex-1 py-2 text-xs font-bold bg-primary/10 text-primary rounded-xl">ติดตาม 🌱</button>' : ''}
+        ${o.status === 'ready' ? '<button onclick="window.location.href=\'farmup_tracking.html\';switchTab(document.querySelector(\'.tab-btn:nth-child(4)\'),\'tab-qr\')" class="flex-1 py-2 text-xs font-bold bg-secondary/10 text-secondary rounded-xl">QR รับสินค้า 📲</button>' : ''}
+        ${o.status === 'done' ? '<button onclick="showReviewModal()" class="flex-1 py-2 text-xs font-bold bg-success/10 text-success rounded-xl">รีวิว ⭐</button>' : ''}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function openOrderDetail(o) {
+  document.getElementById('modal-title').textContent = o.emoji + ' ' + o.name;
+  document.getElementById('modal-content').innerHTML = `
+    <div class="space-y-3 text-sm">
+      <div class="bg-surface rounded-xl p-3 space-y-2 text-xs">
+        <div class="flex justify-between"><span class="text-gray-400">รหัสออเดอร์</span><span class="font-bold font-mono">${o.id}</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">ฟาร์ม</span><span class="font-bold">${o.farm}</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">จำนวน</span><span class="font-bold">${o.qty} กก</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">ราคารวม</span><span class="font-bold text-primary">฿${o.price.toLocaleString()}</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">กำหนดรับ</span><span class="font-bold">${o.harvest}</span></div>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs">
+        <p class="font-bold text-success mb-1">🛡️ Risk Sharing Active</p>
+        <p class="text-gray-600">เสียหาย &gt;50% → คืน 70% | เสียหาย 20-50% → คืน 30%</p>
+      </div>
+    </div>
+  `;
+  document.getElementById('order-modal').classList.remove('hidden');
+}
+
+function renderPickupPoints() {
+  var list = document.getElementById('pickup-points');
+  list.innerHTML = '';
+  pickupPoints.forEach(function(p) {
+    var div = document.createElement('div');
+    div.className = 'pickup-card' + (selectedPickup === p.id ? ' selected' : '');
+    div.id = 'pickup-' + p.id;
+    div.innerHTML = `
+      <div class="flex items-start gap-3">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">${p.emoji}</div>
+        <div class="flex-1">
+          <div class="flex items-start justify-between gap-2">
+            <h3 class="font-bold text-sm">${p.name}</h3>
+            <span class="text-[10px] bg-surface border border-gray-200 text-gray-500 px-2 py-0.5 rounded-full flex-shrink-0">${p.type}</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-0.5">${p.addr}</p>
+          <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+            <span>⏰ ${p.hours}</span>
+            <span>📍 ${p.distance}</span>
+          </div>
+          <div class="flex items-center gap-1 mt-1.5">
+            <div class="w-2 h-2 rounded-full bg-success"></div>
+            <span class="text-xs text-success font-semibold">${p.capacity}</span>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          ${selectedPickup === p.id ? '<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-white text-sm">check</span></div>' : '<div class="w-6 h-6 rounded-full border-2 border-gray-300"></div>'}
+        </div>
+      </div>
+    `;
+    div.onclick = function() {
+      selectedPickup = p.id;
+      document.getElementById('confirm-pickup-btn').classList.remove('hidden');
+      renderPickupPoints();
+    };
+    list.appendChild(div);
+  });
+}
+
+function confirmPickup() {
+  var p = pickupPoints.find(function(x){ return x.id === selectedPickup; });
+  if (!p) return;
+  showToast('✅ เลือกจุดรับ "' + p.name + '" เรียบร้อยแล้ว!');
+}
+
+function renderSchedule() {
+  var list = document.getElementById('pickup-schedule');
+  list.innerHTML = '';
+  scheduleItems.forEach(function(s) {
+    var div = document.createElement('div');
+    div.className = 'flex items-center gap-3 p-3 bg-surface rounded-xl';
+    div.innerHTML = `
+      <div class="text-center bg-white rounded-xl p-2 min-w-[48px] shadow-sm">
+        <p class="text-primary font-black text-sm">${s.date.split(' ')[0]}</p>
+        <p class="text-gray-400 text-[10px]">${s.date.split(' ')[1]} ${s.date.split(' ')[2]}</p>
+      </div>
+      <div class="flex-1">
+        <p class="font-bold text-sm">${s.item}</p>
+        <p class="text-xs text-gray-500">${s.point} • ${s.weight}</p>
+      </div>
+      ${s.point === 'ยังไม่เลือก' ? '<button onclick="switchTab(document.querySelectorAll(\'.tab-btn\')[1],\'tab-pickup\')" class="text-xs text-primary font-bold bg-primary/10 px-3 py-1.5 rounded-lg">เลือก →</button>' : '<span class="text-xs text-success font-bold">✅</span>'}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function renderCalendar() {
+  var grid = document.getElementById('cal-days');
+  grid.innerHTML = '';
+  // April 2025 starts on Tuesday (offset 2)
+  var offset = 2;
+  var daysInMonth = 30;
+  var highlightDays = [15,20,30];
+  for (var i = 0; i < offset; i++) {
+    var empty = document.createElement('div');
+    empty.className = 'py-1.5';
+    grid.appendChild(empty);
+  }
+  for (var d = 1; d <= daysInMonth; d++) {
+    var day = document.createElement('div');
+    var isHighlight = highlightDays.includes(d);
+    var isToday = d === 27;
+    day.className = 'py-1.5 text-center rounded-lg text-xs font-semibold cursor-pointer transition-all ' +
+      (isHighlight ? 'bg-primary text-white' : isToday ? 'bg-surface font-bold text-primary' : 'text-gray-600 hover:bg-surface');
+    day.textContent = d;
+    if (isHighlight) { day.title = 'วันรับสินค้า'; }
+    grid.appendChild(day);
+  }
+}
+
+function showReviewModal() { showToast('⭐ โหลดฟอร์มรีวิว...'); }
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(function(){ t.classList.add('hidden'); }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var u = JSON.parse(localStorage.getItem('farmup_user') || '{}');
+  if (u.name) document.getElementById('qr-name').textContent = u.name;
+  // Merge localStorage orders
+  var saved = JSON.parse(localStorage.getItem('farmup_orders') || '[]');
+  saved.forEach(function(s) {
+    orders.push({id:'FUP-'+Date.now(),emoji:'🌾',name:s.name||'ออเดอร์',farm:'ฟาร์มสมศักดิ์',qty:s.qty||1,price:s.total||0,status:'growing',harvest:'30 เม.ย 2568',week:1,total:8,risk:'low'});
+  });
+  renderOrders();
+  renderPickupPoints();
+  renderSchedule();
+  renderCalendar();
+});
+</script>
+</body>
+</html>
