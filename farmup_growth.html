@@ -60,10 +60,10 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <p class="text-white/80 text-sm font-semibold">Growth Tracking</p>
     </div>
     <div class="relative px-4 pt-4">
-      <h1 class="font-headline font-black text-2xl text-white">🍅 มะเขือเทศ Heirloom</h1>
+      <h1 class="font-headline font-black text-2xl text-white flex items-center gap-2"><span class="material-symbols-outlined text-3xl">eco</span> มะเขือเทศ Heirloom</h1>
       <p class="text-white/70 text-sm mt-1">Batch #24 • ฟาร์มสมศักดิ์ • แม่ริม, เชียงใหม่</p>
       <div class="flex items-center gap-3 mt-3">
-        <span class="risk-badge risk-green">✅ ปลอดภัย</span>
+        <span class="risk-badge risk-green"><span class="material-symbols-outlined text-[14px]">check_circle</span> ปลอดภัย</span>
         <span class="text-white/70 text-xs">อัปเดต 2 ชม.ก่อน</span>
       </div>
     </div>
@@ -111,14 +111,14 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 
   <!-- Timeline -->
   <section class="mb-6">
-    <h2 class="font-headline font-black text-base text-gray-900 mb-4">📅 Timeline การเติบโต</h2>
+    <h2 class="font-headline font-black text-base text-gray-900 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">calendar_month</span> Timeline การเติบโต</h2>
     <div id="timeline-container" class="space-y-0"></div>
   </section>
 
   <!-- Week Photo Gallery -->
   <section class="mb-6">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="font-headline font-black text-base text-gray-900">📸 ภาพอัปเดต</h2>
+      <h2 class="font-headline font-black text-base text-gray-900 flex items-center gap-2"><span class="material-symbols-outlined text-primary">photo_camera</span> ภาพอัปเดต</h2>
       <div class="flex gap-2 overflow-x-auto" id="week-tabs"></div>
     </div>
     <div id="photo-gallery" class="grid grid-cols-2 gap-3"></div>
@@ -126,7 +126,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 
   <!-- Environmental Sensors -->
   <section class="mb-6">
-    <h2 class="font-headline font-black text-base text-gray-900 mb-3">🌡️ สภาพแวดล้อมฟาร์ม</h2>
+    <h2 class="font-headline font-black text-base text-gray-900 mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-primary">device_thermostat</span> สภาพแวดล้อมฟาร์ม</h2>
     <div class="grid grid-cols-2 gap-3">
       <div class="bg-white rounded-2xl p-4 shadow-sm">
         <div class="flex items-center gap-2 mb-3">
@@ -177,7 +177,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 
   <!-- Risk Status -->
   <section class="mb-6">
-    <h2 class="font-headline font-black text-base text-gray-900 mb-3">🛡️ สถานะความเสี่ยง</h2>
+    <h2 class="font-headline font-black text-base text-gray-900 mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-primary">shield</span> สถานะความเสี่ยง</h2>
     <div class="bg-white rounded-2xl p-4 shadow-sm">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
@@ -201,14 +201,14 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
         </div>
       </div>
       <div class="mt-3 p-3 bg-green-50 rounded-xl text-xs text-gray-600">
-        <strong class="text-success">🛡️ Risk Sharing Active</strong> — หากเสียหาย &gt;50% คืนเงิน 70%
+        <strong class="text-success flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">shield</span> Risk Sharing Active</strong> — หากเสียหาย &gt;50% คืนเงิน 70%
       </div>
     </div>
   </section>
 
   <!-- Farmer Notes -->
   <section class="mb-6">
-    <h2 class="font-headline font-black text-base text-gray-900 mb-3">📝 บันทึกเกษตรกร</h2>
+    <h2 class="font-headline font-black text-base text-gray-900 mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-primary">edit_note</span> บันทึกเกษตรกร</h2>
     <div class="space-y-3" id="farmer-notes"></div>
   </section>
 
@@ -219,10 +219,10 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
         <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">local_shipping</span>
       </div>
       <div class="flex-1">
-        <p class="font-bold text-sm mb-1">📅 วันรับสินค้า: 30 เมษายน</p>
+        <p class="font-bold text-sm mb-1 flex items-center gap-1.5"><span class="material-symbols-outlined text-base">calendar_month</span> วันรับสินค้า: 30 เมษายน</p>
         <p class="text-white/70 text-xs mb-3">เลือกจุดรับสินค้าก่อน 25 เมษายน</p>
-        <button onclick="window.location.href='farmup_tracking.html'" class="bg-white text-primary text-sm font-bold px-4 py-2.5 rounded-xl w-full text-center block">
-          📍 เลือกจุดรับสินค้า →
+        <button onclick="window.location.href='farmup_tracking.html'" class="bg-white text-primary text-sm font-bold px-4 py-2.5 rounded-xl w-full flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">location_on</span> เลือกจุดรับสินค้า →
         </button>
       </div>
     </div>
@@ -255,12 +255,12 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 <script>
 // ===== DATA =====
 var milestones = [
-  { icon:'🌱', title:'ปลูกเมล็ด', date:'7 มี.ค 2568', desc:'เพาะเมล็ดพันธุ์ในโรงเรือน เมล็ดทั้งหมด 2,000 เมล็ด', status:'done', week:0 },
-  { icon:'🌿', title:'ต้นกล้า', date:'14 มี.ค 2568', desc:'ต้นกล้างอก 1,890 ต้น (94%) ย้ายลงแปลงหลัก', status:'done', week:1 },
-  { icon:'🌾', title:'กำลังเติบโต', date:'21 มี.ค 2568', desc:'ต้นสูง 15-20 ซม. ใส่ปุ๋ยรอบแรก ระบบน้ำทำงานดี', status:'active', week:3 },
-  { icon:'🌸', title:'ออกดอก', date:'11 เม.ย 2568', desc:'คาดออกดอกสัปดาห์ที่ 5-6', status:'pending', week:5 },
-  { icon:'🍅', title:'ติดผล', date:'21 เม.ย 2568', desc:'คาดผลเริ่มแดงสัปดาห์ที่ 7', status:'pending', week:7 },
-  { icon:'🚜', title:'เก็บเกี่ยว', date:'30 เม.ย 2568', desc:'กำหนดเก็บเกี่ยวและจัดส่งสู่จุดรับ', status:'pending', week:8 },
+  { icon:'eco', title:'ปลูกเมล็ด', date:'7 มี.ค 2568', desc:'เพาะเมล็ดพันธุ์ในโรงเรือน เมล็ดทั้งหมด 2,000 เมล็ด', status:'done', week:0 },
+  { icon:'grass', title:'ต้นกล้า', date:'14 มี.ค 2568', desc:'ต้นกล้างอก 1,890 ต้น (94%) ย้ายลงแปลงหลัก', status:'done', week:1 },
+  { icon:'filter_vintage', title:'กำลังเติบโต', date:'21 มี.ค 2568', desc:'ต้นสูง 15-20 ซม. ใส่ปุ๋ยรอบแรก ระบบน้ำทำงานดี', status:'active', week:3 },
+  { icon:'local_florist', title:'ออกดอก', date:'11 เม.ย 2568', desc:'คาดออกดอกสัปดาห์ที่ 5-6', status:'pending', week:5 },
+  { icon:'restaurant', title:'ติดผล', date:'21 เม.ย 2568', desc:'คาดผลเริ่มแดงสัปดาห์ที่ 7', status:'pending', week:7 },
+  { icon:'agriculture', title:'เก็บเกี่ยว', date:'30 เม.ย 2568', desc:'กำหนดเก็บเกี่ยวและจัดส่งสู่จุดรับ', status:'pending', week:8 },
 ];
 
 var photos = {
@@ -281,9 +281,9 @@ var photos = {
 };
 
 var farmerNotes = [
-  {week:3, date:'21 มี.ค 2568', avatar:'🧑‍🌾', name:'ลุงสมศักดิ์', note:'อัปเดตสัปดาห์ 3: ต้นโตแข็งแรงมากครับ ไม่พบโรคหรือแมลง ใส่ปุ๋ยอินทรีย์รอบแรก คาดว่าจะเก็บได้ตามกำหนดครับ'},
-  {week:2, date:'14 มี.ค 2568', avatar:'🧑‍🌾', name:'ลุงสมศักดิ์', note:'ย้ายต้นกล้าลงแปลงหลักแล้วครับ 1,890 ต้นจาก 2,000 — ต้นกล้าสมบูรณ์ดีมาก'},
-  {week:1, date:'7 มี.ค 2568', avatar:'🧑‍🌾', name:'ลุงสมศักดิ์', note:'เริ่มเพาะเมล็ดวันนี้ครับ พันธุ์ Heirloom นำเข้าจากอิตาลี เมล็ดคุณภาพสูง'},
+  {week:3, date:'21 มี.ค 2568', avatar:'agriculture', name:'ลุงสมศักดิ์', note:'อัปเดตสัปดาห์ 3: ต้นโตแข็งแรงมากครับ ไม่พบโรคหรือแมลง ใส่ปุ๋ยอินทรีย์รอบแรก คาดว่าจะเก็บได้ตามกำหนดครับ'},
+  {week:2, date:'14 มี.ค 2568', avatar:'agriculture', name:'ลุงสมศักดิ์', note:'ย้ายต้นกล้าลงแปลงหลักแล้วครับ 1,890 ต้นจาก 2,000 — ต้นกล้าสมบูรณ์ดีมาก'},
+  {week:1, date:'7 มี.ค 2568', avatar:'agriculture', name:'ลุงสมศักดิ์', note:'เริ่มเพาะเมล็ดวันนี้ครับ พันธุ์ Heirloom นำเข้าจากอิตาลี เมล็ดคุณภาพสูง'},
 ];
 
 var activeWeek = 3;
@@ -299,7 +299,7 @@ function renderTimeline() {
     row.innerHTML = `
       <div class="flex flex-col items-center">
         <div class="timeline-dot ${m.status}">
-          <span class="${m.status==='done'||m.status==='active' ? 'text-white' : 'text-gray-400'} text-base">${m.icon}</span>
+          <span class="material-symbols-outlined ${m.status==='done'||m.status==='active' ? 'text-white' : 'text-gray-400'} text-base">${m.icon}</span>
         </div>
         ${!isLast ? '<div class="timeline-line '+(i<2?'done':'pending')+'"></div>' : ''}
       </div>
@@ -307,9 +307,9 @@ function renderTimeline() {
         <div class="bg-white rounded-2xl p-4 shadow-sm ${m.status==='active'?'border-2 border-secondary':''} slide-in">
           <div class="flex items-start justify-between mb-1">
             <h3 class="font-bold text-sm ${m.status==='active'?'text-secondary':m.status==='done'?'text-gray-900':'text-gray-400'}">${m.title}</h3>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${m.status==='done'?'bg-green-100 text-success':m.status==='active'?'bg-yellow-100 text-secondary':'bg-gray-100 text-gray-400'}">${m.status==='done'?'✅ เสร็จ':m.status==='active'?'⏳ กำลัง':'⏰ รอ'}</span>
+            <span class="text-[10px] flex items-center gap-1 font-bold px-2 py-0.5 rounded-full ${m.status==='done'?'bg-green-100 text-success':m.status==='active'?'bg-yellow-100 text-secondary':'bg-gray-100 text-gray-400'}">${m.status==='done'?'<span class="material-symbols-outlined text-[12px]">check_circle</span> เสร็จ':m.status==='active'?'<span class="material-symbols-outlined text-[12px]">hourglass_empty</span> กำลัง':'<span class="material-symbols-outlined text-[12px]">schedule</span> รอ'}</span>
           </div>
-          <p class="text-xs text-gray-500 mb-2">📅 ${m.date}</p>
+          <p class="text-xs text-gray-500 mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_month</span> ${m.date}</p>
           ${m.status!=='pending' ? '<p class="text-xs text-gray-600">'+m.desc+'</p>' : '<p class="text-xs text-gray-400 italic">'+m.desc+'</p>'}
           ${m.status==='active' ? '<div class="mt-2 flex items-center gap-1.5 text-xs text-secondary font-semibold"><div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>กำลังดำเนินการ</div>' : ''}
         </div>
@@ -372,7 +372,7 @@ function renderFarmerNotes() {
     div.className = 'bg-white rounded-2xl p-4 shadow-sm slide-in';
     div.innerHTML = `
       <div class="flex items-center gap-3 mb-2">
-        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xl">${n.avatar}</div>
+        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xl text-primary"><span class="material-symbols-outlined">${n.avatar}</span></div>
         <div>
           <p class="font-bold text-sm">${n.name}</p>
           <p class="text-xs text-gray-400">สัปดาห์ ${n.week} • ${n.date}</p>

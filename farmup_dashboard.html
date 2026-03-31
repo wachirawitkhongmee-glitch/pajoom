@@ -11,22 +11,36 @@
 </head>
 <body>
 <div class="relative"><div class="h-36 bg-gradient-to-br from-primary to-primary-dark"></div>
-<div class="absolute top-4 right-4"><button onclick="doLogout()" class="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur">ออกจากระบบ</button></div>
-<div class="px-4 -mt-12">
-  <div class="flex items-end gap-3 mb-4">
-    <div class="w-20 h-20 rounded-2xl bg-white shadow-xl flex items-center justify-center text-4xl border-4 border-white" id="profile-avatar">🙋</div>
-    <div class="mb-2">
-      <h1 class="font-headline font-black text-xl" id="profile-name">Loading...</h1>
-      <p class="text-sm text-gray-500" id="profile-role">ผู้บริโภค</p>
+<div class="absolute top-4 right-4"><button onclick="doLogout()" class="bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full backdrop-blur flex items-center gap-1.5 hover:bg-white/30 transition-all">
+  <span class="material-symbols-outlined text-sm">logout</span> ออกจากระบบ
+</button></div>
+<div class="px-4 -mt-14">
+  <div class="flex items-end gap-4 mb-4">
+    <div class="relative group">
+      <div class="w-24 h-24 rounded-2xl bg-white shadow-xl flex items-center justify-center text-4xl border-4 border-white overflow-hidden" id="profile-avatar-container">
+        <span id="profile-avatar" class="material-symbols-outlined text-primary text-4xl">person</span>
+      </div>
+      <label class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center cursor-pointer shadow-lg hover:bg-primary-light transition-all">
+        <span class="material-symbols-outlined text-sm">photo_camera</span>
+        <input type="file" id="photo-upload" class="hidden" accept="image/*" onchange="handlePhotoUpload(event)"/>
+      </label>
     </div>
-    <button onclick="window.location.href='farmup_farmer.html'" class="ml-auto mb-2 px-3 py-2 rounded-xl border-2 border-primary text-primary text-sm font-bold hover:bg-primary hover:text-white transition-all">🧑‍🌾 เกษตรกร</button>
+    <div class="mb-2 flex-1">
+      <h1 class="font-headline font-black text-xl text-white" id="profile-name">Loading...</h1>
+      <p class="text-sm text-white/70 flex items-center gap-1" id="profile-role">
+        <span class="material-symbols-outlined text-sm">person</span> ผู้บริโภค
+      </p>
+      <p class="text-xs text-white/50 mt-0.5" id="profile-email"></p>
+    </div>
   </div>
 </div></div>
 
 <main class="px-4 pb-32 max-w-2xl mx-auto">
   <!-- Impact -->
   <section class="mb-5">
-    <h2 class="font-headline font-black text-lg mb-3">🌍 Impact ของฉัน</h2>
+    <h2 class="font-headline font-black text-lg mb-3 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-primary">public</span> Impact ของฉัน
+    </h2>
     <div class="grid grid-cols-3 gap-3">
       <div class="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-4 text-white text-center shadow-lg"><p class="text-2xl font-headline font-black" id="waste-saved">0</p><p class="text-[10px] text-white/70 uppercase font-bold mt-1">กก ไม่เสียเปล่า</p></div>
       <div class="bg-gradient-to-br from-secondary to-orange-400 rounded-2xl p-4 text-white text-center shadow-lg"><p class="text-2xl font-headline font-black" id="co2-saved">0</p><p class="text-[10px] text-white/70 uppercase font-bold mt-1">กก CO₂ ลด</p></div>
@@ -36,19 +50,35 @@
 
   <!-- Badges -->
   <section class="mb-5">
-    <h2 class="font-headline font-black text-lg mb-3">🏅 Badges</h2>
+    <h2 class="font-headline font-black text-lg mb-3 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">military_tech</span> Badges
+    </h2>
     <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-3 overflow-x-auto">
-      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('🥇 First Order!')"><div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center text-2xl mb-1">🥇</div><p class="text-[9px] text-gray-500 font-bold">First Order</p></div>
-      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('🌱 Green Starter!')"><div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-2xl mb-1">🌱</div><p class="text-[9px] text-gray-500 font-bold">Green Starter</p></div>
-      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('🌿 Organic Lover!')"><div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-2xl mb-1">🌿</div><p class="text-[9px] text-gray-500 font-bold">Organic Lover</p></div>
-      <div class="flex-shrink-0 text-center cursor-pointer opacity-30" onclick="showToast('🔒 จอง 50 ครั้งเพื่อปลดล็อก Earth Champion')"><div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-2xl mb-1">🔒</div><p class="text-[9px] text-gray-500 font-bold">Earth Champion</p></div>
+      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('First Order — คุณได้รับตรานี้แล้ว!')">
+        <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-yellow-500 text-2xl" style="font-variation-settings:'FILL' 1;">emoji_events</span></div>
+        <p class="text-[9px] text-gray-500 font-bold">First Order</p>
+      </div>
+      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('Green Starter — คุณได้รับตรานี้แล้ว!')">
+        <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-success text-2xl" style="font-variation-settings:'FILL' 1;">eco</span></div>
+        <p class="text-[9px] text-gray-500 font-bold">Green Starter</p>
+      </div>
+      <div class="flex-shrink-0 text-center cursor-pointer" onclick="showToast('Organic Lover — คุณได้รับตรานี้แล้ว!')">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-emerald-500 text-2xl" style="font-variation-settings:'FILL' 1;">spa</span></div>
+        <p class="text-[9px] text-gray-500 font-bold">Organic Lover</p>
+      </div>
+      <div class="flex-shrink-0 text-center cursor-pointer opacity-30" onclick="showToast('จอง 50 ครั้งเพื่อปลดล็อก Earth Champion')">
+        <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-gray-400 text-2xl">lock</span></div>
+        <p class="text-[9px] text-gray-500 font-bold">Earth Champion</p>
+      </div>
     </div>
   </section>
 
   <!-- Orders -->
   <section class="mb-5">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="font-headline font-black text-lg">📦 ออเดอร์ของฉัน</h2>
+      <h2 class="font-headline font-black text-lg flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary">inventory_2</span> ออเดอร์ของฉัน
+      </h2>
       <button onclick="window.location.href='farmup_explore.html'" class="text-primary text-sm font-bold">+ จองเพิ่ม</button>
     </div>
     <div id="order-list"><div class="text-center py-8 text-gray-400"><span class="material-symbols-outlined text-4xl block mb-2">shopping_bag</span><p class="text-sm">ยังไม่มีออเดอร์</p><button onclick="window.location.href='farmup_explore.html'" class="mt-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold">จองเลย →</button></div></div>
@@ -56,17 +86,21 @@
 
   <!-- Contract Stub -->
   <section class="mb-5">
-    <h2 class="font-headline font-black text-lg mb-3">📜 สัญญาดิจิทัล</h2>
+    <h2 class="font-headline font-black text-lg mb-3 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-primary">description</span> สัญญาดิจิทัล
+    </h2>
     <div id="contract-list"><div class="bg-white rounded-2xl p-4 shadow-sm text-center text-gray-400 text-sm">ยังไม่มีสัญญา — จองเพื่อสร้างสัญญา</div></div>
   </section>
 
   <!-- Secondary Market -->
   <section>
-    <h2 class="font-headline font-black text-lg mb-3">🛍️ Secondary Market</h2>
+    <h2 class="font-headline font-black text-lg mb-3 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-purple-600">storefront</span> Secondary Market
+    </h2>
     <div class="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-4">
       <p class="font-bold text-sm mb-1">ขายสิทธิ์ล็อตต่อ</p>
       <p class="text-xs text-gray-500 mb-3">โอนสิทธิ์การจองให้ผู้อื่นได้ด้วยราคาตลาด</p>
-      <button onclick="showToast('🔄 Secondary Market — เปิดใช้งานได้หลังจองครบ 3 ออเดอร์')" class="w-full py-2.5 rounded-xl bg-purple-600 text-white text-sm font-bold">ดูตลาดขายสิทธิ์ →</button>
+      <button onclick="window.location.href='farmup_secondary.html'" class="w-full py-2.5 rounded-xl bg-purple-600 text-white text-sm font-bold shadow-sm hover:bg-purple-700 transition-all flex items-center justify-center gap-1">ดูตลาดขายสิทธิ์ <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
     </div>
   </section>
 </main>
@@ -74,9 +108,25 @@
 <!-- Contract Modal -->
 <div id="contract-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end" onclick="if(event.target===this)this.classList.add('hidden')">
   <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 shadow-2xl">
-    <h3 class="font-headline font-black text-xl mb-4">📜 สัญญา Pre-order</h3>
+    <h3 class="font-headline font-black text-xl mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">description</span> สัญญา Pre-order</h3>
     <div id="contract-detail" class="text-sm text-gray-700 space-y-3 mb-4"></div>
     <button onclick="document.getElementById('contract-modal').classList.add('hidden')" class="w-full py-3 bg-surface rounded-2xl font-bold text-gray-600">ปิด</button>
+  </div>
+</div>
+
+<!-- Sell Modal -->
+<div id="sell-modal" class="hidden fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+    <h3 class="font-headline font-black text-lg mb-2 text-purple-700 flex items-center gap-1"><span class="material-symbols-outlined">storefront</span> ตั้งราคาขายสิทธิ์</h3>
+    <p class="text-xs text-gray-500 mb-4" id="sm-order-info"></p>
+    <div class="mb-5 relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-500">฿</span>
+      <input type="number" id="sm-price" class="w-full pl-8 pr-4 py-3 bg-surface border-2 border-purple-100 focus:border-purple-500 rounded-xl font-headline font-bold text-lg outline-none transition-all" placeholder="ระบุราคาที่ต้องการขาย" />
+    </div>
+    <div class="flex gap-2">
+      <button onclick="document.getElementById('sell-modal').classList.add('hidden')" class="flex-1 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 text-sm">ยกเลิก</button>
+      <button onclick="confirmSell()" class="flex-1 py-3 rounded-xl bg-purple-600 text-white font-bold text-sm shadow hover:bg-purple-700 transition-all">ประกาศขาย</button>
+    </div>
   </div>
 </div>
 
@@ -88,67 +138,152 @@
   <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
   <a href="farmup_dashboard.html" class="nav-item active flex-1"><span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
 </nav>
-<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-2xl shadow-xl z-[200] font-bold text-sm flex items-center gap-2"></div>
+
+<!-- UI Functions (always works) -->
 <script>
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
-function doLogout(){localStorage.removeItem('farmup_user');window.location.href='farmup_index.html';}
-function animCount(id,n){var el=document.getElementById(id);var i=0;var step=Math.ceil(n/25);var timer=setInterval(function(){i+=step;if(i>=n){i=n;clearInterval(timer);}el.textContent=i;},40);}
+var currentUser = null;
+var _fbLogoutUser = null;
+var _fbUpdateProfile = null;
+var _fbUploadImage = null;
+
+function showToast(msg){var t=document.getElementById('toast');t.innerHTML='<span class="material-symbols-outlined text-lg">check_circle</span> '+msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
+
+function doLogout(){
+  if (_fbLogoutUser) {
+    _fbLogoutUser().then(function() {
+      window.location.href='index.html';
+    }).catch(function() {
+      localStorage.removeItem('farmup_user');
+      localStorage.removeItem('farmup_token');
+      window.location.href='index.html';
+    });
+  } else {
+    localStorage.removeItem('farmup_user');
+    localStorage.removeItem('farmup_token');
+    window.location.href='index.html';
+  }
+}
+
+function animCount(id,n){
+  var el=document.getElementById(id);
+  if(!el) return;
+  var i=0;var step=Math.ceil(n/25) || 1;
+  var timer=setInterval(function(){i+=step;if(i>=n){i=n;clearInterval(timer);}el.textContent=i;},40);
+}
+
+function handlePhotoUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 500000) {
+    showToast('ไฟล์ใหญ่เกินไป (สูงสุด 500KB)');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    document.getElementById('profile-avatar-container').innerHTML = '<img src="' + dataUrl + '" class="w-full h-full object-cover" />';
+    
+    if (_fbUploadImage && _fbUpdateProfile && currentUser && currentUser.uid) {
+      showToast('กำลังอัปโหลดรูปภาพ...');
+      _fbUploadImage(currentUser.uid, dataUrl).then(function(dlUrl) {
+        return _fbUpdateProfile(currentUser.uid, { photoURL: dlUrl }).then(function() {
+          var u = JSON.parse(localStorage.getItem('farmup_user') || '{}');
+          u.photoURL = dlUrl;
+          localStorage.setItem('farmup_user', JSON.stringify(u));
+          showToast('อัปเดตรูปโปรไฟล์สำเร็จ');
+        });
+      }).catch(function(err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการบันทึกรูป');
+      });
+    } else {
+      var u = JSON.parse(localStorage.getItem('farmup_user') || '{}');
+      u.photoURL = dataUrl;
+      localStorage.setItem('farmup_user', JSON.stringify(u));
+      showToast('อัปเดตรูปโปรไฟล์สำเร็จ (Offline)');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+var localObjOrders = [];
 function renderOrders(orders){
+  localObjOrders = orders;
   var list=document.getElementById('order-list');var cList=document.getElementById('contract-list');
   if(!orders||orders.length===0)return;
   list.innerHTML='';cList.innerHTML='';
   orders.forEach(function(o,idx){
+    var statusTag = o.isSelling ? '<span class="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">sell</span> ประกาศขาย</span>' : '<span class="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">eco</span> กำลังปลูก</span>';
     var div=document.createElement('div');
     div.className='bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all mb-3';
-    div.innerHTML='<div class="flex justify-between items-center"><div><p class="font-bold text-sm">'+((o.name||'ออเดอร์ #'+(idx+1)).substring(0,30))+'</p><p class="text-xs text-gray-400 mt-0.5">📅 '+o.date+' • '+(o.qty||1)+' กก</p></div><div class="text-right"><span class="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">กำลังปลูก 🌱</span><p class="font-headline font-black text-primary mt-1">฿'+(o.total||0).toLocaleString()+'</p></div></div>';
+    div.innerHTML='<div class="flex justify-between items-center"><div><p class="font-bold text-sm">'+((o.name||'ออเดอร์ #'+(idx+1)).substring(0,30))+'</p><p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> '+o.date+' · '+(o.qty||1)+' กก</p></div><div class="text-right">'+statusTag+'<p class="font-headline font-black text-primary mt-1">฿'+(o.total||0).toLocaleString()+'</p></div></div>';
     div.onclick=function(){
-      document.getElementById('contract-detail').innerHTML='<div class="bg-surface rounded-xl p-3 space-y-2 text-xs"><div class="flex justify-between"><span class="text-gray-400">สินค้า</span><span class="font-bold">'+o.name+'</span></div><div class="flex justify-between"><span class="text-gray-400">จำนวน</span><span class="font-bold">'+(o.qty||1)+' กก</span></div><div class="flex justify-between"><span class="text-gray-400">ราคารวม</span><span class="font-bold text-primary">฿'+(o.total||0).toLocaleString()+'</span></div><div class="flex justify-between"><span class="text-gray-400">วันรับสินค้า</span><span class="font-bold">'+o.date+'</span></div></div><div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs"><p class="font-bold text-success mb-1">🛡️ Risk Sharing</p><p>เสียหาย >50% → คืน 70%</p><p>เสียหาย 20-50% → คืน 30%</p></div>';
+      var sellBtn = o.isSelling ? '' : '<button onclick="openSellModal('+idx+')" class="mt-3 w-full py-2.5 rounded-xl border-2 border-purple-600 text-purple-600 font-bold text-sm bg-purple-50 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center gap-1"><span class="material-symbols-outlined text-lg">storefront</span> นำไปขายต่อ (Secondary Market)</button>';
+      document.getElementById('contract-detail').innerHTML='<div class="bg-surface rounded-xl p-3 space-y-2 text-xs"><div class="flex justify-between"><span class="text-gray-400">สินค้า</span><span class="font-bold">'+o.name+'</span></div><div class="flex justify-between"><span class="text-gray-400">จำนวน</span><span class="font-bold">'+(o.qty||1)+' กก</span></div><div class="flex justify-between"><span class="text-gray-400">ราคารวม</span><span class="font-bold text-primary">฿'+(o.total||0).toLocaleString()+'</span></div><div class="flex justify-between"><span class="text-gray-400">วันรับสินค้า</span><span class="font-bold">'+o.date+'</span></div></div><div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs"><p class="font-bold text-success mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">shield</span> Risk Sharing</p><p>เสียหาย >50% → คืน 70%</p><p>เสียหาย 20-50% → คืน 30%</p></div>' + sellBtn;
       document.getElementById('contract-modal').classList.remove('hidden');
     };
     list.appendChild(div);
     var cdiv=document.createElement('div');
     cdiv.className='bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all mb-2 flex items-center gap-3';
-    cdiv.innerHTML='<span class="material-symbols-outlined text-primary">description</span><div class="flex-1"><p class="font-bold text-sm">สัญญา #'+String(idx+1).padStart(3,'0')+'</p><p class="text-xs text-gray-400">'+o.name+' • ฿'+(o.total||0).toLocaleString()+'</p></div><span class="material-symbols-outlined text-gray-400">arrow_forward_ios</span>';
+    cdiv.innerHTML='<span class="material-symbols-outlined text-primary">description</span><div class="flex-1"><p class="font-bold text-sm">สัญญา #'+String(idx+1).padStart(3,'0')+'</p><p class="text-xs text-gray-400">'+o.name+' · ฿'+(o.total||0).toLocaleString()+'</p></div><span class="material-symbols-outlined text-gray-400">arrow_forward_ios</span>';
     cdiv.onclick=div.onclick;
     cList.appendChild(cdiv);
   });
 }
-document.addEventListener('DOMContentLoaded',function(){
-  var user = JSON.parse(localStorage.getItem('farmup_user')||'{"name":"คุณ","role":"consumer","avatar":"🙋"}');
-  document.getElementById('profile-name').textContent = user.name;
-  document.getElementById('profile-role').textContent = user.role === 'farmer' ? '🧑‍🌾 เกษตรกร' : '🛒 ผู้บริโภค';
-  document.getElementById('profile-avatar').textContent = user.avatar || '🙋';
+
+var sellOrderIndex = -1;
+function openSellModal(idx) {
+  document.getElementById('contract-modal').classList.add('hidden');
+  sellOrderIndex = idx;
+  var o = localObjOrders[idx];
+  document.getElementById('sm-order-info').textContent = 'สินค้า: ' + o.name + ' (' + (o.qty||1) + ' กก)';
+  document.getElementById('sm-price').value = (o.total || 0);
+  document.getElementById('sell-modal').classList.remove('hidden');
+}
+
+function confirmSell() {
+  var price = parseInt(document.getElementById('sm-price').value) || 0;
+  if(price <= 0) { showToast('กรุณาระบุราคา'); return; }
+  var o = localObjOrders[sellOrderIndex];
   
-  var token = localStorage.getItem('farmup_token');
-  if (token) {
-    fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + token } })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.error) {
-          setTimeout(function(){
-            animCount('waste-saved', Math.round(data.length * 8.5));
-            animCount('co2-saved', Math.round(data.length * 3.2));
-            animCount('orders-total', data.length);
-          }, 300);
-          
-          // Map backend orders to frontend format
-          const mappedOrders = data.map(o => ({
-            id: o.id,
-            name: o.name,
-            qty: o.qty,
-            total: o.total_price,
-            date: o.harvest_date
-          }));
-          renderOrders(mappedOrders);
-        } else {
-          loadLocalOrders();
-        }
-      })
-      .catch(err => loadLocalOrders());
-  } else {
-    loadLocalOrders();
+  var resale = JSON.parse(localStorage.getItem('farmup_resale') || '[]');
+  resale.push({
+    farmerName: currentUser.name || 'คุณ (นักลงทุน)',
+    cropName: o.name,
+    qty: (o.qty||1),
+    date: o.date,
+    originalPrice: o.total,
+    askPrice: price,
+    isLocal: true,
+    timestamp: Date.now()
+  });
+  localStorage.setItem('farmup_resale', JSON.stringify(resale));
+  
+  var allOrders = JSON.parse(localStorage.getItem('farmup_orders') || '[]');
+  if(allOrders[sellOrderIndex]) {
+    allOrders[sellOrderIndex].isSelling = true;
+    localStorage.setItem('farmup_orders', JSON.stringify(allOrders));
   }
-});
+  
+  document.getElementById('sell-modal').classList.add('hidden');
+  showToast('ประกาศขายสำเร็จ!');
+  loadLocalOrders();
+}
+
+function updateProfileUI(user) {
+  document.getElementById('profile-name').textContent = user.name || 'ผู้ใช้';
+  var roleText = user.role === 'farmer' ? 'เกษตรกร' : 'ผู้บริโภค';
+  var roleIcon = user.role === 'farmer' ? 'agriculture' : 'person';
+  document.getElementById('profile-role').innerHTML = '<span class="material-symbols-outlined text-sm">' + roleIcon + '</span> ' + roleText;
+  document.getElementById('profile-email').textContent = user.email || '';
+  if (user.photoURL) {
+    document.getElementById('profile-avatar-container').innerHTML = '<img src="' + user.photoURL + '" class="w-full h-full object-cover" />';
+  } else if (user.name) {
+    document.getElementById('profile-avatar').textContent = user.name.charAt(0);
+    document.getElementById('profile-avatar').className = 'text-primary text-4xl font-headline font-black';
+  }
+}
 
 function loadLocalOrders() {
   var orders = JSON.parse(localStorage.getItem('farmup_orders')||'[]');
@@ -159,5 +294,49 @@ function loadLocalOrders() {
   }, 300);
   renderOrders(orders);
 }
+
+document.addEventListener('DOMContentLoaded', function(){
+  var user = JSON.parse(localStorage.getItem('farmup_user')||'{}');
+  currentUser = user;
+  updateProfileUI(user);
+  loadLocalOrders();
+});
+</script>
+
+<!-- Firebase Enhancement -->
+<script type="module">
+import { onAuthChange, logoutUser, getUserProfile, updateUserProfile, getUserOrders, storage, ref, uploadString, getDownloadURL } from './firebase-config.js';
+_fbLogoutUser = logoutUser;
+_fbUpdateProfile = updateUserProfile;
+_fbUploadImage = async function(uid, dataUrl) {
+  const imageRef = ref(storage, 'profiles/' + uid + '_' + Date.now() + '.jpg');
+  await uploadString(imageRef, dataUrl, 'data_url');
+  return await getDownloadURL(imageRef);
+};
+
+onAuthChange(function(user) {
+  if (user) {
+    getUserProfile(user.uid).then(function(profile) {
+      if (profile) {
+        currentUser = { uid: user.uid, name: profile.name, email: profile.email, role: profile.role, photoURL: profile.photoURL || '' };
+        localStorage.setItem('farmup_user', JSON.stringify(currentUser));
+        updateProfileUI(currentUser);
+        
+        getUserOrders(user.uid).then(function(orders) {
+          if (orders.length > 0) {
+            setTimeout(function(){
+              animCount('waste-saved', Math.round(orders.length * 8.5));
+              animCount('co2-saved', Math.round(orders.length * 3.2));
+              animCount('orders-total', orders.length);
+            }, 300);
+            renderOrders(orders);
+          } else {
+            loadLocalOrders();
+          }
+        });
+      }
+    }).catch(function(e) { loadLocalOrders(); });
+  }
+});
 </script>
 </body></html>

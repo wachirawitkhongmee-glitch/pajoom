@@ -8,40 +8,79 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',warning:'#f59e0b',success:'#16a34a'}}}}</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<style>*{box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#f5f0e8;}.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);}.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}.nav-item:hover,.nav-item.active{color:#1a6b2e;}.chip{padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;white-space:nowrap;}.chip.active{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}.open-badge{background:#dcfce7;color:#16a34a;}.closed-badge{background:#fee2e2;color:#dc2626;}</style>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f0e8;}
+.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);}
+.nav-item{display:flex;flex-direction:column;align-items:center;padding:8px;cursor:pointer;text-decoration:none;color:#6b7280;transition:color 0.2s;}
+.nav-item:hover,.nav-item.active{color:#1a6b2e;}
+.chip{padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;white-space:nowrap;}
+.chip.active{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}
+.open-badge{background:#dcfce7;color:#16a34a;}
+.closed-badge{background:#fee2e2;color:#dc2626;}
+/* Map Improvements */
+#map{z-index:0;border-radius:20px;}
+.leaflet-control-zoom{border-radius:12px !important;overflow:hidden;border:none !important;box-shadow:0 4px 16px rgba(0,0,0,0.15) !important;}
+.leaflet-control-zoom a{width:36px !important;height:36px !important;line-height:36px !important;font-size:18px !important;color:#1a6b2e !important;border:none !important;}
+.leaflet-control-zoom a:hover{background:#f0f9f2 !important;}
+.map-legend{position:absolute;bottom:16px;left:16px;background:white;border-radius:12px;padding:10px 14px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:400;pointer-events:none;}
+</style>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <header class="sticky top-0 z-40 glass px-4 py-3 shadow-sm">
   <div class="flex items-center justify-between mb-3">
-    <div><h1 class="font-headline font-black text-xl text-primary">🏪 ตลาดนัดสด</h1><p class="text-xs text-gray-500">Smart Market • อัปเดตแบบ Real-time</p></div>
+    <div>
+      <h1 class="font-headline font-black text-xl text-primary flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">storefront</span> ตลาดนัดสด
+      </h1>
+      <p class="text-xs text-gray-500">Smart Market · อัปเดตแบบ Real-time</p>
+    </div>
     <button onclick="window.location.href='farmup_dashboard.html'" class="relative p-2 rounded-xl bg-white shadow-sm"><span class="material-symbols-outlined text-gray-500">notifications</span><span class="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] font-bold rounded-full flex items-center justify-center">2</span></button>
   </div>
   <div class="relative mb-2"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span><input id="market-search" type="text" placeholder="ค้นหาตลาด, แผงขาย..." class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-2xl text-sm bg-white focus:outline-none focus:border-primary transition-all" oninput="renderMarkets()"/></div>
   <div class="flex gap-2 overflow-x-auto scrollbar-hide">
-    <button class="chip active" onclick="setMarketFilter(this,'all')">📍 ทั้งหมด</button>
-    <button class="chip" onclick="setMarketFilter(this,'open')">🟢 เปิดอยู่</button>
-    <button class="chip" onclick="setMarketFilter(this,'near')">📡 ใกล้ฉัน</button>
-    <button class="chip" onclick="setMarketFilter(this,'flash')">⚡ Flash Sale</button>
-    <button class="chip" onclick="setMarketFilter(this,'organic')">🌿 ออร์แกนิก</button>
+    <button class="chip active" onclick="setMarketFilter(this,'all')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">place</span> ทั้งหมด</span></button>
+    <button class="chip" onclick="setMarketFilter(this,'open')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> เปิดอยู่</span></button>
+    <button class="chip" onclick="setMarketFilter(this,'near')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">near_me</span> ใกล้ฉัน</span></button>
+    <button class="chip" onclick="setMarketFilter(this,'flash')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">bolt</span> Flash Sale</span></button>
+    <button class="chip" onclick="setMarketFilter(this,'organic')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">spa</span> ออร์แกนิก</span></button>
   </div>
 </header>
 
 <main class="pb-32 max-w-2xl mx-auto">
-  <!-- Live Map -->
-  <div class="relative mx-4 mt-4 h-64 rounded-3xl overflow-hidden shadow-lg border-2 border-white z-0">
-    <!-- Leaflet Map Container -->
-    <div id="map" class="w-full h-full z-0"></div>
+  <!-- Live Map - Improved -->
+  <div class="relative mx-4 mt-4 rounded-3xl overflow-hidden shadow-lg border-2 border-white z-0">
+    <div id="map" class="w-full z-0" style="height:280px;"></div>
     
-    <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow border border-gray-100 flex items-center gap-2 pointer-events-none z-[400]">
-      <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary text-sm text-lg">map</span>
+    <div class="absolute top-3 left-3 bg-white/95 backdrop-filter backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-gray-100 flex items-center gap-3 pointer-events-none z-[400]">
+      <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-lg">map</span>
       </div>
       <div>
         <p class="font-headline font-bold text-primary text-sm leading-tight">แผนที่ตลาดเกษตรกร</p>
         <p id="map-status" class="text-[10px] text-gray-500 font-semibold">กำลังค้นหาตำแหน่งของคุณ...</p>
       </div>
     </div>
+
+    <!-- Map Legend -->
+    <div class="map-legend">
+      <div class="flex items-center gap-4 text-[10px] text-gray-600">
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded-full bg-primary border-2 border-white shadow"></div>
+          <span class="font-semibold">ตำแหน่งคุณ</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1;">storefront</span>
+          <span class="font-semibold">ตลาด</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recenter button -->
+    <button id="btn-recenter" onclick="recenterMap()" class="absolute bottom-4 right-4 bg-white text-primary p-2.5 rounded-xl shadow-lg z-[400] hover:bg-primary hover:text-white transition-all">
+      <span class="material-symbols-outlined text-lg">my_location</span>
+    </button>
 
     <!-- Fallback btn -->
     <button id="btn-manual-loc" onclick="enableManualLocation()" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg z-[400] flex items-center gap-1">
@@ -53,22 +92,30 @@
   <section class="px-4 mt-5">
     <div class="bg-gradient-to-r from-danger to-orange-500 rounded-3xl p-4 text-white">
       <div class="flex justify-between items-start mb-2">
-        <div><p class="font-headline font-black text-xl">⚡ Flash Sale</p><p class="text-white/70 text-xs">ราคาลดก่อนปิดตลาด</p></div>
+        <div>
+          <p class="font-headline font-black text-xl flex items-center gap-1.5">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">bolt</span> Flash Sale
+          </p>
+          <p class="text-white/70 text-xs">ราคาลดก่อนปิดตลาด</p>
+        </div>
         <div class="text-right"><p class="text-white/70 text-[10px] font-bold uppercase">ปิดใน</p><p class="font-headline font-black text-2xl" id="flash-timer">01:24:05</p></div>
       </div>
       <div class="flex gap-3 overflow-x-auto pb-1">
         <div class="flex-shrink-0 bg-white/15 rounded-2xl p-3 backdrop-blur cursor-pointer hover:bg-white/25 transition-all active:scale-95" onclick="addToCart('มะเขือเทศผสม','฿25/กก')">
-          <p class="text-lg mb-1">🍅</p><p class="font-bold text-sm">มะเขือเทศผสม</p>
+          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-white text-lg">nutrition</span></div>
+          <p class="font-bold text-sm">มะเขือเทศผสม</p>
           <div class="flex items-center gap-1 mt-1"><p class="text-white line-through text-xs opacity-60">฿42</p><p class="font-headline font-black">฿25</p></div>
           <p class="text-[10px] opacity-70 mt-0.5">เหลือ 8 กก</p>
         </div>
         <div class="flex-shrink-0 bg-white/15 rounded-2xl p-3 backdrop-blur cursor-pointer hover:bg-white/25 transition-all active:scale-95" onclick="addToCart('ผักบุ้งสด','฿8/กก')">
-          <p class="text-lg mb-1">🥬</p><p class="font-bold text-sm">ผักบุ้งสด</p>
+          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-white text-lg">grass</span></div>
+          <p class="font-bold text-sm">ผักบุ้งสด</p>
           <div class="flex items-center gap-1 mt-1"><p class="text-white line-through text-xs opacity-60">฿18</p><p class="font-headline font-black">฿8</p></div>
           <p class="text-[10px] opacity-70 mt-0.5">เหลือ 15 กก</p>
         </div>
         <div class="flex-shrink-0 bg-white/15 rounded-2xl p-3 backdrop-blur cursor-pointer hover:bg-white/25 transition-all active:scale-95" onclick="addToCart('กล้วยหอม','฿35/หวี')">
-          <p class="text-lg mb-1">🍌</p><p class="font-bold text-sm">กล้วยหอมทอง</p>
+          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center mb-1"><span class="material-symbols-outlined text-white text-lg">nutrition</span></div>
+          <p class="font-bold text-sm">กล้วยหอมทอง</p>
           <div class="flex items-center gap-1 mt-1"><p class="text-white line-through text-xs opacity-60">฿65</p><p class="font-headline font-black">฿35</p></div>
           <p class="text-[10px] opacity-70 mt-0.5">เหลือ 5 หวี</p>
         </div>
@@ -79,7 +126,9 @@
   <!-- Market List -->
   <section class="px-4 mt-5">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="font-headline font-black text-lg">📍 ตลาดนัดใกล้ฉัน</h2>
+      <h2 class="font-headline font-black text-lg flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">place</span> ตลาดนัดใกล้ฉัน
+      </h2>
       <p id="market-count" class="text-xs text-gray-400"></p>
     </div>
     <div id="market-list" class="space-y-3"></div>
@@ -87,13 +136,15 @@
 
   <!-- Community Board -->
   <section class="px-4 mt-5">
-    <h2 class="font-headline font-black text-lg mb-3">📋 Community Board</h2>
+    <h2 class="font-headline font-black text-lg mb-3 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-primary">forum</span> Community Board
+    </h2>
     <div class="space-y-2">
       <div class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all">
-        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-primary text-white text-sm flex items-center justify-center font-bold">ส</div><div><p class="text-sm font-semibold">สมหมาย: "มะม่วงนครสวรรค์รสหวานมากวันนี้ อยู่แผง 3B"</p><p class="text-xs text-gray-400 mt-0.5">10 นาทีที่แล้ว • ❤️ 24 คนชอบ</p></div></div>
+        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-primary text-white text-sm flex items-center justify-center font-bold">ส</div><div><p class="text-sm font-semibold">สมหมาย: "มะม่วงนครสวรรค์รสหวานมากวันนี้ อยู่แผง 3B"</p><p class="text-xs text-gray-400 mt-0.5">10 นาทีที่แล้ว · 24 คนชอบ</p></div></div>
       </div>
       <div class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all">
-        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-secondary text-white text-sm flex items-center justify-center font-bold">ม</div><div><p class="text-sm font-semibold">มาลี: "ผักออร์แกนิกมาแล้ว! จำกัด 50 ถุง"</p><p class="text-xs text-gray-400 mt-0.5">1 ชั่วโมงที่แล้ว • 🛒 12 คนสนใจ</p></div></div>
+        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-secondary text-white text-sm flex items-center justify-center font-bold">ม</div><div><p class="text-sm font-semibold">มาลี: "ผักออร์แกนิกมาแล้ว! จำกัด 50 ถุง"</p><p class="text-xs text-gray-400 mt-0.5">1 ชั่วโมงที่แล้ว · 12 คนสนใจ</p></div></div>
       </div>
       <button onclick="window.location.href='farmup_community.html'" class="w-full py-3 bg-white rounded-2xl text-primary text-sm font-bold shadow-sm hover:shadow transition-all">ดูทั้งหมด →</button>
     </div>
@@ -104,20 +155,13 @@
 <nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-xl h-20 flex items-center px-2">
   <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
   <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
-  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
-    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl shadow-primary/40 flex items-center justify-center">
-      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span>
-    </div><span class="text-[10px] font-bold text-primary mt-1">จอง</span>
-  </a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-light to-primary shadow-xl shadow-primary/40 flex items-center justify-center"><span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">eco</span></div><span class="text-[10px] font-bold text-primary mt-1">จอง</span></a>
   <a href="farmup_market.html" class="nav-item active flex-1"><span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">storefront</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
   <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
 </nav>
-<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-2xl shadow-xl z-[200] font-bold text-sm flex items-center gap-2"></div>
 <script>
-// --- Data & Map Logic ---
-// Real world market coordinates from OpenStreetMap (Overpass API)
 var markets = [];
-
 var map;
 var userMarker;
 var marketMarkers = [];
@@ -125,9 +169,8 @@ var userLat = null;
 var userLng = null;
 var mFilter = 'all';
 
-// Haversine Distance (returns distance in km)
 function getDistanceKM(lat1, lon1, lat2, lon2) {
-  var R = 6371; // km
+  var R = 6371;
   var dLat = (lat2-lat1) * Math.PI / 180;
   var dLon = (lon2-lon1) * Math.PI / 180;
   var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
@@ -137,12 +180,15 @@ function getDistanceKM(lat1, lon1, lat2, lon2) {
 }
 
 function initMap() {
-  // Initialize map at center of Thailand
-  map = L.map('map').setView([13.7563, 100.5018], 5);
+  map = L.map('map', {
+    zoomControl: true,
+    attributionControl: false
+  }).setView([13.7563, 100.5018], 5);
   
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  // Use cleaner map tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
-    attribution: '© OpenStreetMap'
+    attribution: ''
   }).addTo(map);
 
   initLocation();
@@ -160,9 +206,9 @@ function initLocation() {
         if(cached) {
           var c = JSON.parse(cached);
           setUserLocation(c.lat, c.lng, false);
-          showToast('⚠️ ใช้ตำแหน่งเก่า กรุณาปักหมุดเองถ้าคุณย้ายที่');
+          showToast('ใช้ตำแหน่งเก่า — ปักหมุดเองหากย้ายที่');
         } else {
-          showToast('⚠️ ไม่สามารถดึงตำแหน่งได้ กรุณาแตะบนแผนที่');
+          showToast('ไม่สามารถดึงตำแหน่งได้ — กรุณาแตะบนแผนที่');
           enableManualLocation();
         }
       },
@@ -177,7 +223,7 @@ function initLocation() {
 var isManualMode = false;
 function enableManualLocation() {
   isManualMode = true;
-  document.getElementById('btn-manual-loc').classList.add('hidden');
+  document.getElementById('btn-manual-loc').classList.remove('hidden');
   document.getElementById('map-status').innerText = 'คลิกพื้นที่บนแผนที่เพื่อระบุตำแหน่ง';
   map.getContainer().style.cursor = 'crosshair';
   
@@ -187,7 +233,16 @@ function enableManualLocation() {
     isManualMode = false;
     map.getContainer().style.cursor = '';
     map.off('click');
+    document.getElementById('btn-manual-loc').classList.add('hidden');
   });
+}
+
+function recenterMap() {
+  if (userLat && userLng) {
+    map.flyTo([userLat, userLng], 13, { animate: true, duration: 1 });
+  } else {
+    initLocation();
+  }
 }
 
 function setUserLocation(lat, lng, save) {
@@ -195,60 +250,53 @@ function setUserLocation(lat, lng, save) {
   userLng = lng;
   if(save) localStorage.setItem('farmup_location', JSON.stringify({lat:lat, lng:lng}));
   
-  // Update UI and map center
   map.flyTo([lat, lng], 13, { animate: true, duration: 1.5 });
   
-  // Custom Icon for User
   var userIcon = L.divIcon({
     className: 'custom-div-icon',
-    html: `<div class="bg-primary border-4 border-white shadow-lg w-6 h-6 rounded-full relative z-[500]"><div class="absolute inset-0 rounded-full bg-primary/40 animate-ping"></div></div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
+    html: '<div style="width:20px;height:20px;background:#1a6b2e;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);position:relative;"><div style="position:absolute;inset:0;border-radius:50%;background:rgba(26,107,46,0.3);animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div></div><style>@keyframes ping{75%,100%{transform:scale(2);opacity:0;}}</style>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
 
   if (userMarker) {
     userMarker.setLatLng([lat, lng]);
   } else {
-    userMarker = L.marker([lat, lng], {icon: userIcon, zIndexOffset: 1000}).addTo(map).bindPopup('<b>📍 ฉันอยู่ตรงนี้</b>').openPopup();
+    userMarker = L.marker([lat, lng], {icon: userIcon, zIndexOffset: 1000}).addTo(map).bindPopup('<div style="font-family:Inter,sans-serif;padding:4px;"><b style="color:#1a6b2e;">ตำแหน่งของคุณ</b></div>');
   }
 
-  document.getElementById('map-status').innerText = 'พิกัดของคุณ (ดึงสำเร็จ)';
+  document.getElementById('map-status').innerText = 'พบตำแหน่งแล้ว · กำลังค้นหาตลาดใกล้เคียง';
+  document.getElementById('btn-manual-loc').classList.add('hidden');
   
-  // Trigger OSM Live Fetch
   fetchLiveMarkets(lat, lng);
 }
 
 function fetchLiveMarkets(lat, lng) {
   var list = document.getElementById('market-list');
-  list.innerHTML = `<div class="bg-white rounded-2xl p-6 shadow-sm text-center">
-    <div class="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-3"></div>
-    <p class="font-bold text-sm text-primary">กำลังสแกนตลาดของจริงรอบตัวคุณ...</p>
-    <p class="text-xs text-gray-400 mt-1">(ดึงฐานข้อมูลแผนที่โลก OpenStreetMap)</p>
-  </div>`;
+  list.innerHTML = '<div class="bg-white rounded-2xl p-6 shadow-sm text-center"><div class="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-3"></div><p class="font-bold text-sm text-primary">กำลังสแกนตลาดรอบตัวคุณ...</p><p class="text-xs text-gray-400 mt-1">ดึงจากฐานข้อมูล OpenStreetMap</p></div>';
   
-  // Query 7km radius for exact market places from actual map data
   var radiusMap = 7000;
-  var overpassQuery = `[out:json][timeout:15];(node["amenity"="marketplace"](around:${radiusMap},${lat},${lng});way["amenity"="marketplace"](around:${radiusMap},${lat},${lng});node["shop"="greengrocer"](around:${radiusMap},${lat},${lng});node["shop"="supermarket"](around:${radiusMap},${lat},${lng}););out center;`;
+  var overpassQuery = '[out:json][timeout:15];(node["amenity"="marketplace"](around:'+radiusMap+','+lat+','+lng+');way["amenity"="marketplace"](around:'+radiusMap+','+lat+','+lng+');node["shop"="greengrocer"](around:'+radiusMap+','+lat+','+lng+');node["shop"="supermarket"](around:'+radiusMap+','+lat+','+lng+'););out center;';
   
   fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(overpassQuery))
     .then(res => res.json())
     .then(data => {
       markets = [];
       data.elements.forEach(function(el) {
-        if(!el.tags || !el.tags.name) return; // Skip unnamed venues
+        if(!el.tags || !el.tags.name) return;
         var elLat = el.lat || (el.center && el.center.lat);
         var elLng = el.lon || (el.center && el.center.lon);
         if(!elLat || !elLng) return;
         
-        var m_open = Math.random() > 0.3; // Pseudo-open status
+        var m_open = Math.random() > 0.3;
         markets.push({
           id: el.id,
           name: el.tags.name,
-          addr: el.tags['addr:street'] || el.tags.brand || 'พิกัดสถานที่จริง',
+          addr: el.tags['addr:street'] || el.tags.brand || 'สถานที่จริง',
           lat: elLat,
           lng: elLng,
           open: m_open,
-          days: 'จ-อา (อ้างอิงของจริง)',
+          days: 'จ-อา',
           tags: ['organic', 'veg'],
           stalls: Math.floor(Math.random()*60)+10,
           checkedIn: Math.floor(Math.random()*30),
@@ -257,22 +305,23 @@ function fetchLiveMarkets(lat, lng) {
       });
       
       if(markets.length === 0) {
-        list.innerHTML = `<div class="text-center text-gray-400 py-6">❌ ไม่มีข้อมูลตลาดในแผนที่ OSM โซนที่คุณอยู่ (รัศมี 7 กม.)</div>`;
+        list.innerHTML = '<div class="text-center text-gray-400 py-6"><span class="material-symbols-outlined text-3xl block mb-2">location_off</span><p class="font-bold text-sm">ไม่มีข้อมูลตลาดใน OSM รัศมี 7 กม.</p></div>';
+        document.getElementById('map-status').innerText = 'ไม่พบตลาดใกล้เคียง';
         return;
       }
       
-      // Calculate distances for all fetched real markets and Sort
       markets.forEach(function(m) {
         m.distanceKm = getDistanceKM(userLat, userLng, m.lat, m.lng);
       });
       markets.sort(function(a, b) { return a.distanceKm - b.distanceKm; });
       
-      showToast('✅ ดึงตลาดสถานที่จริงสำเร็จ ' + markets.length + ' แห่ง', 'success');
+      document.getElementById('map-status').innerText = 'พบ ' + markets.length + ' ตลาดใกล้เคียง';
+      showToast('สแกนพบ ' + markets.length + ' ตลาดใกล้คุณ');
       drawMarketMarkers();
       renderMarkets();
     })
     .catch(err => {
-      list.innerHTML = `<div class="text-center text-danger py-6">⚠️ เกิดข้อผิดพลาดในการโหลด API แผนที่จริง</div>`;
+      list.innerHTML = '<div class="text-center text-danger py-6"><span class="material-symbols-outlined text-3xl block mb-2">error</span><p class="font-bold text-sm">เกิดข้อผิดพลาดในการโหลดข้อมูลแผนที่</p></div>';
     });
 }
 
@@ -280,39 +329,51 @@ function drawMarketMarkers() {
   marketMarkers.forEach(m => map.removeLayer(m));
   marketMarkers = [];
   
+  // Fit bounds to show all markers
+  var bounds = L.latLngBounds([[userLat, userLng]]);
+  
   markets.forEach(function(m) {
-    var iconHtml = `<div class="bg-white border text-primary border-primary shadow text-center rounded-lg px-2 py-0.5 text-xs font-bold w-max" style="transform:translate(-50%,-100%); margin-top:-8px;">` +
-                   (m.hasFlash ? '⚡ ' : '') + m.name + `</div>`;
-    var icon = L.divIcon({ className: '', html: iconHtml });
+    bounds.extend([m.lat, m.lng]);
     
-    var marker = L.marker([m.lat, m.lng], {icon: icon}).addTo(map);
+    var markerIcon = L.divIcon({
+      className: '',
+      html: '<div style="background:white;border:2px solid #1a6b2e;border-radius:10px;padding:3px 8px;font-size:10px;font-weight:700;color:#1a6b2e;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.15);transform:translate(-50%,-100%);margin-top:-6px;font-family:Inter,sans-serif;">' +
+             (m.hasFlash ? '<span style="color:#dc2626;">⚡</span> ' : '') + m.name + '</div>',
+      iconAnchor: [0, 0]
+    });
+    
+    var marker = L.marker([m.lat, m.lng], {icon: markerIcon}).addTo(map);
     marketMarkers.push(marker);
     
-    // On click map pin -> scroll to that market in list
     marker.on('click', function() {
-      map.flyTo([m.lat, m.lng], 15);
-      showToast('📍 เลือก ' + m.name);
+      map.flyTo([m.lat, m.lng], 16, { duration: 1 });
+      showToast('เลือก ' + m.name);
       document.getElementById('market-search').value = m.name;
       renderMarkets();
     });
   });
+  
+  // Fit map to show user + nearby markets
+  if (markets.length > 0) {
+    map.fitBounds(bounds.pad(0.2), { animate: true, duration: 1 });
+  }
 }
 
 function setMarketFilter(btn,tag){
   mFilter=tag;
-  document.querySelectorAll('.chip').forEach(function(c){c.className=c.className.replace(' active','');});
-  btn.className+=' active';
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active');
   renderMarkets();
 }
 
 function viewOnMap(lat, lng) {
-  map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
+  map.flyTo([lat, lng], 16, { animate: true, duration: 1 });
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function getDirections(lat, lng) {
   if(!userLat) { showToast('ไม่พบตำแหน่งต้นทางของคุณ'); return; }
-  var url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}`;
+  var url = 'https://www.google.com/maps/dir/?api=1&origin='+userLat+','+userLng+'&destination='+lat+','+lng;
   window.open(url, '_blank');
 }
 
@@ -327,15 +388,15 @@ function renderMarkets(){
     return matchQ&&matchF;
   });
 
-  document.getElementById('market-count').textContent='พบ '+filtered.length+' แห่งใกล้คุณ';
+  document.getElementById('market-count').textContent='พบ '+filtered.length+' แห่ง';
   
   filtered.forEach(function(m){
-    var distStr = m.distanceKm !== undefined ? (m.distanceKm.toFixed(1) + ' กม.') : 'กำลังคำนวณ...';
+    var distStr = m.distanceKm !== undefined ? (m.distanceKm.toFixed(1) + ' กม.') : '...';
     var div=document.createElement('div');
-    div.className='bg-white rounded-2xl p-4 shadow-sm transition-all relative overflow-hidden group';
+    div.className='bg-white rounded-2xl p-4 shadow-sm transition-all relative overflow-hidden hover:shadow-md';
     div.innerHTML=`
       <div class="flex gap-3">
-        <div class="w-12 h-12 rounded-2xl ${m.open?'bg-green-100':'bg-gray-100'} flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 transition-all" onclick="viewOnMap(${m.lat}, ${m.lng})">
+        <div class="w-12 h-12 rounded-2xl ${m.open?'bg-green-50':'bg-gray-100'} flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-95 transition-all" onclick="viewOnMap(${m.lat}, ${m.lng})">
           <span class="material-symbols-outlined ${m.open?'text-success':'text-gray-400'}" style="font-variation-settings:'FILL' 1;">storefront</span>
         </div>
         <div class="flex-1">
@@ -350,18 +411,18 @@ function renderMarkets(){
             </div>
           </div>
           <div class="flex flex-wrap items-center justify-between mt-2 gap-2">
-            <p class="text-[10px] text-gray-500">📅 ${m.days}</p>
-            ${m.hasFlash?'<span class="text-[10px] font-bold bg-danger/10 text-danger px-2 py-0.5 rounded-full">⚡ Flash Sale</span>':''}
+            <p class="text-[10px] text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span> ${m.days}</p>
+            ${m.hasFlash?'<span class="text-[10px] font-bold bg-danger/10 text-danger px-2 py-0.5 rounded-full flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">bolt</span> Flash Sale</span>':''}
           </div>
           
-          <div class="mt-3 flex gap-2 w-full pt-3 border-t border-gray-100 pl-1">
+          <div class="mt-3 flex gap-2 w-full pt-3 border-t border-gray-100">
              <div class="flex-1">
                <div class="flex items-center gap-2 mb-1">
-                 <div class="flex-1 h-1 bg-gray-100 rounded-full"><div class="h-1 bg-green-400 rounded-full" style="width:${m.open?Math.round(m.checkedIn/m.stalls*100):0}%"></div></div>
-                 <p class="text-[9px] text-gray-400">${m.checkedIn}/${m.stalls} คิวว่าง</p>
+                 <div class="flex-1 h-1.5 bg-gray-100 rounded-full"><div class="h-1.5 bg-green-400 rounded-full transition-all" style="width:${m.open?Math.round(m.checkedIn/m.stalls*100):0}%"></div></div>
+                 <p class="text-[9px] text-gray-400">${m.checkedIn}/${m.stalls} แผง</p>
                </div>
              </div>
-             <button onclick="getDirections(${m.lat}, ${m.lng})" class="bg-primary/10 text-primary py-1.5 px-3 rounded-full text-xs font-bold hover:bg-primary hover:text-white transition-colors active:scale-95 flex items-center gap-1"><span class="material-symbols-outlined text-sm">directions_car</span>นำทางเลย</button>
+             <button onclick="getDirections(${m.lat}, ${m.lng})" class="bg-primary/10 text-primary py-1.5 px-3 rounded-full text-xs font-bold hover:bg-primary hover:text-white transition-colors active:scale-95 flex items-center gap-1"><span class="material-symbols-outlined text-sm">directions_car</span>นำทาง</button>
           </div>
         </div>
       </div>
@@ -370,12 +431,12 @@ function renderMarkets(){
   });
   
   if(filtered.length === 0) {
-    list.innerHTML = `<p class="text-center text-gray-400 text-sm py-4">❌ ไม่พบตลาดระยะใกล้พิกัดของคุณ (ลองค้นหาชื่อพื้นที่)</p>`;
+    list.innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><span class="material-symbols-outlined text-3xl block mb-2">search_off</span><p class="font-bold">ไม่พบตลาดตามเงื่อนไข</p></div>';
   }
 }
 
-function addToCart(name,price){showToast('🛒 เพิ่ม '+name+' ('+price+') ในตะกร้าแล้ว');}
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
+function addToCart(name,price){showToast('เพิ่ม '+name+' ('+price+') ในตะกร้าแล้ว');}
+function showToast(msg){var t=document.getElementById('toast');t.innerHTML='<span class="material-symbols-outlined text-lg">check_circle</span> '+msg;t.classList.remove('hidden');setTimeout(function(){t.classList.add('hidden');},3000);}
 function updateFlash(){var now=new Date();var h=String(1).padStart(2,'0');var m=String(59-now.getMinutes()).padStart(2,'0');var s=String(59-now.getSeconds()).padStart(2,'0');var el=document.getElementById('flash-timer');if(el)el.textContent=h+':'+m+':'+s;}
 setInterval(updateFlash,1000);
 

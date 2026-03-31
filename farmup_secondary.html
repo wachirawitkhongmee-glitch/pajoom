@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmUP — Secondary Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{headline:['Manrope','sans-serif']},colors:{primary:'#1a6b2e','primary-light':'#2d8a47',secondary:'#e8a020',surface:'#f5f0e8',danger:'#dc2626',warning:'#f59e0b',success:'#16a34a',market:'#7c3aed','market-light':'#8b5cf6'}}}}</script>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#f5f3ff;}
+.glass{background:rgba(255,255,255,0.8);backdrop-filter:blur(16px);}
+.chip{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;white-space:nowrap;}
+.chip.active,.chip:hover{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;cursor:pointer;transition:all 0.2s;text-decoration:none;color:#6b7280;}
+.nav-item:hover,.nav-item.active{color:#7c3aed;}
+.sort-btn{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;background:#fff;border:1.5px solid #e5e7eb;color:#6b7280;}
+.sort-btn.active{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-40 glass px-4 py-3 shadow-sm border-b border-purple-100">
+  <div class="flex items-center gap-3 mb-3">
+    <button onclick="window.location.href='farmup_dashboard.html'" class="p-2 rounded-xl bg-white shadow-sm border border-purple-100"><span class="material-symbols-outlined text-purple-600">arrow_back</span></button>
+    <div class="flex-1">
+      <h1 class="font-headline font-black text-lg text-purple-700 flex items-center gap-1.5"><span class="material-symbols-outlined">storefront</span> Secondary Market</h1>
+      <p class="text-[10px] text-gray-500 font-bold">ตลาดขายสิทธิ์ล็อตต่อ</p>
+    </div>
+  </div>
+  <div class="relative mb-3">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+    <input id="search-input" type="text" placeholder="ค้นหาพืช, ผู้ขาย..." class="w-full pl-10 pr-4 py-2 border-2 border-purple-100 rounded-2xl text-sm bg-white focus:outline-none focus:border-purple-500 transition-all" oninput="renderCards()"/>
+  </div>
+  <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <button class="chip active" onclick="setFilter(this,'all')">ทั้งหมด</button>
+    <button class="chip" onclick="setFilter(this,'discount')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">trending_down</span> ลดราคา (ตัดขาดทุน)</span></button>
+    <button class="chip" onclick="setFilter(this,'markup')"><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">trending_up</span> ราคาสูงกว่า (ขายทำกำไร)</span></button>
+  </div>
+</header>
+
+<main class="px-4 pt-4 pb-32 max-w-2xl mx-auto">
+  <div class="flex items-center justify-between mb-4">
+    <p id="result-count" class="text-sm text-gray-500 font-semibold"></p>
+    <div class="flex gap-2">
+      <button class="sort-btn active" onclick="setSort(this,'new')">ใหม่สุด ↓</button>
+      <button class="sort-btn" onclick="setSort(this,'price')">ราคา ↓</button>
+      <button class="sort-btn" onclick="setSort(this,'harvest')">เก็บเกี่ยว ↓</button>
+    </div>
+  </div>
+
+  <div id="cards-grid" class="space-y-4"></div>
+</main>
+
+<!-- Buy Modal -->
+<div id="buy-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end justify-center" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="bg-white w-full max-w-md rounded-t-3xl p-6 shadow-2xl transition-transform transform translate-y-0">
+    <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="font-headline font-black text-xl mb-4 text-purple-700 flex items-center gap-2"><span class="material-symbols-outlined">shopping_cart_checkout</span> ยืนยันการซื้อสิทธิ์</h3>
+    <div id="buy-detail" class="bg-purple-50 rounded-2xl p-4 mb-4 text-sm text-gray-700 space-y-2 border border-purple-100"></div>
+    
+    <div class="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 flex gap-2">
+      <span class="material-symbols-outlined text-success text-sm mt-0.5">verified_user</span>
+      <div>
+        <p class="text-xs font-bold text-gray-700">สิทธิ์จะถูกโอนเข้าบัญชีคุณทันที</p>
+        <p class="text-xs text-gray-500">รวมถึงการคุ้มครองความเสี่ยง Risk Sharing ทั้งหมด</p>
+      </div>
+    </div>
+    
+    <button onclick="confirmBuy()" class="w-full py-4 rounded-2xl bg-purple-600 text-white font-headline font-bold text-base shadow-lg hover:bg-purple-700 active:scale-95 transition-all flex items-center justify-center gap-1.5">
+      <span class="material-symbols-outlined text-lg">check_circle</span> ยืนยันชำระเงิน
+    </button>
+    <button onclick="document.getElementById('buy-modal').classList.add('hidden')" class="w-full py-2 mt-1 text-gray-400 text-sm font-bold">ยกเลิก</button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-purple-100 shadow-xl h-20 flex items-center px-2">
+  <a href="farmup_home.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-bold mt-0.5">หน้าหลัก</span></a>
+  <a href="farmup_explore.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-bold mt-0.5">สำรวจ</span></a>
+  <a href="farmup_explore.html" class="flex-1 flex flex-col items-center justify-center -mt-8">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-market shadow-xl shadow-market/40 flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">storefront</span>
+    </div><span class="text-[10px] font-bold text-market mt-1">ซื้อสิทธิ์</span>
+  </a>
+  <a href="farmup_market.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">store</span><span class="text-[10px] font-bold mt-0.5">ตลาด</span></a>
+  <a href="farmup_dashboard.html" class="nav-item flex-1"><span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-bold mt-0.5">โปรไฟล์</span></a>
+</nav>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-market text-white px-6 py-3 rounded-2xl shadow-xl z-[200] font-bold text-sm flex items-center gap-2"></div>
+
+<script>
+var mockResales = [
+  { id: 101, farmerName: 'คุณวิทยา (ผู้จองรายแรก)', cropName: 'มะเขือเทศ Heirloom Batch #24', qty: 2, date: '30 เม.ย 2568', originalPrice: 560, askPrice: 500, timestamp: Date.now() - 3600000, isLocal: false },
+  { id: 102, farmerName: 'Somchai Trader', cropName: 'แครอทหวาน Batch #7', qty: 5, date: '10 เม.ย 2568', originalPrice: 475, askPrice: 550, timestamp: Date.now() - 86400000, isLocal: false },
+  { id: 103, farmerName: 'Ariya C.', cropName: 'มะม่วงน้ำดอกไม้ Batch #3', qty: 10, date: '1 มิ.ย 2568', originalPrice: 4500, askPrice: 4000, timestamp: Date.now() - 172800000, isLocal: false },
+  { id: 104, farmerName: 'Pawat_Inv', cropName: 'ผักบุ้งไร้สาร Batch #5', qty: 3, date: '15 เม.ย 2568', originalPrice: 180, askPrice: 200, timestamp: Date.now() - 2000000, isLocal: false }
+];
+
+var allResales = [];
+var filterType = 'all';
+var sortType = 'new';
+var selectedResale = null;
+
+function loadResales() {
+  allResales = [...mockResales];
+  var localResales = JSON.parse(localStorage.getItem('farmup_resale') || '[]');
+  
+  // Tag local ones with an ID
+  localResales.forEach((r, idx) => {
+    r.id = 'L' + idx;
+    allResales.unshift(r);
+  });
+  
+  // Remove items we already bought locally
+  var boughtIds = JSON.parse(localStorage.getItem('farmup_bought_resales') || '[]');
+  allResales = allResales.filter(r => !boughtIds.includes(r.id));
+  
+  renderCards();
+}
+
+function setFilter(btn, type) {
+  filterType = type;
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function setSort(btn, type) {
+  sortType = type;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function renderCards() {
+  var q = document.getElementById('search-input').value.toLowerCase();
+  
+  var filtered = allResales.filter(r => {
+    var matchSearch = !q || r.cropName.toLowerCase().includes(q) || r.farmerName.toLowerCase().includes(q);
+    var matchFilter = true;
+    if (filterType === 'discount') matchFilter = r.askPrice < r.originalPrice;
+    if (filterType === 'markup') matchFilter = r.askPrice > r.originalPrice;
+    return matchSearch && matchFilter;
+  });
+  
+  filtered.sort((a,b) => {
+    if (sortType === 'new') return b.timestamp - a.timestamp;
+    if (sortType === 'price') return a.askPrice - b.askPrice;
+    if (sortType === 'harvest') return new Date(a.date) - new Date(b.date);
+    return 0;
+  });
+  
+  document.getElementById('result-count').textContent = 'พบ ' + filtered.length + ' ประกาศ';
+  
+  var grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="text-center py-16 text-gray-400"><span class="material-symbols-outlined text-5xl block mb-2 opacity-50">shopping_bag</span><p class="font-bold">ไม่มีประกาศขายสิทธิ์ในขณะนี้</p></div>';
+    return;
+  }
+  
+  filtered.forEach(r => {
+    var diff = r.askPrice - r.originalPrice;
+    var badgeHtml = '';
+    var priceHtml = '';
+    
+    if (diff < 0) {
+      badgeHtml = '<span class="text-[10px] font-bold bg-green-100 text-success px-2 py-0.5 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">trending_down</span> ลดราคา ' + Math.abs(diff) + 'บ.</span>';
+      priceHtml = '<p class="text-[10px] text-gray-400 line-through">฿' + r.originalPrice.toLocaleString() + '</p><p class="font-headline font-black text-purple-700 text-xl">฿' + r.askPrice.toLocaleString() + '</p>';
+    } else if (diff > 0) {
+      badgeHtml = '<span class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">trending_up</span> เกินทุน ' + diff + 'บ.</span>';
+      priceHtml = '<p class="text-[10px] text-gray-400 mt-1">ทุน ฿' + r.originalPrice.toLocaleString() + '</p><p class="font-headline font-black text-purple-700 text-xl">฿' + r.askPrice.toLocaleString() + '</p>';
+    } else {
+      badgeHtml = '<span class="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">ราคาเท่าทุน</span>';
+      priceHtml = '<p class="font-headline font-black text-purple-700 text-xl mt-3">฿' + r.askPrice.toLocaleString() + '</p>';
+    }
+  
+    var div = document.createElement('div');
+    div.className = 'bg-white rounded-3xl p-4 shadow-sm hover:shadow-md transition-all border border-purple-50';
+    div.innerHTML = `
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex gap-2 items-center">
+          <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm">
+            <span class="material-symbols-outlined text-sm">person</span>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-gray-700">${r.farmerName}</p>
+            <p class="text-[10px] text-gray-400">ลงขายเมื่อ ${timeAgo(r.timestamp)}</p>
+          </div>
+        </div>
+        ${badgeHtml}
+      </div>
+      <div class="bg-purple-50/50 rounded-2xl p-3 mb-4">
+        <h3 class="font-headline font-bold text-sm">${r.cropName}</h3>
+        <p class="text-xs text-gray-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-sm">calendar_today</span> รับสินค้า: ${r.date} · จำนวน: ${r.qty} กก</p>
+      </div>
+      <div class="flex justify-between items-end">
+        <div class="text-left">${priceHtml}</div>
+        <button onclick="openBuyModal('${r.id}')" class="px-5 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-bold shadow hover:bg-purple-700 active:scale-95 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">shopping_cart_checkout</span> ซื้อสิทธิ์
+        </button>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function timeAgo(ts) {
+  var sec=(Date.now()-ts)/1000;
+  if(sec<60) return 'เมื่อสักครู่';
+  if(sec<3600) return Math.floor(sec/60)+' นาทีที่แล้ว';
+  if(sec<86400) return Math.floor(sec/3600)+' ชม.ที่แล้ว';
+  return Math.floor(sec/86400)+' วันที่แล้ว';
+}
+
+function openBuyModal(id) {
+  selectedResale = allResales.find(r => String(r.id) === String(id));
+  if(!selectedResale) return;
+  
+  document.getElementById('buy-detail').innerHTML = `
+    <div class="flex justify-between"><span class="text-gray-500">สินค้า</span><span class="font-bold">${selectedResale.cropName}</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">จำนวนโอนสิทธิ์</span><span class="font-bold">${selectedResale.qty} กก</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">วันรับสินค้า</span><span class="font-bold">${selectedResale.date}</span></div>
+    <div class="border-t border-purple-200 my-2 pt-2 flex justify-between"><span class="text-gray-500">ผู้ขายสิทธิ์</span><span class="font-bold">${selectedResale.farmerName}</span></div>
+    <div class="flex justify-between items-end"><span class="text-gray-500 font-bold">ยอดที่ต้องชำระ</span><span class="font-headline font-black text-xl text-purple-700">฿${selectedResale.askPrice.toLocaleString()}</span></div>
+  `;
+  document.getElementById('buy-modal').classList.remove('hidden');
+}
+
+function confirmBuy() {
+  document.getElementById('buy-modal').classList.add('hidden');
+  
+  // Track that we bought it
+  var boughtIds = JSON.parse(localStorage.getItem('farmup_bought_resales') || '[]');
+  boughtIds.push(selectedResale.id);
+  localStorage.setItem('farmup_bought_resales', JSON.stringify(boughtIds));
+  
+  // Add to our own active orders
+  var orders = JSON.parse(localStorage.getItem('farmup_orders') || '[]');
+  orders.push({
+    name: selectedResale.cropName + ' (รับสิทธิ์ต่อ)',
+    qty: selectedResale.qty,
+    total: selectedResale.askPrice, // Using we paid
+    status: 'growing',
+    date: selectedResale.date,
+    isSelling: false
+  });
+  localStorage.setItem('farmup_orders', JSON.stringify(orders));
+  
+  // Remove from localhost resale
+  if (selectedResale.isLocal) {
+    var rawResales = JSON.parse(localStorage.getItem('farmup_resale') || '[]');
+    // We remove the one matching originalPrice & cropName (since we didn't store true ID in local storage)
+    rawResales = rawResales.filter(r => !(r.cropName===selectedResale.cropName && r.askPrice===selectedResale.askPrice));
+    localStorage.setItem('farmup_resale', JSON.stringify(rawResales));
+  }
+  
+  showToast('ซื้อสิทธิ์สำเร็จ! ตรวจสอบได้ที่โปรไฟล์');
+  loadResales();
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> ' + msg;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
+document.addEventListener('DOMContentLoaded', loadResales);
+</script>
+</body>
+</html>

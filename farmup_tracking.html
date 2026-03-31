@@ -46,7 +46,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <span class="material-symbols-outlined">arrow_back</span>
     </button>
     <div>
-      <h1 class="font-headline font-black text-xl">📦 ออเดอร์ & รับสินค้า</h1>
+      <h1 class="font-headline font-black text-xl flex items-center gap-2"><span class="material-symbols-outlined">inventory_2</span> ออเดอร์ & รับสินค้า</h1>
       <p class="text-white/70 text-xs">ติดตามและเลือกจุดรับ</p>
     </div>
   </div>
@@ -69,10 +69,10 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 
 <!-- Tabs -->
 <div class="bg-surface px-4 py-3 flex gap-2 border-b border-gray-200 overflow-x-auto">
-  <button class="tab-btn active" onclick="switchTab(this,'tab-orders')">📦 ออเดอร์ทั้งหมด</button>
-  <button class="tab-btn" onclick="switchTab(this,'tab-pickup')">📍 จุดรับสินค้า</button>
-  <button class="tab-btn" onclick="switchTab(this,'tab-schedule')">📅 ตารางรับ</button>
-  <button class="tab-btn" onclick="switchTab(this,'tab-qr')">📲 QR ของฉัน</button>
+  <button class="tab-btn active" onclick="switchTab(this,'tab-orders')"><span class="material-symbols-outlined text-sm align-middle mr-1">inventory_2</span> ออเดอร์ทั้งหมด</button>
+  <button class="tab-btn" onclick="switchTab(this,'tab-pickup')"><span class="material-symbols-outlined text-sm align-middle mr-1">location_on</span> จุดรับสินค้า</button>
+  <button class="tab-btn" onclick="switchTab(this,'tab-schedule')"><span class="material-symbols-outlined text-sm align-middle mr-1">calendar_month</span> ตารางรับ</button>
+  <button class="tab-btn" onclick="switchTab(this,'tab-qr')"><span class="material-symbols-outlined text-sm align-middle mr-1">qr_code</span> QR ของฉัน</button>
 </div>
 
 <main class="pb-28 max-w-2xl mx-auto">
@@ -102,15 +102,15 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
   </div>
   <p class="text-xs text-gray-500 mb-3 font-semibold uppercase tracking-wider">จุดรับสินค้า 5 แห่ง</p>
   <div id="pickup-points" class="space-y-3"></div>
-  <button id="confirm-pickup-btn" onclick="confirmPickup()" class="hidden w-full mt-4 py-4 bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold rounded-2xl shadow-lg shadow-primary/30">
-    ✅ ยืนยันจุดรับสินค้า
+  <button id="confirm-pickup-btn" onclick="confirmPickup()" class="hidden w-full mt-4 py-4 bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold rounded-2xl shadow-lg shadow-primary/30 flex justify-center items-center gap-2">
+    <span class="material-symbols-outlined">check_circle</span> ยืนยันจุดรับสินค้า
   </button>
 </div>
 
 <!-- Tab: Schedule -->
 <div id="tab-schedule" class="tab-panel hidden px-4 py-4">
   <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-    <h3 class="font-bold text-sm mb-3">📅 ตารางรับสินค้าของคุณ</h3>
+    <h3 class="font-bold text-sm mb-3 flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-lg">calendar_month</span> ตารางรับสินค้าของคุณ</h3>
     <div class="space-y-3" id="pickup-schedule"></div>
   </div>
   <!-- Calendar mini -->
@@ -250,24 +250,24 @@ var user = JSON.parse(localStorage.getItem('farmup_user') || '{"name":"คุณ
 var selectedPickup = null;
 
 var orders = [
-  {id:'FUP-2025-0024',emoji:'🍅',name:'มะเขือเทศ Heirloom Batch #24',farm:'ฟาร์มสมศักดิ์ เชียงใหม่',qty:5,price:1400,status:'growing',harvest:'30 เม.ย 2568',week:3,total:8,risk:'low'},
-  {id:'FUP-2025-0019',emoji:'🥬',name:'ผักบุ้งไร้สาร Batch #5',farm:'ฟาร์มใจดี เลย',qty:3,price:180,status:'ready',harvest:'15 เม.ย 2568',week:4,total:4,risk:'low'},
-  {id:'FUP-2025-0015',emoji:'🌿',name:'ตะไคร้อินทรีย์ Batch #2',farm:'ฟาร์มเขียวสด เชียงราย',qty:2,price:240,status:'growing',harvest:'20 พ.ค 2568',week:2,total:6,risk:'medium'},
-  {id:'FUP-2025-0011',emoji:'🥭',name:'มะม่วงน้ำดอกไม้ Batch #1',farm:'ฟาร์มทองคำ นครสวรรค์',qty:4,price:1800,status:'done',harvest:'15 มี.ค 2568',week:10,total:10,risk:'none'},
+  {id:'FUP-2025-0024',emoji:'eco',name:'มะเขือเทศ Heirloom Batch #24',farm:'ฟาร์มสมศักดิ์ เชียงใหม่',qty:5,price:1400,status:'growing',harvest:'30 เม.ย 2568',week:3,total:8,risk:'low'},
+  {id:'FUP-2025-0019',emoji:'eco',name:'ผักบุ้งไร้สาร Batch #5',farm:'ฟาร์มใจดี เลย',qty:3,price:180,status:'ready',harvest:'15 เม.ย 2568',week:4,total:4,risk:'low'},
+  {id:'FUP-2025-0015',emoji:'eco',name:'ตะไคร้อินทรีย์ Batch #2',farm:'ฟาร์มเขียวสด เชียงราย',qty:2,price:240,status:'growing',harvest:'20 พ.ค 2568',week:2,total:6,risk:'medium'},
+  {id:'FUP-2025-0011',emoji:'eco',name:'มะม่วงน้ำดอกไม้ Batch #1',farm:'ฟาร์มทองคำ นครสวรรค์',qty:4,price:1800,status:'done',harvest:'15 มี.ค 2568',week:10,total:10,risk:'none'},
 ];
 
 var pickupPoints = [
-  {id:1,name:'ตลาด อตก. กรุงเทพ',addr:'เขตจตุจักร กรุงเทพฯ',hours:'08:00-17:00',type:'ตลาดหลัก',emoji:'🏪',capacity:'มีที่ว่าง',distance:'2.3 กม.'},
-  {id:2,name:'เมญ่า เชียงใหม่',addr:'ถนนนิมมานเหมินท์ เชียงใหม่',hours:'10:00-20:00',type:'ห้างฯ',emoji:'🏬',capacity:'มีที่ว่าง',distance:'45 กม. (จัดส่ง)'},
-  {id:3,name:'ไปรษณีย์ไทย สาขาใกล้บ้าน',addr:'กดตรวจสอบสาขาใกล้คุณ',hours:'09:00-17:00',type:'ไปรษณีย์',emoji:'📮',capacity:'มีที่ว่าง',distance:'0.8 กม.'},
-  {id:4,name:'จัดส่งถึงบ้าน (EMS)',addr:'ที่อยู่ที่ลงทะเบียน',hours:'จัดส่ง 1-2 วัน',type:'Delivery',emoji:'🚚',capacity:'รับได้เสมอ',distance:'+฿80'},
-  {id:5,name:'Grab/LINE MAN',addr:'รับที่ฟาร์มแล้วส่งถึงมือ',hours:'ตามคนส่ง',type:'On-demand',emoji:'🛵',capacity:'มีพร้อม',distance:'+฿120'},
+  {id:1,name:'ตลาด อตก. กรุงเทพ',addr:'เขตจตุจักร กรุงเทพฯ',hours:'08:00-17:00',type:'ตลาดหลัก',emoji:'storefront',capacity:'มีที่ว่าง',distance:'2.3 กม.'},
+  {id:2,name:'เมญ่า เชียงใหม่',addr:'ถนนนิมมานเหมินท์ เชียงใหม่',hours:'10:00-20:00',type:'ห้างฯ',emoji:'store',capacity:'มีที่ว่าง',distance:'45 กม. (จัดส่ง)'},
+  {id:3,name:'ไปรษณีย์ไทย สาขาใกล้บ้าน',addr:'กดตรวจสอบสาขาใกล้คุณ',hours:'09:00-17:00',type:'ไปรษณีย์',emoji:'local_post_office',capacity:'มีที่ว่าง',distance:'0.8 กม.'},
+  {id:4,name:'จัดส่งถึงบ้าน (EMS)',addr:'ที่อยู่ที่ลงทะเบียน',hours:'จัดส่ง 1-2 วัน',type:'Delivery',emoji:'local_shipping',capacity:'รับได้เสมอ',distance:'+฿80'},
+  {id:5,name:'Grab/LINE MAN',addr:'รับที่ฟาร์มแล้วส่งถึงมือ',hours:'ตามคนส่ง',type:'On-demand',emoji:'two_wheeler',capacity:'มีพร้อม',distance:'+฿120'},
 ];
 
 var scheduleItems = [
-  {date:'30 เม.ย 2568',item:'🍅 มะเขือเทศ Heirloom #24',point:'ตลาด อตก.',weight:'5 กก'},
-  {date:'20 พ.ค 2568',item:'🌿 ตะไคร้อินทรีย์ #2',point:'ยังไม่เลือก',weight:'2 กก'},
-  {date:'1 มิ.ย 2568',item:'🥭 มะม่วงน้ำดอกไม้ #3',point:'ยังไม่เลือก',weight:'4 กก'},
+  {date:'30 เม.ย 2568',item:'มะเขือเทศ Heirloom #24',point:'ตลาด อตก.',weight:'5 กก'},
+  {date:'20 พ.ค 2568',item:'ตะไคร้อินทรีย์ #2',point:'ยังไม่เลือก',weight:'2 กก'},
+  {date:'1 มิ.ย 2568',item:'มะม่วงน้ำดอกไม้ #3',point:'ยังไม่เลือก',weight:'4 กก'},
 ];
 
 var currentFilter = 'all';
@@ -298,10 +298,10 @@ function renderOrders() {
     var div = document.createElement('div');
     div.className = 'bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow-md transition-all';
     var chipClass = {growing:'chip-growing',ready:'chip-ready',done:'chip-delivered'}[o.status] || 'chip-growing';
-    var chipText = {growing:'🌱 กำลังปลูก',ready:'✅ พร้อมรับ',done:'📦 รับแล้ว'}[o.status];
+    var chipText = {growing:'<span class="material-symbols-outlined text-[10px] mr-0.5">eco</span> กำลังปลูก',ready:'<span class="material-symbols-outlined text-[10px] mr-0.5">check_circle</span> พร้อมรับ',done:'<span class="material-symbols-outlined text-[10px] mr-0.5">inventory_2</span> รับแล้ว'}[o.status];
     div.innerHTML = `
       <div class="flex items-start gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">${o.emoji}</div>
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0"><span class="material-symbols-outlined text-2xl">${o.emoji}</span></div>
         <div class="flex-1 min-w-0">
           <div class="flex items-start justify-between gap-2 mb-1">
             <h3 class="font-bold text-sm text-gray-900 leading-tight">${o.name}</h3>
@@ -327,9 +327,9 @@ function renderOrders() {
       </div>
       <div class="flex gap-2 mt-3">
         <button onclick="openOrderDetail(${JSON.stringify(o).replace(/"/g,'&quot;')})" class="flex-1 py-2 text-xs font-bold border border-gray-200 rounded-xl text-gray-600 hover:border-primary hover:text-primary transition-all">รายละเอียด</button>
-        ${o.status === 'growing' ? '<button onclick="window.location.href=\'farmup_growth.html\'" class="flex-1 py-2 text-xs font-bold bg-primary/10 text-primary rounded-xl">ติดตาม 🌱</button>' : ''}
-        ${o.status === 'ready' ? '<button onclick="window.location.href=\'farmup_tracking.html\';switchTab(document.querySelector(\'.tab-btn:nth-child(4)\'),\'tab-qr\')" class="flex-1 py-2 text-xs font-bold bg-secondary/10 text-secondary rounded-xl">QR รับสินค้า 📲</button>' : ''}
-        ${o.status === 'done' ? '<button onclick="showReviewModal()" class="flex-1 py-2 text-xs font-bold bg-success/10 text-success rounded-xl">รีวิว ⭐</button>' : ''}
+        ${o.status === 'growing' ? '<button onclick="window.location.href=\'farmup_growth.html\'" class="flex-1 py-2 text-xs font-bold bg-primary/10 text-primary rounded-xl flex items-center justify-center gap-1">ติดตาม <span class="material-symbols-outlined text-[14px]">eco</span></button>' : ''}
+        ${o.status === 'ready' ? '<button onclick="window.location.href=\'farmup_tracking.html\';switchTab(document.querySelector(\'.tab-btn:nth-child(4)\'),\'tab-qr\')" class="flex-1 py-2 text-xs font-bold bg-secondary/10 text-secondary rounded-xl flex items-center justify-center gap-1">QR รับสินค้า <span class="material-symbols-outlined text-[14px]">qr_code</span></button>' : ''}
+        ${o.status === 'done' ? '<button onclick="showReviewModal()" class="flex-1 py-2 text-xs font-bold bg-success/10 text-success rounded-xl flex items-center justify-center gap-1">รีวิว <span class="material-symbols-outlined text-[14px]">star</span></button>' : ''}
       </div>
     `;
     list.appendChild(div);
@@ -337,7 +337,7 @@ function renderOrders() {
 }
 
 function openOrderDetail(o) {
-  document.getElementById('modal-title').textContent = o.emoji + ' ' + o.name;
+  document.getElementById('modal-title').innerHTML = '<span class="material-symbols-outlined align-middle mr-1 text-primary">' + o.emoji + '</span> ' + o.name;
   document.getElementById('modal-content').innerHTML = `
     <div class="space-y-3 text-sm">
       <div class="bg-surface rounded-xl p-3 space-y-2 text-xs">
@@ -348,7 +348,7 @@ function openOrderDetail(o) {
         <div class="flex justify-between"><span class="text-gray-400">กำหนดรับ</span><span class="font-bold">${o.harvest}</span></div>
       </div>
       <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs">
-        <p class="font-bold text-success mb-1">🛡️ Risk Sharing Active</p>
+        <p class="font-bold text-success mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-success">shield</span> Risk Sharing Active</p>
         <p class="text-gray-600">เสียหาย &gt;50% → คืน 70% | เสียหาย 20-50% → คืน 30%</p>
       </div>
     </div>
@@ -365,7 +365,7 @@ function renderPickupPoints() {
     div.id = 'pickup-' + p.id;
     div.innerHTML = `
       <div class="flex items-start gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">${p.emoji}</div>
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0"><span class="material-symbols-outlined text-2xl">${p.emoji}</span></div>
         <div class="flex-1">
           <div class="flex items-start justify-between gap-2">
             <h3 class="font-bold text-sm">${p.name}</h3>
@@ -398,7 +398,7 @@ function renderPickupPoints() {
 function confirmPickup() {
   var p = pickupPoints.find(function(x){ return x.id === selectedPickup; });
   if (!p) return;
-  showToast('✅ เลือกจุดรับ "' + p.name + '" เรียบร้อยแล้ว!');
+  showToast('เลือกจุดรับ "' + p.name + '" เรียบร้อยแล้ว!');
 }
 
 function renderSchedule() {
@@ -416,7 +416,7 @@ function renderSchedule() {
         <p class="font-bold text-sm">${s.item}</p>
         <p class="text-xs text-gray-500">${s.point} • ${s.weight}</p>
       </div>
-      ${s.point === 'ยังไม่เลือก' ? '<button onclick="switchTab(document.querySelectorAll(\'.tab-btn\')[1],\'tab-pickup\')" class="text-xs text-primary font-bold bg-primary/10 px-3 py-1.5 rounded-lg">เลือก →</button>' : '<span class="text-xs text-success font-bold">✅</span>'}
+      ${s.point === 'ยังไม่เลือก' ? '<button onclick="switchTab(document.querySelectorAll(\'.tab-btn\')[1],\'tab-pickup\')" class="text-xs text-primary font-bold bg-primary/10 px-3 py-1.5 rounded-lg">เลือก →</button>' : '<span class="material-symbols-outlined text-success">check_circle</span>'}
     `;
     list.appendChild(div);
   });
@@ -446,7 +446,7 @@ function renderCalendar() {
   }
 }
 
-function showReviewModal() { showToast('⭐ โหลดฟอร์มรีวิว...'); }
+function showReviewModal() { showToast('โหลดฟอร์มรีวิว...'); }
 
 function showToast(msg) {
   var t = document.getElementById('toast');
@@ -460,8 +460,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (u.name) document.getElementById('qr-name').textContent = u.name;
   // Merge localStorage orders
   var saved = JSON.parse(localStorage.getItem('farmup_orders') || '[]');
-  saved.forEach(function(s) {
-    orders.push({id:'FUP-'+Date.now(),emoji:'🌾',name:s.name||'ออเดอร์',farm:'ฟาร์มสมศักดิ์',qty:s.qty||1,price:s.total||0,status:'growing',harvest:'30 เม.ย 2568',week:1,total:8,risk:'low'});
+  saved.forEach(function(s, idx) {
+    orders.unshift({id:'FUP-'+Date.now()+'-'+idx,emoji:s.emoji||'eco',name:s.name||'ออเดอร์',farm:s.farm||'ฟาร์มสมศักดิ์',qty:s.qty||1,price:s.total||0,status:'growing',harvest:s.date||'30 เม.ย 2568',week:1,total:8,risk:'low'});
   });
   renderOrders();
   renderPickupPoints();

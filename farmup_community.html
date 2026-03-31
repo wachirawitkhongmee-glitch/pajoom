@@ -59,10 +59,10 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 <!-- Tabs -->
 <div class="bg-surface px-4 py-3 overflow-x-auto border-b border-gray-200">
   <div class="flex gap-2 w-max">
-    <button class="tab-btn active" onclick="switchTab(this,'tab-rooms')">🌱 ห้องทั้งหมด</button>
-    <button class="tab-btn" onclick="switchTab(this,'tab-chat')">💬 แชทล็อต #24</button>
-    <button class="tab-btn" onclick="switchTab(this,'tab-feed')">📰 Story Feed</button>
-    <button class="tab-btn" onclick="switchTab(this,'tab-qa')">❓ Q&A</button>
+    <button class="tab-btn active flex items-center gap-1" onclick="switchTab(this,'tab-rooms')"><span class="material-symbols-outlined text-sm">eco</span> ห้องทั้งหมด</button>
+    <button class="tab-btn flex items-center gap-1" onclick="switchTab(this,'tab-chat')"><span class="material-symbols-outlined text-sm">chat</span> แชทล็อต #24</button>
+    <button class="tab-btn flex items-center gap-1" onclick="switchTab(this,'tab-feed')"><span class="material-symbols-outlined text-sm">newspaper</span> Story Feed</button>
+    <button class="tab-btn flex items-center gap-1" onclick="switchTab(this,'tab-qa')"><span class="material-symbols-outlined text-sm">help</span> Q&A</button>
   </div>
 </div>
 
@@ -78,7 +78,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 
   <!-- Hot topic banner -->
   <div class="bg-gradient-to-r from-orange-500 to-secondary rounded-2xl p-4 mb-4 flex items-center gap-3">
-    <span class="text-3xl">🔥</span>
+    <span class="material-symbols-outlined text-white text-3xl">local_fire_department</span>
     <div>
       <p class="font-bold text-white text-sm">Hot Topic: ภัยแล้งภาคเหนือ</p>
       <p class="text-white/80 text-xs mt-0.5">247 คนกำลังพูดถึง • อัปเดต 5 นาทีก่อน</p>
@@ -93,7 +93,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 <div id="tab-chat" class="tab-panel hidden flex flex-col" style="height:calc(100vh - 148px)">
   <!-- Room info bar -->
   <div class="bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-3">
-    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-xl">🍅</div>
+    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-xl"><span class="material-symbols-outlined text-primary">eco</span></div>
     <div class="flex-1">
       <p class="font-bold text-sm text-gray-900">มะเขือเทศ Heirloom Batch #24</p>
       <p class="text-xs text-gray-500">47 คน • ฟาร์มสมศักดิ์ เชียงใหม่</p>
@@ -141,7 +141,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 <div id="tab-qa" class="tab-panel hidden px-4 py-4 pb-28 max-w-2xl mx-auto">
   <!-- Ask question -->
   <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-    <p class="font-bold text-sm mb-2">❓ ถามผู้เชี่ยวชาญ</p>
+    <p class="font-bold text-sm mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-primary">help</span> ถามผู้เชี่ยวชาญ</p>
     <textarea id="qa-input" rows="2" placeholder="เช่น ทำไมใบมะเขือเทศเหลือง? วิธีแก้?" 
       class="w-full px-3 py-2.5 bg-surface border-2 border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:border-primary transition-all mb-2"></textarea>
     <div class="flex gap-2">
@@ -158,7 +158,7 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 <div id="create-room-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end" onclick="if(event.target===this)this.classList.add('hidden')">
   <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 shadow-2xl">
     <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div>
-    <h3 class="font-headline font-black text-xl mb-4">🌱 สร้างห้องใหม่</h3>
+    <h3 class="font-headline font-black text-xl mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary text-2xl">eco</span> สร้างห้องใหม่</h3>
     <div class="space-y-3">
       <div>
         <label class="text-xs font-bold text-gray-500 uppercase mb-1.5 block">ชื่อห้อง</label>
@@ -167,12 +167,12 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <div>
         <label class="text-xs font-bold text-gray-500 uppercase mb-1.5 block">ประเภท</label>
         <div class="grid grid-cols-3 gap-2">
-          <button onclick="selectRoomType(this,'lot')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm">🌾 ล็อต</button>
-          <button onclick="selectRoomType(this,'general')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm">💬 ทั่วไป</button>
-          <button onclick="selectRoomType(this,'expert')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm">🎓 ผู้เชี่ยวชาญ</button>
+          <button onclick="selectRoomType(this,'lot')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm flex flex-col items-center justify-center gap-1"><span class="material-symbols-outlined text-primary text-xl">agriculture</span> ล็อต</button>
+          <button onclick="selectRoomType(this,'general')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm flex flex-col items-center justify-center gap-1"><span class="material-symbols-outlined text-primary text-xl">chat</span> ทั่วไป</button>
+          <button onclick="selectRoomType(this,'expert')" class="room-type-btn p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer text-sm flex flex-col items-center justify-center gap-1"><span class="material-symbols-outlined text-primary text-xl">school</span> ผู้เชี่ยวชาญ</button>
         </div>
       </div>
-      <button onclick="createRoom()" class="w-full py-4 bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold rounded-2xl shadow-lg">✅ สร้างห้อง</button>
+      <button onclick="createRoom()" class="w-full py-4 bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2"><span class="material-symbols-outlined">check_circle</span> สร้างห้อง</button>
     </div>
   </div>
 </div>
@@ -195,35 +195,36 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 <div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[300] font-bold text-sm"></div>
 
 <script>
-var user = JSON.parse(localStorage.getItem('farmup_user') || '{"name":"คุณสมใจ","avatar":"🙋","role":"consumer"}');
+var user = JSON.parse(localStorage.getItem('farmup_user') || '{"name":"คุณสมใจ","avatar":"person","role":"consumer"}');
 var activeTab = 'tab-rooms';
 var selectedRoomType = 'lot';
+window.activeRoomId = 'lot_24';
 
 // ===== DATA =====
 var rooms = [
-  { id:1, emoji:'🍅', name:'มะเขือเทศ Heirloom Batch #24', type:'Lot Room', members:47, online:12, lastMsg:'ลุงสมศักดิ์: อัปเดตรูปการเจริญเติบโตสัปดาห์ 3 แล้วนะครับ', time:'5 นาทีก่อน', hot:true },
-  { id:2, emoji:'🥬', name:'กลุ่มผักออร์แกนิกอีสาน', type:'General', members:89, online:23, lastMsg:'น้องมาลี: ใครรู้จักฟาร์มผักปลอดสารได้บ้าง?', time:'12 นาทีก่อน', hot:false },
-  { id:3, emoji:'🎓', name:'เกษตรผู้เชี่ยวชาญ AMA', type:'Expert Room', members:234, online:56, lastMsg:'ดร.วิชัย: วิธีป้องกันโรคราน้ำค้างในช่วงฝน', time:'1 ชม.ก่อน', hot:true },
-  { id:4, emoji:'🥭', name:'มะม่วงน้ำดอกไม้ Batch #3', type:'Lot Room', members:18, online:3, lastMsg:'คุณสมชาย: เมื่อไหร่จะถึงช่วงออกดอกครับ?', time:'2 ชม.ก่อน', hot:false },
-  { id:5, emoji:'🌾', name:'ข้าวหอมมะลิ Batch #11', type:'Lot Room', members:62, online:8, lastMsg:'ลุงทองสุข: ฝนทิ้งช่วง เพิ่มการรดน้ำแล้ว', time:'3 ชม.ก่อน', hot:false },
+  { id:1, emoji:'eco', name:'มะเขือเทศ Heirloom Batch #24', type:'Lot Room', members:47, online:12, lastMsg:'ลุงสมศักดิ์: อัปเดตรูปการเจริญเติบโตสัปดาห์ 3 แล้ว', time:'5 นาทีก่อน', hot:true },
+  { id:2, emoji:'grass', name:'กลุ่มผักออร์แกนิกอีสาน', type:'General', members:89, online:23, lastMsg:'น้องมาลี: ใครรู้จักฟาร์มผักปลอดสารได้บ้าง?', time:'12 นาทีก่อน', hot:false },
+  { id:3, emoji:'school', name:'เกษตรผู้เชี่ยวชาญ AMA', type:'Expert Room', members:234, online:56, lastMsg:'ดร.วิชัย: วิธีป้องกันโรคราน้ำค้างในช่วงฝน', time:'1 ชม.ก่อน', hot:true },
+  { id:4, emoji:'eco', name:'มะม่วงน้ำดอกไม้ Batch #3', type:'Lot Room', members:18, online:3, lastMsg:'คุณสมชาย: เมื่อไหร่จะถึงช่วงออกดอกครับ?', time:'2 ชม.ก่อน', hot:false },
+  { id:5, emoji:'agriculture', name:'ข้าวหอมมะลิ Batch #11', type:'Lot Room', members:62, online:8, lastMsg:'ลุงทองสุข: ฝนทิ้งช่วง เพิ่มการรดน้ำแล้ว', time:'3 ชม.ก่อน', hot:false },
 ];
 
 var onlineUsers = [
-  {name:'สมศักดิ์',emoji:'🧑‍🌾',role:'farmer'},{name:'สมใจ',emoji:'🙋',role:'consumer'},
-  {name:'มาลี',emoji:'👩',role:'consumer'},{name:'ทองสุข',emoji:'🧑',role:'farmer'},
-  {name:'วิชัย',emoji:'👨‍🏫',role:'expert'},{name:'สุภาพร',emoji:'👩',role:'consumer'},
-  {name:'ประยูร',emoji:'🧑‍🌾',role:'farmer'},{name:'รัตนา',emoji:'👩',role:'consumer'},
+  {name:'สมศักดิ์',emoji:'agriculture',role:'farmer'},{name:'สมใจ',emoji:'person',role:'consumer'},
+  {name:'มาลี',emoji:'person',role:'consumer'},{name:'ทองสุข',emoji:'agriculture',role:'farmer'},
+  {name:'วิชัย',emoji:'school',role:'expert'},{name:'สุภาพร',emoji:'person',role:'consumer'},
+  {name:'ประยูร',emoji:'agriculture',role:'farmer'},{name:'รัตนา',emoji:'person',role:'consumer'},
 ];
 
 var chatMessages = [
-  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'สวัสดีครับทุกคน อัปเดตสัปดาห์ที่ 3 มาเลยนะครับ',time:'09:00',type:'other'},
-  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'ต้นมะเขือเทศแข็งแรงดีมากครับ คาดว่าจะได้ผลผลิตตามกำหนด 30 เม.ย. 🍅',time:'09:01',type:'other'},
-  {from:'consumer',name:'คุณสมใจ',emoji:'🙋',text:'ขอบคุณครับ รูปออกมาสดมากเลย 👍',time:'09:05',type:'me'},
-  {from:'consumer',name:'นภาพรรณ',emoji:'👩',text:'ฟาร์มสวยมากเลยค่ะ ดีใจที่จองมาตั้งแต่ต้น',time:'09:07',type:'other'},
-  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'ขอบคุณทุกคนนะครับ ผมจะโพสต์รูปทุกสัปดาห์ครับ',time:'09:10',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'agriculture',text:'สวัสดีครับทุกคน อัปเดตสัปดาห์ที่ 3 มาเลยนะครับ',time:'09:00',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'agriculture',text:'ต้นมะเขือเทศแข็งแรงดีมากครับ คาดว่าจะได้ผลผลิตตามกำหนด 30 เม.ย.',time:'09:01',type:'other'},
+  {from:'consumer',name:'คุณสมใจ',emoji:'person',text:'ขอบคุณครับ รูปออกมาสดมากเลย',time:'09:05',type:'me'},
+  {from:'consumer',name:'นภาพรรณ',emoji:'person',text:'ฟาร์มสวยมากเลยค่ะ ดีใจที่จองมาตั้งแต่ต้น',time:'09:07',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'agriculture',text:'ขอบคุณทุกคนนะครับ ผมจะโพสต์รูปทุกสัปดาห์ครับ',time:'09:10',type:'other'},
   {from:'system',text:'📊 Demand อัปเดต: 176/200 ออเดอร์ (88%)',time:'09:15',type:'system'},
-  {from:'consumer',name:'มาลี',emoji:'👩',text:'วันรับสินค้าไปที่ไหนได้บ้างคะ?',time:'09:20',type:'other'},
-  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:'มีจุดรับที่ตลาด อตก. กรุงเทพ และ เมญ่า เชียงใหม่ครับ',time:'09:22',type:'other'},
+  {from:'consumer',name:'มาลี',emoji:'person',text:'วันรับสินค้าไปที่ไหนได้บ้างคะ?',time:'09:20',type:'other'},
+  {from:'farmer',name:'ลุงสมศักดิ์',emoji:'agriculture',text:'มีจุดรับที่ตลาด อตก. กรุงเทพ และ เมญ่า เชียงใหม่ครับ',time:'09:22',type:'other'},
 ];
 
 var qaItems = [
@@ -236,9 +237,9 @@ var qaItems = [
 ];
 
 var storyFeed = [
-  {farm:'ฟาร์มสมศักดิ์',emoji:'🧑‍🌾',time:'30 นาทีก่อน',img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&fit=crop',caption:'อัปเดตสัปดาห์ 3: ต้นแข็งแรง ขยายเติบโตดี รดน้ำวันละ 2 ครั้ง 🌱',likes:23,comments:8,lot:'Batch #24',commentsList:[{user:'สมศรี',text:'เยี่ยมเลยค่ะ'},{user:'ประยูร',text:'รอรับเลยครับ'}]},
-  {farm:'ฟาร์มทองสุข',emoji:'🧑‍🌾',time:'2 ชม.ก่อน',img:'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&fit=crop',caption:'ข้าวหอมมะลิออกรวงแล้ว คาดเก็บได้เดือนกันยา 🌾',likes:45,comments:12,lot:'Batch #11',commentsList:[]},
-  {farm:'ฟาร์มเขียวสด',emoji:'🌿',time:'5 ชม.ก่อน',img:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&fit=crop',caption:'ตะไคร้อินทรีย์โตเต็มที่แล้ว เตรียมเก็บสัปดาห์หน้า',likes:18,comments:5,lot:'Batch #2',commentsList:[]},
+  {id:1, farm:'ฟาร์มสมศักดิ์',emoji:'agriculture',time:'30 นาทีก่อน',img:'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=400&fit=crop',caption:'อัปเดตสัปดาห์ 3: ต้นมะเขือเทศแข็งแรง ขยายเติบโตดี รดน้ำวันละ 2 ครั้ง',likes:23,comments:8,lot:'Batch #24',commentsList:[{user:'สมศรี',text:'เยี่ยมเลยค่ะ'},{user:'ประยูร',text:'รอรับเลยครับ'}]},
+  {id:2, farm:'ฟาร์มทองสุข',emoji:'agriculture',time:'2 ชม.ก่อน',img:'https://images.unsplash.com/photo-1586208643501-8178a9c336b9?w=400&fit=crop',caption:'ข้าวหอมมะลิออกรวงแล้ว คาดเก็บได้เดือนกันยา',likes:45,comments:12,lot:'Batch #11',commentsList:[]},
+  {id:3, farm:'ฟาร์มเขียวสด',emoji:'grass',time:'5 ชม.ก่อน',img:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&fit=crop',caption:'ตะไคร้อินทรีย์โตเต็มที่แล้ว เตรียมเก็บสัปดาห์หน้า',likes:18,comments:5,lot:'Batch #2',commentsList:[]},
 ];
 
 // ===== RENDER =====
@@ -250,7 +251,7 @@ function renderRooms() {
     div.className = 'room-card';
     div.innerHTML = `
       <div class="flex items-start gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">${r.emoji}</div>
+        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl flex-shrink-0"><span class="material-symbols-outlined text-2xl">${r.emoji}</span></div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-0.5">
             <h3 class="font-bold text-sm text-gray-900 truncate">${r.name}</h3>
@@ -267,7 +268,18 @@ function renderRooms() {
       </div>
     `;
     div.onclick = function() {
-      switchTab(document.querySelector('.tab-btn:nth-child(2)'), 'tab-chat');
+      window.activeRoomId = 'room_' + r.id;
+      if (window._fbSwitchRoom) window._fbSwitchRoom(window.activeRoomId);
+      
+      var chatTabBtn = document.querySelectorAll('.tab-btn')[1];
+      chatTabBtn.innerHTML = '<span class="material-symbols-outlined text-sm">chat</span> ' + r.name;
+      
+      var chatHeader = document.querySelector('#tab-chat .border-b');
+      chatHeader.querySelector('p.font-bold').textContent = r.name;
+      chatHeader.querySelector('p.text-xs').textContent = r.members + ' คน • ' + r.type;
+      chatHeader.querySelector('.material-symbols-outlined').textContent = r.emoji;
+
+      switchTab(chatTabBtn, 'tab-chat');
     };
     list.appendChild(div);
   });
@@ -280,7 +292,7 @@ function renderOnlineUsers() {
     div.className = 'flex-shrink-0 text-center relative cursor-pointer';
     div.innerHTML = `
       <div class="relative w-10 h-10 mx-auto">
-        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">${u.emoji}</div>
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl"><span class="material-symbols-outlined">${u.emoji}</span></div>
         <div class="online-dot"></div>
       </div>
       <p class="text-[9px] text-gray-500 mt-1 w-10 truncate">${u.name}</p>
@@ -302,10 +314,10 @@ function renderChat() {
     }
     var isMe = m.type === 'me';
     var wrapper = document.createElement('div');
-    wrapper.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
+    wrapper.className = 'flex items-end gap-2 my-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
     if (!isMe) {
       wrapper.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-lg flex-shrink-0">${m.emoji}</div>
+        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-lg flex-shrink-0"><span class="material-symbols-outlined text-[16px]">${m.emoji}</span></div>
         <div>
           <p class="text-[10px] text-gray-400 mb-1 ml-1">${m.name}</p>
           <div class="msg-bubble msg-other px-4 py-2.5 text-sm">${m.text}</div>
@@ -334,7 +346,7 @@ function renderFeed() {
     div.className = 'bg-white rounded-3xl overflow-hidden shadow-sm';
     div.innerHTML = `
       <div class="p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">${s.emoji}</div>
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl"><span class="material-symbols-outlined">${s.emoji}</span></div>
         <div>
           <p class="font-bold text-sm">${s.farm}</p>
           <p class="text-xs text-gray-400">${s.time} • <span class="text-primary font-semibold">${s.lot}</span></p>
@@ -345,9 +357,9 @@ function renderFeed() {
       <div class="p-4">
         <p class="text-sm text-gray-700">${s.caption}</p>
         <div class="flex items-center gap-4 mt-3">
-          <button onclick="this.textContent=this.textContent.includes('❤️')?'🤍 ${s.likes}':'❤️ ${s.likes+1}'" class="text-sm font-semibold text-gray-600">🤍 ${s.likes}</button>
-          <button onclick="document.getElementById('comment-section-${idx}').classList.toggle('hidden')" class="text-sm font-semibold text-gray-600">💬 ${s.comments}</button>
-          <button onclick="showToast('📤 แชร์สตอรี่')" class="text-sm font-semibold text-gray-600">📤 แชร์</button>
+          <button onclick="toggleLike(this, ${idx})" class="text-sm font-semibold text-gray-600 flex items-center gap-1"><span class="material-symbols-outlined text-[16px] like-icon">favorite_border</span> <span class="like-count">${s.likes}</span></button>
+          <button onclick="document.getElementById('comment-section-${idx}').classList.toggle('hidden')" class="text-sm font-semibold text-gray-600 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span> ${s.comments}</button>
+          <button onclick="showToast('แชร์สตอรี่')" class="text-sm font-semibold text-gray-600 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">share</span> แชร์</button>
         </div>
         <div id="comment-section-${idx}" class="hidden mt-3 border-t border-gray-100 pt-3">
           ${commentsHtml}
@@ -376,6 +388,22 @@ function postFeedComment(idx) {
     var inputFocus = document.getElementById('feed-comment-input-'+idx);
     if(inputFocus) inputFocus.focus();
   }, 10);
+}
+
+function toggleLike(btn, idx) {
+  var icon = btn.querySelector('.like-icon');
+  var count = btn.querySelector('.like-count');
+  if (icon.textContent === 'favorite_border') {
+    icon.textContent = 'favorite';
+    icon.classList.add('text-danger');
+    icon.style.fontVariationSettings = "'FILL' 1";
+    count.textContent = storyFeed[idx].likes + 1;
+  } else {
+    icon.textContent = 'favorite_border';
+    icon.classList.remove('text-danger');
+    icon.style.fontVariationSettings = "'FILL' 0";
+    count.textContent = storyFeed[idx].likes;
+  }
 }
 
 function renderQA() {
@@ -438,15 +466,14 @@ function sendMsg() {
   var input = document.getElementById('msg-input');
   var text = input.value.trim();
   if (!text) return;
+  
   chatMessages.push({type:'me', text: text, time: new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});
   input.value = '';
   renderChat();
-  // Simulate response
-  setTimeout(function() {
-    var replies = ['ขอบคุณครับ! 🙏','เข้าใจแล้วครับ ขอบคุณมาก','จะอัปเดตให้ทราบครับ','ดีใจที่ถามครับ มีอะไรสอบถามได้เลย'];
-    chatMessages.push({from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:replies[Math.floor(Math.random()*replies.length)],time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),type:'other'});
-    renderChat();
-  }, 1500);
+
+  if(window._fbSendChat){
+    window._fbSendChat(window.activeRoomId, text);
+  }
 }
 
 function insertQuick(text) {
@@ -484,8 +511,8 @@ function selectRoomType(btn, type) {
 function createRoom() {
   var name = document.getElementById('room-name').value.trim();
   if (!name) { showToast('⚠️ กรุณาใส่ชื่อห้อง'); return; }
-  var emojis = {lot:'🌾', general:'💬', expert:'🎓'};
-  rooms.unshift({id:rooms.length+1, emoji:emojis[selectedRoomType]||'💬', name:name, type:selectedRoomType, members:1, online:1, lastMsg:'🌱 ห้องใหม่! เชิญเพื่อนมาร่วมได้เลย', time:'เมื่อกี้', hot:false});
+  var emojis = {lot:'agriculture', general:'forum', expert:'school'};
+  rooms.unshift({id:rooms.length+1, emoji:emojis[selectedRoomType]||'forum', name:name, type:selectedRoomType, members:1, online:1, lastMsg:'🌱 ห้องใหม่! เชิญเพื่อนมาร่วมได้เลย', time:'เมื่อกี้', hot:false});
   document.getElementById('create-room-modal').classList.add('hidden');
   document.getElementById('room-name').value = '';
   renderRooms();
@@ -506,15 +533,88 @@ document.addEventListener('DOMContentLoaded', function() {
   renderChat();
   renderFeed();
   renderQA();
+});
+</script>
 
-  // Simulate new message every 30s
-  setInterval(function() {
-    if (activeTab === 'tab-chat') {
-      var msgs = ['ขอบคุณทุกคนนะครับ 🌱','รูปอัปเดตล่าสุดโพสต์แล้วครับ','ฝนมาพอดีช่วยประหยัดน้ำได้มากครับ'];
-      chatMessages.push({from:'farmer',name:'ลุงสมศักดิ์',emoji:'🧑‍🌾',text:msgs[Math.floor(Math.random()*msgs.length)],time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),type:'other'});
-      renderChat();
+<!-- Firebase Realtime Chat -->
+<script type="module">
+import { db, collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getUserProfile, onAuthChange } from './firebase-config.js';
+
+let currentUid = user.uid || 'guest_' + Math.floor(Math.random() * 1000);
+
+window._fbSwitchRoom = function(roomId) {
+  if (window._fbUnsubscribe) window._fbUnsubscribe();
+  document.getElementById('chat-messages').innerHTML = ''; 
+  chatMessages = [];
+  
+  window._fbUnsubscribe = window._fbListenChat(roomId, (msg) => {
+    // Prevent duplicate local sending
+    if(msg.type === 'me' && chatMessages.find(x => x.text === msg.text && x.time === msg.time)) {
+      return;
     }
-  }, 30000);
+    chatMessages.push(msg);
+    renderChat();
+  });
+};
+
+window._fbSendChat = async function(room, text) {
+  try {
+    await addDoc(collection(db, 'communityMessages'), {
+      uid: currentUid,
+      name: user.name,
+      role: user.role,
+      emoji: user.avatar || 'person',
+      text: text,
+      room: room,
+      createdAt: serverTimestamp()
+    });
+    return true;
+  } catch (e) {
+    console.error('Error sending chat', e);
+    showToast('ส่งข้อความไม่สำเร็จ');
+    return false;
+  }
+};
+
+window._fbListenChat = function(room, callback) {
+  const q = query(
+    collection(db, 'communityMessages'),
+    where('room', '==', room),
+    orderBy('createdAt', 'asc')
+  );
+  return onSnapshot(q, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'added') {
+        const msg = change.doc.data();
+        let timeStr = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+        if (msg.createdAt) {
+          timeStr = msg.createdAt.toDate().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+        }
+        callback({
+          from: msg.role,
+          name: msg.name,
+          emoji: msg.emoji || 'person',
+          text: msg.text,
+          time: timeStr,
+          type: (msg.uid === currentUid) ? 'me' : 'other',
+          uid: msg.uid
+        });
+      }
+    });
+  });
+};
+
+onAuthChange((u) => {
+  if (u) {
+    currentUid = u.uid;
+    getUserProfile(u.uid).then(p => {
+      if(p) {
+        user = { uid: u.uid, name: p.name, role: p.role, avatar: p.photoURL || 'person' };
+      }
+      // Start listening to the room chat
+      window._fbSwitchRoom(window.activeRoomId);
+    });
+  }
 });
 </script>
 </body>

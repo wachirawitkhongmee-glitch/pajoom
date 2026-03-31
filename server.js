@@ -26,7 +26,9 @@ const db = new sqlite3.Database(join(__dirname, 'farmup.sqlite'), (err) => {
 
 // Security Middleware
 app.use(helmet({
-  contentSecurityPolicy: false // Allow inline scripts/styles for prototype
+  contentSecurityPolicy: false, // Allow inline scripts/styles for prototype
+  crossOriginResourcePolicy: false, // Allow Firebase CDN imports
+  crossOriginEmbedderPolicy: false  // Allow cross-origin module scripts
 }));
 
 const corsOptions = {
@@ -98,9 +100,13 @@ function initializeDatabase() {
     db.run(`CREATE TABLE IF NOT EXISTS crops (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       farm_id INTEGER,
+      farm_name TEXT,
       name TEXT NOT NULL,
       category TEXT,
       price DECIMAL(10,2),
+      stock_qty INTEGER DEFAULT 0,
+      max_qty INTEGER DEFAULT 200,
+      harvest_date TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(farm_id) REFERENCES farms(id)
@@ -125,6 +131,8 @@ function initializeDatabase() {
     db.run(`CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
+      crop_id INTEGER,
+      qty INTEGER DEFAULT 1,
       total_price DECIMAL(10,2),
       status TEXT DEFAULT 'pending',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

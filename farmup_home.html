@@ -32,12 +32,8 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 .nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;cursor:pointer;transition:all 0.2s;text-decoration:none;color:#6b7280;}
 .nav-item:hover{color:#1a6b2e;}
 .nav-item.active{color:#1a6b2e;}
-.crop-chip{background:rgba(45,138,71,0.1);color:#1a6b2e;border:1px solid rgba(45,138,71,0.3);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
-.crop-chip.active,.crop-chip:hover{background:#1a6b2e;color:#fff;}
-.risk-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
-.risk-green{background:#16a34a;}
-.risk-yellow{background:#f59e0b;}
-.risk-red{background:#dc2626;}
+.crop-chip{background:rgba(45,138,71,0.08);color:#1a6b2e;border:1.5px solid rgba(45,138,71,0.2);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.crop-chip.active,.crop-chip:hover{background:#1a6b2e;color:#fff;border-color:#1a6b2e;}
 .demand-bar{height:6px;border-radius:3px;background:#e5e7eb;}
 .demand-fill{height:6px;border-radius:3px;background:linear-gradient(90deg,#2d8a47,#16a34a);}
 @keyframes crisis-pulse{0%,100%{opacity:1;}50%{opacity:0.7;}}
@@ -67,8 +63,8 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <span class="material-symbols-outlined text-gray-500 text-xl">notifications</span>
       <span class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
     </button>
-    <button onclick="window.location.href='farmup_dashboard.html'" class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-lg shadow">
-      <span id="user-avatar">🙋</span>
+    <button onclick="window.location.href='farmup_dashboard.html'" id="user-avatar-btn" class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-light to-primary flex items-center justify-center text-lg shadow overflow-hidden">
+      <span id="user-avatar" class="material-symbols-outlined text-white text-xl">person</span>
     </button>
   </div>
 </header>
@@ -78,7 +74,9 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
   <div class="flex items-center gap-3">
     <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings:'FILL' 1;">emergency</span>
     <div class="flex-1">
-      <p class="text-white font-bold text-sm">⚠️ Crisis Mode — ภัยแล้งภาคเหนือ</p>
+      <p class="text-white font-bold text-sm flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">warning</span> Crisis Mode — ภัยแล้งภาคเหนือ
+      </p>
       <p class="text-white/80 text-xs">กำลัง redirect demand ไปฟาร์มที่ปลอดภัย</p>
     </div>
     <button onclick="document.getElementById('crisis-banner').classList.add('hidden')" class="text-white/70 hover:text-white">
@@ -89,20 +87,12 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 
 <main class="pb-32 max-w-2xl mx-auto">
 
-  <!-- Category chips -->
-  <div class="flex gap-2 px-4 mt-4 overflow-x-auto pb-2 scrollbar-hide">
-    <button class="crop-chip active whitespace-nowrap" onclick="filterFeed(this,'all')">🌾 ทั้งหมด</button>
-    <button class="crop-chip whitespace-nowrap" onclick="filterFeed(this,'organic')">🌿 ออร์แกนิก</button>
-    <button class="crop-chip whitespace-nowrap" onclick="filterFeed(this,'veg')">🥬 ผัก</button>
-    <button class="crop-chip whitespace-nowrap" onclick="filterFeed(this,'fruit')">🍅 ผลไม้</button>
-    <button class="crop-chip whitespace-nowrap" onclick="filterFeed(this,'herb')">🌿 สมุนไพร</button>
-    <button class="crop-chip whitespace-nowrap" onclick="filterFeed(this,'grain')">🌾 ธัญพืช</button>
-  </div>
-
   <!-- Flash Booking -->
   <section class="px-4 mt-5">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="font-headline font-black text-lg text-gray-900">⚡ Flash Booking</h2>
+      <h2 class="font-headline font-black text-lg text-gray-900 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">bolt</span> Flash Booking
+      </h2>
       <span class="text-xs text-gray-400 bg-white px-3 py-1 rounded-full shadow-sm">ล็อตกำลังจะเต็ม</span>
     </div>
     <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -110,9 +100,11 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <div class="flex-shrink-0 w-52 bg-gradient-to-br from-primary to-primary-dark rounded-2xl p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition-all active:scale-95"
            onclick="openQuickOrder('มะเขือเทศ Heirloom Batch #24','฿280/กก','farmup_detail.html?id=1')">
         <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-4 translate-x-4"></div>
-        <div class="text-2xl mb-2">🍅</div>
+        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center mb-2">
+          <span class="material-symbols-outlined text-white text-lg">nutrition</span>
+        </div>
         <h3 class="font-headline font-bold text-white text-sm">มะเขือเทศ Heirloom</h3>
-        <p class="text-white/70 text-xs">ฟาร์มสมศักดิ์ • เชียงใหม่</p>
+        <p class="text-white/70 text-xs">ฟาร์มสมศักดิ์ · เชียงใหม่</p>
         <div class="mt-3">
           <div class="flex justify-between text-xs text-white/80 mb-1"><span>เหลือ 12 ที่</span><span id="flash-count">03:24:11</span></div>
           <div class="demand-bar"><div class="demand-fill" style="width:88%"></div></div>
@@ -123,9 +115,11 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <div class="flex-shrink-0 w-52 bg-gradient-to-br from-secondary to-orange-500 rounded-2xl p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition-all active:scale-95"
            onclick="openQuickOrder('กะหล่ำปลีอินทรีย์ Batch #8','฿95/กก','farmup_detail.html?id=2')">
         <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-4 translate-x-4"></div>
-        <div class="text-2xl mb-2">🥬</div>
+        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center mb-2">
+          <span class="material-symbols-outlined text-white text-lg">grass</span>
+        </div>
         <h3 class="font-headline font-bold text-white text-sm">กะหล่ำปลีอินทรีย์</h3>
-        <p class="text-white/70 text-xs">ฟาร์มเขียวขจี • เลย</p>
+        <p class="text-white/70 text-xs">ฟาร์มเขียวขจี · เลย</p>
         <div class="mt-3">
           <div class="flex justify-between text-xs text-white/80 mb-1"><span>เหลือ 5 ที่</span><span>01:45:30</span></div>
           <div class="demand-bar"><div class="demand-fill" style="width:95%;background:rgba(255,255,255,0.4)"></div></div>
@@ -136,9 +130,11 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <div class="flex-shrink-0 w-52 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition-all active:scale-95"
            onclick="openQuickOrder('มะม่วงน้ำดอกไม้ Batch #3','฿450/กก','farmup_detail.html?id=4')">
         <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-4 translate-x-4"></div>
-        <div class="text-2xl mb-2">🥭</div>
+        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center mb-2">
+          <span class="material-symbols-outlined text-white text-lg">nutrition</span>
+        </div>
         <h3 class="font-headline font-bold text-white text-sm">มะม่วงน้ำดอกไม้</h3>
-        <p class="text-white/70 text-xs">ฟาร์มทองคำ • นครสวรรค์</p>
+        <p class="text-white/70 text-xs">ฟาร์มทองคำ · นครสวรรค์</p>
         <div class="mt-3">
           <div class="flex justify-between text-xs text-white/80 mb-1"><span>เหลือ 20 ที่</span><span>06:00:00</span></div>
           <div class="demand-bar"><div class="demand-fill" style="width:75%;background:rgba(255,255,255,0.3)"></div></div>
@@ -151,15 +147,51 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
   <!-- Story Feed -->
   <section class="px-4 mt-6">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="font-headline font-black text-lg text-gray-900">📖 Farm Stories</h2>
+      <h2 class="font-headline font-black text-lg text-gray-900 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">auto_stories</span> Farm Stories
+      </h2>
       <button onclick="window.location.href='farmup_community.html'" class="text-primary text-sm font-bold">ดูทั้งหมด →</button>
     </div>
-    <div id="story-feed" class="space-y-4"></div>
+    <div id="real-story-feed" class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"></div>
+  </section>
+
+  <!-- Discover Crops -->
+  <section class="mt-6">
+    <div class="px-4 flex justify-between items-center mb-3">
+      <h2 class="font-headline font-black text-lg text-gray-900 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">app_shortcut</span> ค้นพบผลผลิต
+      </h2>
+      <span class="text-xs text-gray-400">จองก่อนรับสิทธิ์ก่อน</span>
+    </div>
+    <!-- Category chips -->
+    <div class="flex gap-2 px-4 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+      <button class="crop-chip active" onclick="filterFeed(this,'all')">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">apps</span> ทั้งหมด</span>
+      </button>
+      <button class="crop-chip" onclick="filterFeed(this,'organic')">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">spa</span> ออร์แกนิก</span>
+      </button>
+      <button class="crop-chip" onclick="filterFeed(this,'veg')">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">grass</span> ผัก</span>
+      </button>
+      <button class="crop-chip" onclick="filterFeed(this,'fruit')">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">nutrition</span> ผลไม้</span>
+      </button>
+      <button class="crop-chip" onclick="filterFeed(this,'herb')">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">spa</span> สมุนไพร</span>
+      </button>
+      <button class="crop-chip" onclick="filterFeed(this,'grain')">
+        <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">grain</span> ธัญพืช</span>
+      </button>
+    </div>
+    <div id="story-feed" class="px-4 space-y-4"></div>
   </section>
 
   <!-- Community Shortcuts -->
   <section class="px-4 mt-6">
-    <h2 class="font-headline font-black text-lg text-gray-900 mb-3">👥 Community Farming</h2>
+    <h2 class="font-headline font-black text-lg text-gray-900 mb-3 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-primary">groups</span> Community Farming
+    </h2>
     <div class="grid grid-cols-2 gap-3">
       <div onclick="window.location.href='farmup_detail.html?id=1'" class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition-all active:scale-95">
         <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
@@ -192,7 +224,9 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
   <!-- Price & Demand Dashboard -->
   <section class="px-4 mt-6">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="font-headline font-black text-lg text-gray-900">📊 ราคาตลาดวันนี้</h2>
+      <h2 class="font-headline font-black text-lg text-gray-900 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-primary">analytics</span> ราคาตลาดวันนี้
+      </h2>
       <button onclick="window.location.href='farmup_market.html'" class="text-primary text-sm font-bold">ตลาดสด →</button>
     </div>
     <div class="bg-white rounded-2xl p-4 shadow-sm">
@@ -250,8 +284,8 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
       <span class="material-symbols-outlined text-success text-sm">verified</span>
       <p class="text-xs text-gray-600"><strong>Risk Sharing</strong> — หากเสียหาย คืนเงิน 70%</p>
     </div>
-    <button onclick="confirmQuickOrder()" class="w-full py-4 rounded-2xl bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold text-base shadow-lg hover:shadow-xl active:scale-95 transition-all">
-      ✅ ยืนยันการจอง
+    <button onclick="confirmQuickOrder()" class="w-full py-4 rounded-2xl bg-gradient-to-br from-primary-light to-primary text-white font-headline font-bold text-base shadow-lg hover:shadow-xl active:scale-95 transition-all flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined">check_circle</span> ยืนยันการจอง
     </button>
     <button onclick="window.location.href=currentDetailPage" class="w-full py-2 mt-2 text-gray-500 text-sm hover:text-primary transition-all">ดูรายละเอียดเพิ่มเติม →</button>
   </div>
@@ -284,44 +318,63 @@ body{font-family:'Inter',sans-serif;background:#f5f0e8;min-height:100vh;}
 </nav>
 
 <!-- Toast -->
-<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-xl z-[200] font-bold text-sm"></div>
+<div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-2xl shadow-xl z-[200] font-bold text-sm flex items-center gap-2"></div>
 
+<!-- UI Functions (always works) -->
 <script>
-// ===== DATA =====
 var stories = [];
+var currentUser = null;
+var currentFilter = 'all';
+var qoPrice = 280, qoQty = 1, currentDetailPage = 'farmup_detail.html';
+var _fbSaveOrder = null;
 
 function fetchCrops() {
   fetch('/api/crops')
-    .then(res => res.json())
-    .then(data => {
-      stories = data.map(c => ({
-        id: c.id, 
-        emoji: c.name.includes('มะเขือเทศ')?'🍅':c.name.includes('ผัก')?'🥬':c.name.includes('มะม่วง')?'🥭':c.name.includes('ตะไคร้')?'🌿':'🌾',
-        title: c.name, 
-        farm: c.farm_name, 
-        week: 'สัปดาห์ที่ 3', 
-        risk: 'green', 
-        riskLabel: 'ปลอดภัย', 
-        price: '฿'+c.price+'/กก', 
+    .then(function(res){ return res.json(); })
+    .then(function(data) {
+      stories = data.map(function(c) { return {
+        id: c.id, title: c.name, farm: c.farm_name,
+        week: 'สัปดาห์ที่ 3', risk: 'green', riskLabel: 'ปลอดภัย',
+        price: '฿'+c.price+'/กก',
         demand: Math.round((c.stock_qty/c.max_qty)*100) || 0,
-        orders: c.stock_qty, 
-        maxOrders: c.max_qty, 
-        tag: c.name.includes('ผัก')?'veg':c.name.includes('มะม่วง')?'fruit':c.name.includes('มะเขือเทศ')?'organic':'herb',
-        img: c.name.includes('มะเขือเทศ')?'https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?w=400&fit=crop':c.name.includes('ผัก')?'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&fit=crop':'https://images.pexels.com/photos/2294471/pexels-photo-2294471.jpeg?w=400&fit=crop',
+        orders: c.stock_qty, maxOrders: c.max_qty,
+        tag: c.name.indexOf('ผัก')>=0?'veg':c.name.indexOf('มะม่วง')>=0?'fruit':c.name.indexOf('มะเขือเทศ')>=0?'organic':'herb',
+        img: c.name.indexOf('มะเขือเทศ')>=0?'https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?w=400&fit=crop':c.name.indexOf('ผัก')>=0?'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&fit=crop':'https://images.pexels.com/photos/2294471/pexels-photo-2294471.jpeg?w=400&fit=crop',
         harvest: c.harvest_date
-      }));
+      };});
       renderFeed();
     })
-    .catch(err => console.error(err));
+    .catch(function() {
+      stories = [
+        {id:1,title:'มะเขือเทศ Heirloom Batch #24',farm:'ฟาร์มสมศักดิ์ · เชียงใหม่',week:'สัปดาห์ที่ 3',risk:'green',riskLabel:'ปลอดภัย',price:'฿280/กก',demand:88,orders:176,maxOrders:200,tag:'organic',img:'https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?w=400&fit=crop',harvest:'30 เม.ย 2568',emoji:'eco'},
+        {id:2,title:'ผักบุ้งไร้สาร Batch #5',farm:'ฟาร์มใจดี · เลย',week:'สัปดาห์ที่ 2',risk:'green',riskLabel:'ปลอดภัย',price:'฿60/กก',demand:45,orders:90,maxOrders:200,tag:'veg',img:'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&fit=crop',harvest:'15 เม.ย 2568',emoji:'grass'},
+        {id:3,title:'มะม่วงน้ำดอกไม้ Batch #3',farm:'ฟาร์มทองคำ · นครสวรรค์',week:'สัปดาห์ที่ 4',risk:'green',riskLabel:'ปลอดภัย',price:'฿450/กก',demand:75,orders:150,maxOrders:200,tag:'fruit',img:'https://images.pexels.com/photos/2294471/pexels-photo-2294471.jpeg?w=400&fit=crop',harvest:'1 มิ.ย 2568',emoji:'eco'}
+      ];
+      renderFeed();
+    });
 }
 
-var currentFilter = 'all';
-var qoPrice = 280; var qoQty = 1; var currentDetailPage = 'farmup_detail.html';
+function renderRealStories() {
+  var rsFeed = [
+    {farm:'ฟาร์มสมศักดิ์', time:'30 นาทีก่อน', crop:'มะเขือเทศ Heirloom', img:'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=400&fit=crop'},
+    {farm:'ฟาร์มทองสุข', time:'2 ชม.ก่อน', crop:'ข้าวหอมมะลิ', img:'https://images.unsplash.com/photo-1586208643501-8178a9c336b9?w=400&fit=crop'},
+    {farm:'ฟาร์มเขียวสด', time:'5 ชม.ก่อน', crop:'ตะไคร้อินทรีย์', img:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&fit=crop'},
+  ];
+  var container = document.getElementById('real-story-feed');
+  container.innerHTML = '';
+  rsFeed.forEach(function(s) {
+    var div = document.createElement('div');
+    div.className = 'w-32 h-44 flex-shrink-0 story-card relative rounded-2xl overflow-hidden cursor-pointer';
+    div.onclick = function() { window.location.href = 'farmup_community.html'; };
+    div.innerHTML = '<img src="' + s.img + '" class="w-full h-full object-cover absolute inset-0" /><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div><div class="absolute bottom-3 left-3 right-3"><p class="text-[10px] text-white/80">' + s.time + '</p><p class="text-white font-bold text-xs leading-tight">' + s.farm + '</p></div>';
+    container.appendChild(div);
+  });
+}
 
 function filterFeed(btn, tag) {
   currentFilter = tag;
-  document.querySelectorAll('.crop-chip').forEach(function(c){ c.className = c.className.replace(' active',''); });
-  btn.className += ' active';
+  document.querySelectorAll('.crop-chip').forEach(function(c){ c.classList.remove('active'); });
+  btn.classList.add('active');
   renderFeed();
 }
 
@@ -333,45 +386,17 @@ function renderFeed() {
     var riskClass = {green:'text-success bg-green-50 border-green-200', yellow:'text-warning bg-yellow-50 border-yellow-200', red:'text-danger bg-red-50 border-red-200'}[s.risk];
     var card = document.createElement('div');
     card.className = 'bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-[0.99]';
-    card.innerHTML = `
-      <div class="relative h-48 overflow-hidden" onclick="window.location.href='farmup_detail.html?id=${s.id}'">
-        <img src="${s.img}" class="w-full h-full object-cover" alt="${s.title}" loading="lazy"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-        <div class="absolute top-3 left-3 flex gap-2">
-          <span class="text-[10px] font-bold bg-white/90 text-gray-700 px-2 py-1 rounded-full">${s.week}</span>
-        </div>
-        <div class="absolute top-3 right-3">
-          <span class="text-[10px] font-bold border px-2 py-1 rounded-full ${riskClass}">
-            <span class="risk-dot risk-${s.risk} mr-1"></span>${s.riskLabel}
-          </span>
-        </div>
-        <div class="absolute bottom-3 left-3">
-          <span class="text-xl">${s.emoji}</span>
-        </div>
-      </div>
-      <div class="p-4">
-        <div class="flex justify-between items-start mb-1">
-          <div>
-            <h3 class="font-headline font-black text-base text-gray-900">${s.title}</h3>
-            <p class="text-xs text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span>${s.farm}</p>
-          </div>
-          <div class="text-right">
-            <p class="font-headline font-black text-primary text-lg">${s.price}</p>
-            <p class="text-xs text-gray-400">วันรับ: ${s.harvest}</p>
-          </div>
-        </div>
-        <div class="mt-3">
-          <div class="flex justify-between text-xs text-gray-500 mb-1">
-            <span>Demand ${s.orders}/${s.maxOrders} ออเดอร์</span>
-            <span class="font-bold text-primary">${s.demand}%</span>
-          </div>
-          <div class="demand-bar"><div class="demand-fill" style="width:${s.demand}%"></div></div>
-        </div>
-        <button onclick="openQuickOrder('${s.title}','${s.price}','farmup_detail.html?id=${s.id}')" class="w-full mt-3 py-3 rounded-2xl bg-gradient-to-r from-primary-light to-primary text-white font-headline font-bold text-sm shadow hover:shadow-lg active:scale-95 transition-all">
-          🌱 จองล่วงหน้า
-        </button>
-      </div>
-    `;
+    card.innerHTML = '<div class="relative h-48 overflow-hidden" onclick="window.location.href=\'farmup_detail.html?id='+s.id+'\'">'
+      + '<img src="'+s.img+'" class="w-full h-full object-cover" alt="'+s.title+'" loading="lazy"/>'
+      + '<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>'
+      + '<div class="absolute top-3 left-3"><span class="text-[10px] font-bold bg-white/90 text-gray-700 px-2 py-1 rounded-full">'+s.week+'</span></div>'
+      + '<div class="absolute top-3 right-3"><span class="text-[10px] font-bold border px-2 py-1 rounded-full '+riskClass+'"><span class="inline-block w-1.5 h-1.5 rounded-full '+(s.risk==='green'?'bg-success':s.risk==='yellow'?'bg-warning':'bg-danger')+' mr-1"></span>'+s.riskLabel+'</span></div>'
+      + '</div>'
+      + '<div class="p-4">'
+      + '<div class="flex justify-between items-start mb-1"><div><h3 class="font-headline font-black text-base text-gray-900">'+s.title+'</h3><p class="text-xs text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span>'+s.farm+'</p></div><div class="text-right"><p class="font-headline font-black text-primary text-lg">'+s.price+'</p><p class="text-xs text-gray-400">วันรับ: '+s.harvest+'</p></div></div>'
+      + '<div class="mt-3"><div class="flex justify-between text-xs text-gray-500 mb-1"><span>Demand '+s.orders+'/'+s.maxOrders+' ออเดอร์</span><span class="font-bold text-primary">'+s.demand+'%</span></div><div class="demand-bar"><div class="demand-fill" style="width:'+s.demand+'%"></div></div></div>'
+      + '<button onclick="openQuickOrder('+s.id+')" class="w-full mt-3 py-3 rounded-2xl bg-gradient-to-r from-primary-light to-primary text-white font-headline font-bold text-sm shadow hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-lg">eco</span> จองล่วงหน้า</button>'
+      + '</div>';
     feed.appendChild(card);
   });
   if (filtered.length === 0) {
@@ -379,10 +404,14 @@ function renderFeed() {
   }
 }
 
-function openQuickOrder(name, price, detailPage) {
-  currentDetailPage = detailPage;
-  document.getElementById('qo-name').textContent = '🌱 จอง: ' + name;
-  qoPrice = parseFloat(price.replace(/[^0-9.]/g,'')) || 280;
+var _qoCurrentCrop = null;
+function openQuickOrder(id) {
+  var s = stories.find(function(x){ return x.id === id; });
+  if (!s) return;
+  _qoCurrentCrop = s;
+  currentDetailPage = 'farmup_detail.html?id=' + s.id;
+  document.getElementById('qo-name').textContent = s.title;
+  qoPrice = parseFloat(s.price.replace(/[^0-9.]/g,'')) || 280;
   qoQty = 1;
   document.getElementById('qo-qty').textContent = '1';
   document.getElementById('qo-total').textContent = '฿' + qoPrice;
@@ -397,41 +426,92 @@ function changeQOQty(delta) {
 
 function confirmQuickOrder() {
   document.getElementById('quick-order-modal').classList.add('hidden');
-  showToast('✅ จองสำเร็จ! ตรวจสอบออเดอร์ที่ Dashboard');
-  // Save order to localStorage
+  var orderData = {
+    name: _qoCurrentCrop.title,
+    qty: qoQty,
+    total: qoPrice * qoQty,
+    status: 'growing',
+    date: _qoCurrentCrop.harvest || '30 เม.ย 2568',
+    emoji: _qoCurrentCrop.emoji || 'eco',
+    farm: _qoCurrentCrop.farm || 'ฟาร์มชุมชน'
+  };
+
+  if (_fbSaveOrder && currentUser && currentUser.uid) {
+    _fbSaveOrder(currentUser.uid, orderData).then(function() {
+      showToast('จองสำเร็จ! บันทึกเรียบร้อย');
+    }).catch(function() {
+      saveOrderLocal(orderData);
+      showToast('จองสำเร็จ! (บันทึก Offline)');
+    });
+  } else {
+    saveOrderLocal(orderData);
+    showToast('จองสำเร็จ! ตรวจสอบออเดอร์ที่ Dashboard');
+  }
+}
+
+function saveOrderLocal(orderData) {
   var orders = JSON.parse(localStorage.getItem('farmup_orders') || '[]');
-  orders.push({ name: document.getElementById('qo-name').textContent, qty: qoQty, total: qoPrice * qoQty, status: 'growing', date: new Date().toLocaleDateString('th-TH') });
+  orders.push(orderData);
   localStorage.setItem('farmup_orders', JSON.stringify(orders));
 }
 
 function showToast(msg) {
   var t = document.getElementById('toast');
-  t.textContent = msg;
+  t.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> ' + msg;
   t.classList.remove('hidden');
-  setTimeout(function(){ t.classList.add('hidden'); },3000);
+  setTimeout(function(){ t.classList.add('hidden'); }, 3000);
 }
 
-// Flash countdown
 function updateFlash() {
   var el = document.getElementById('flash-count');
-  if(!el) return;
+  if (!el) return;
   var now = new Date();
-  var h = String(3-now.getHours()%4).padStart(2,'0');
-  var m = String(59-now.getMinutes()).padStart(2,'0');
-  var s = String(59-now.getSeconds()).padStart(2,'0');
-  el.textContent = h+':'+m+':'+s;
+  var h = String(3 - now.getHours() % 4).padStart(2, '0');
+  var m = String(59 - now.getMinutes()).padStart(2, '0');
+  var s = String(59 - now.getSeconds()).padStart(2, '0');
+  el.textContent = h + ':' + m + ':' + s;
 }
 setInterval(updateFlash, 1000);
 
-// Init
+// Init on load
 document.addEventListener('DOMContentLoaded', function() {
-  var user = JSON.parse(localStorage.getItem('farmup_user') || '{"name":"คุณ","avatar":"🙋"}');
-  document.getElementById('welcome-name').textContent = 'สวัสดี, ' + user.name.split(' ')[0];
-  document.getElementById('user-avatar').textContent = user.avatar || '🙋';
+  var user = JSON.parse(localStorage.getItem('farmup_user') || '{}');
+  if (user.name) {
+    document.getElementById('welcome-name').textContent = 'สวัสดี, ' + user.name.split(' ')[0];
+  }
+  if (user.photoURL) {
+    document.getElementById('user-avatar-btn').innerHTML = '<img src="' + user.photoURL + '" class="w-full h-full object-cover rounded-full" />';
+  } else if (user.name) {
+    document.getElementById('user-avatar').textContent = user.name.charAt(0);
+    document.getElementById('user-avatar').className = 'text-white text-sm font-bold';
+  }
+  currentUser = user;
   fetchCrops();
-  // Show crisis banner if weather risk is high
+  renderRealStories();
   setTimeout(function(){ document.getElementById('crisis-banner').classList.remove('hidden'); }, 3000);
 });
+</script>
+
+<!-- Firebase Enhancement -->
+<script type="module">
+import { onAuthChange, getUserProfile, saveOrder } from './firebase-config.js';
+_fbSaveOrder = saveOrder;
+
+onAuthChange(function(user) {
+  if (user) {
+    getUserProfile(user.uid).then(function(profile) {
+      if (profile) {
+        currentUser = { uid: user.uid, name: profile.name, email: profile.email, role: profile.role, photoURL: profile.photoURL || '' };
+        localStorage.setItem('farmup_user', JSON.stringify(currentUser));
+        document.getElementById('welcome-name').textContent = 'สวัสดี, ' + (profile.name || '').split(' ')[0];
+        if (profile.photoURL) {
+          document.getElementById('user-avatar-btn').innerHTML = '<img src="' + profile.photoURL + '" class="w-full h-full object-cover rounded-full" />';
+        }
+      }
+    }).catch(function(e) { console.log('Firebase profile error:', e); });
+  }
+});
+console.log('Firebase module loaded');
 </script>
 </body>
 </html>

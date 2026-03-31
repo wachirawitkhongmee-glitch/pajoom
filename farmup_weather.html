@@ -23,7 +23,7 @@
   <div class="flex items-center justify-between mb-6">
     <button onclick="history.back()" class="glass text-white p-2 rounded-xl"><span class="material-symbols-outlined">arrow_back</span></button>
     <div class="text-center">
-      <h1 class="font-headline font-black text-white text-xl">🌦️ Weather Risk</h1>
+      <h1 class="font-headline font-black text-white text-xl flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-2xl">partly_cloudy_day</span> Weather Risk</h1>
       <p class="text-blue-300 text-xs">เชียงใหม่, ประเทศไทย</p>
     </div>
     <button onclick="showToast('🔔 เปิดการแจ้งเตือนสภาพอากาศ')" class="glass text-white p-2 rounded-xl"><span class="material-symbols-outlined">notifications</span></button>
@@ -31,7 +31,7 @@
 
   <!-- Main weather display (Real-time enabled via JS) -->
   <div class="text-center mb-6">
-    <p class="text-7xl mb-3" id="weather-icon">⛅</p>
+    <p class="text-7xl mb-3 flex justify-center text-white" id="weather-icon"><span class="material-symbols-outlined text-[72px]">partly_cloudy_day</span></p>
     <p class="font-headline font-black text-white flex justify-center items-start text-6xl" id="weather-temp-container">
       <span id="weather-temp" class="text-6xl">28</span><span class="text-3xl mt-1">°</span>
     </p>
@@ -43,13 +43,18 @@
   <div class="glass rounded-3xl p-5 mb-2">
     <div class="flex justify-between items-center mb-3">
       <p class="font-headline font-bold text-white text-base">Overall Farm Risk Score</p>
-      <span class="text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-3 py-1 rounded-full">🟡 ปานกลาง</span>
+      <span class="text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">error</span> ปานกลาง</span>
     </div>
     <div class="h-3 bg-white/10 rounded-full overflow-hidden">
       <div class="h-3 rounded-full" style="width:45%;background:linear-gradient(90deg,#16a34a,#f59e0b)"></div>
     </div>
-    <div class="flex justify-between text-[10px] text-blue-300 mt-1.5">
-      <span>🟢 ปลอดภัย</span><span>🟡 ปานกลาง</span><span>🔴 เสี่ยงสูง</span>
+    <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+      <div class="h-3 rounded-full" style="width:45%;background:linear-gradient(90deg,#16a34a,#f59e0b)"></div>
+    </div>
+    <div class="flex justify-between text-[10px] text-blue-300 mt-1.5 font-semibold">
+      <span class="flex items-center gap-1 text-green-400"><span class="material-symbols-outlined text-[12px]">check_circle</span> ปลอดภัย</span>
+      <span class="flex items-center gap-1 text-yellow-400"><span class="material-symbols-outlined text-[12px]">error</span> ปานกลาง</span>
+      <span class="flex items-center gap-1 text-red-400"><span class="material-symbols-outlined text-[12px]">cancel</span> เสี่ยงสูง</span>
     </div>
   </div>
 </header>
@@ -57,32 +62,32 @@
 <main class="px-4 pb-32 max-w-2xl mx-auto">
   <!-- Risk Cards -->
   <div class="grid grid-cols-2 gap-3 mb-5">
-    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('🟢 ความเสี่ยงฝนแล้ง: ต่ำ — ดัชนีความชื้นดิน 72%')">
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('ความเสี่ยงฝนแล้ง: ต่ำ ดัชนีความชื้นดิน 72%')">
       <div class="scan-line"></div>
-      <span class="text-3xl block mb-2">☀️</span>
+      <span class="text-3xl block mb-2 text-white"><span class="material-symbols-outlined text-3xl">sunny</span></span>
       <p class="font-bold text-white text-sm">ฝนแล้ง</p>
-      <p class="text-green-300 font-headline font-black text-2xl mt-1">🟢 ต่ำ</p>
+      <p class="text-green-300 font-headline font-black text-2xl mt-1 flex items-center gap-1"><span class="material-symbols-outlined">check_circle</span> ต่ำ</p>
       <p class="text-green-300/70 text-[10px] mt-1">ความชื้นดิน 72%</p>
       <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-green-400 rounded-full" style="width:25%"></div></div>
     </div>
-    <div class="risk-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05));border:1px solid rgba(245,158,11,0.3)" onclick="showToast('🟡 ความเสี่ยงน้ำท่วม: ปานกลาง — ฝนคาดว่าจะตกหนักสัปดาห์หน้า')">
-      <span class="text-3xl block mb-2">🌊</span>
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05));border:1px solid rgba(245,158,11,0.3)" onclick="showToast('ความเสี่ยงน้ำท่วม: ปานกลาง ฝนคาดว่าจะตกหนักสัปดาห์หน้า')">
+      <span class="text-3xl block mb-2 text-white"><span class="material-symbols-outlined text-3xl">water</span></span>
       <p class="font-bold text-white text-sm">น้ำท่วม</p>
-      <p class="text-yellow-300 font-headline font-black text-2xl mt-1">🟡 กลาง</p>
+      <p class="text-yellow-300 font-headline font-black text-2xl mt-1 flex items-center gap-1"><span class="material-symbols-outlined">error</span> กลาง</p>
       <p class="text-yellow-300/70 text-[10px] mt-1">ฝนคาดหนักสัปดาห์หน้า</p>
       <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-yellow-400 rounded-full" style="width:55%"></div></div>
     </div>
-    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('🟢 อุณหภูมิ: ปกติ — 26-32°C ดีสำหรับผักส่วนใหญ่')">
-      <span class="text-3xl block mb-2">🌡️</span>
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('อุณหภูมิ: ปกติ 26-32°C ดีสำหรับผักส่วนใหญ่')">
+      <span class="text-3xl block mb-2 text-white"><span class="material-symbols-outlined text-3xl">thermostat</span></span>
       <p class="font-bold text-white text-sm">อุณหภูมิ</p>
-      <p class="text-green-300 font-headline font-black text-2xl mt-1">🟢 ปกติ</p>
+      <p class="text-green-300 font-headline font-black text-2xl mt-1 flex items-center gap-1"><span class="material-symbols-outlined">check_circle</span> ปกติ</p>
       <p class="text-green-300/70 text-[10px] mt-1">26-32°C เหมาะสม</p>
       <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-green-400 rounded-full" style="width:30%"></div></div>
     </div>
-    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('🟢 ลมฟ้า: ปกติ — ไม่มีพายุคาดการณ์ใน 2 สัปดาห์')">
-      <span class="text-3xl block mb-2">💨</span>
+    <div class="risk-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.2),rgba(22,163,74,0.05));border:1px solid rgba(22,163,74,0.3)" onclick="showToast('ลมฟ้า: ปกติ ไม่มีพายุคาดการณ์ใน 2 สัปดาห์')">
+      <span class="text-3xl block mb-2 text-white"><span class="material-symbols-outlined text-3xl">air</span></span>
       <p class="font-bold text-white text-sm">ลมและพายุ</p>
-      <p class="text-green-300 font-headline font-black text-2xl mt-1">🟢 ปลอดภัย</p>
+      <p class="text-green-300 font-headline font-black text-2xl mt-1 flex items-center gap-1"><span class="material-symbols-outlined">check_circle</span> ปลอดภัย</p>
       <p class="text-green-300/70 text-[10px] mt-1">ไม่มีพายุใน 14 วัน</p>
       <div class="h-1.5 bg-white/10 rounded-full mt-2"><div class="h-1.5 bg-green-400 rounded-full" style="width:15%"></div></div>
     </div>
@@ -90,31 +95,31 @@
 
   <!-- 7-day Forecast -->
   <div class="glass rounded-3xl p-4 mb-4">
-    <h2 class="font-headline font-bold text-white text-sm mb-3">📅 พยากรณ์ 7 วัน</h2>
+    <h2 class="font-headline font-bold text-white text-sm mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">calendar_month</span> พยากรณ์ 7 วัน</h2>
     <div class="flex gap-3 overflow-x-auto pb-1">
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">พรุ่งนี้</p><p class="text-2xl my-1">⛅</p><p class="text-white font-bold text-xs">29°</p><p class="text-blue-300 text-[9px]">22°</p></div>
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16 border border-yellow-500/30"><p class="text-[10px] text-blue-300 font-bold">พ</p><p class="text-2xl my-1">🌧️</p><p class="text-white font-bold text-xs">26°</p><p class="text-yellow-300 text-[9px]">⚠️ฝน</p></div>
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">พฤ</p><p class="text-2xl my-1">🌦️</p><p class="text-white font-bold text-xs">27°</p><p class="text-blue-300 text-[9px]">21°</p></div>
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">ศ</p><p class="text-2xl my-1">☀️</p><p class="text-white font-bold text-xs">32°</p><p class="text-blue-300 text-[9px]">24°</p></div>
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">ส</p><p class="text-2xl my-1">⛅</p><p class="text-white font-bold text-xs">30°</p><p class="text-blue-300 text-[9px]">23°</p></div>
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16 border border-red-500/30"><p class="text-[10px] text-blue-300 font-bold">อา</p><p class="text-2xl my-1">⛈️</p><p class="text-white font-bold text-xs">24°</p><p class="text-red-300 text-[9px]">🔴พายุ</p></div>
-      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">จ</p><p class="text-2xl my-1">🌤️</p><p class="text-white font-bold text-xs">28°</p><p class="text-blue-300 text-[9px]">22°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">พรุ่งนี้</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">partly_cloudy_day</span></p><p class="text-white font-bold text-xs">29°</p><p class="text-blue-300 text-[9px]">22°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16 border border-yellow-500/30"><p class="text-[10px] text-blue-300 font-bold">พ</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">rainy</span></p><p class="text-white font-bold text-xs">26°</p><p class="text-yellow-300 text-[9px] flex items-center gap-0.5 justify-center"><span class="material-symbols-outlined text-[10px]">warning</span> ฝน</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">พฤ</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">rainy</span></p><p class="text-white font-bold text-xs">27°</p><p class="text-blue-300 text-[9px]">21°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">ศ</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">sunny</span></p><p class="text-white font-bold text-xs">32°</p><p class="text-blue-300 text-[9px]">24°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">ส</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">partly_cloudy_day</span></p><p class="text-white font-bold text-xs">30°</p><p class="text-blue-300 text-[9px]">23°</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16 border border-red-500/30"><p class="text-[10px] text-blue-300 font-bold">อา</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">thunderstorm</span></p><p class="text-white font-bold text-xs">24°</p><p class="text-red-300 text-[9px] flex items-center gap-0.5 justify-center"><span class="material-symbols-outlined text-[10px]">cancel</span> พายุ</p></div>
+      <div class="flex-shrink-0 text-center glass rounded-2xl p-3 w-16"><p class="text-[10px] text-blue-300 font-bold">จ</p><p class="my-1 flex justify-center text-white"><span class="material-symbols-outlined">partly_cloudy_day</span></p><p class="text-white font-bold text-xs">28°</p><p class="text-blue-300 text-[9px]">22°</p></div>
     </div>
   </div>
 
   <!-- AI Risk Assessment -->
   <div class="glass rounded-3xl p-4 mb-4">
-    <h2 class="font-headline font-bold text-white text-sm mb-3">🤖 AI Risk Assessment</h2>
+    <h2 class="font-headline font-bold text-white text-sm mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">smart_toy</span> AI Risk Assessment</h2>
     <div class="space-y-2">
-      <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3"><p class="text-yellow-300 font-bold text-xs">⚠️ แนะนำ: เพิ่มชลประทาน 20%</p><p class="text-blue-200 text-[11px] mt-0.5">คาดฝนน้อยในสัปดาห์ที่ 2-3 เมษายน</p></div>
-      <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3"><p class="text-red-300 font-bold text-xs">🔴 แจ้งเตือน: พายุคาดเข้าวันอาทิตย์</p><p class="text-blue-200 text-[11px] mt-0.5">เตรียมตาข่ายกันลม และตรวจสอบระบบระบายน้ำ</p></div>
-      <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-3"><p class="text-green-300 font-bold text-xs">✅ ช่วงปลูกที่ดีที่สุด: 5-15 เมษายน</p><p class="text-blue-200 text-[11px] mt-0.5">อุณหภูมิและความชื้นเหมาะสมสำหรับเมล็ดพันธุ์ใหม่</p></div>
+      <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3"><p class="text-yellow-300 font-bold text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span> แนะนำ: เพิ่มชลประทาน 20%</p><p class="text-blue-200 text-[11px] mt-0.5">คาดฝนน้อยในสัปดาห์ที่ 2-3 เมษายน</p></div>
+      <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3"><p class="text-red-300 font-bold text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">cancel</span> แจ้งเตือน: พายุคาดเข้าวันอาทิตย์</p><p class="text-blue-200 text-[11px] mt-0.5">เตรียมตาข่ายกันลม และตรวจสอบระบบระบายน้ำ</p></div>
+      <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-3"><p class="text-green-300 font-bold text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> ช่วงปลูกที่ดีที่สุด: 5-15 เมษายน</p><p class="text-blue-200 text-[11px] mt-0.5">อุณหภูมิและความชื้นเหมาะสมสำหรับเมล็ดพันธุ์ใหม่</p></div>
     </div>
   </div>
 
   <!-- Alert Toggle -->
   <div class="glass rounded-3xl p-4">
-    <h2 class="font-headline font-bold text-white text-sm mb-3">🔔 การแจ้งเตือน</h2>
+    <h2 class="font-headline font-bold text-white text-sm mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">notifications</span> การแจ้งเตือน</h2>
     <div class="space-y-3">
       <div class="flex items-center justify-between"><span class="text-blue-200 text-sm">แจ้งเตือนฝน</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked oninput="showToast('🌧️ แจ้งเตือนฝน: '+(this.checked?'เปิด':'ปิด'))"/><div class="w-11 h-6 bg-gray-600 peer-checked:bg-primary rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div></label></div>
       <div class="flex items-center justify-between"><span class="text-blue-200 text-sm">แจ้งเตือนความเสี่ยงสูง</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked oninput="showToast('🔴 แจ้งเตือนเสี่ยงสูง: '+(this.checked?'เปิด':'ปิด'))"/><div class="w-11 h-6 bg-gray-600 peer-checked:bg-danger rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div></label></div>
@@ -153,32 +158,32 @@ async function fetchRealTimeWeather() {
       const nowIdx = data.hourly.time.findIndex(t => t.startsWith(data.current_weather.time.substring(0, 13)));
       const humidity = nowIdx !== -1 ? data.hourly.relative_humidity_2m[nowIdx] : 65;
       
-      let icon = '⛅';
+      let icon = 'partly_cloudy_day';
       let desc = 'มีเมฆบางส่วน';
       
       // Simple weather code mapping for Open-Meteo
       if (weatherCode === 0) {
-        icon = isDay ? '☀️' : '🌕';
+        icon = isDay ? 'sunny' : 'nightlight';
         desc = 'ท้องฟ้าแจ่มใส';
       } else if (weatherCode >= 1 && weatherCode <= 3) {
-        icon = isDay ? '⛅' : '☁️';
+        icon = isDay ? 'partly_cloudy_day' : 'cloud';
         desc = 'มีเมฆเป็นส่วนมาก';
       } else if (weatherCode >= 45 && weatherCode <= 48) {
-        icon = '🌫️';
+        icon = 'foggy';
         desc = 'มีหมอก';
       } else if (weatherCode >= 51 && weatherCode <= 67) {
-        icon = '🌧️';
+        icon = 'rainy';
         desc = 'มีฝนตก';
       } else if (weatherCode >= 71 && weatherCode <= 82) {
-        icon = '🌨️';
+        icon = 'weather_snowy';
         desc = 'มีฝนตกหนัก';
       } else if (weatherCode >= 95) {
-        icon = '⛈️';
+        icon = 'thunderstorm';
         desc = 'มีพายุฝนฟ้าคะนอง';
       }
 
       document.getElementById('weather-temp').textContent = temp;
-      document.getElementById('weather-icon').textContent = icon;
+      document.getElementById('weather-icon').innerHTML = '<span class="material-symbols-outlined text-[72px]">' + icon + '</span>';
       document.getElementById('weather-desc').textContent = `${desc} • ความชื้น ${humidity}%`;
       
       const now = new Date();
